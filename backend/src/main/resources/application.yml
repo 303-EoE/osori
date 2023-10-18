@@ -1,1 +1,36 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://stg-yswa-kr-practice-db-master.mariadb.database.azure.com:3306/S09P31A303?serverTimezone=UTC&useUnicode=true&characterEncoding=utf8
+    username: S09P31A303
+    password: aC11CO4iof
+    hikari:
+      maximum-pool-size: 5
 
+  jpa:
+#    hibernate:
+#      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: Asia/Seoul
+      show-sql: true
+    defer-datasource-initialization: true
+
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+
+notification:
+  mattermost:
+    enabled: true
+    webhook-url: https://meeting.ssafy.com/hooks/8c9ty9sw5ifji83hc61xri3f5h
+#    channel:
+#    pretext:
+#    color:
+    author-name: Error Bot
+    author-icon: https://img.icons8.com/fluency/48/error.png
+#    footer:

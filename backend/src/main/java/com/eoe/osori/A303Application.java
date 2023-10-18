@@ -1,5 +1,7 @@
-package com.ping.osori;
+package com.eoe.osori;
 
+import com.eoe.osori.global.advice.exception.GlobalControllerAdvice;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
