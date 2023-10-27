@@ -1,27 +1,33 @@
-package com.eoe.osori.global.advice.exception;
+package com.eoe.osori.global.advice.error;
 
 import com.eoe.osori.domain.mattermost.component.NotificationManager;
+import com.eoe.osori.global.advice.error.exception.MetaException;
+import com.eoe.osori.global.common.response.EnvelopeResponse;
+
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Enumeration;
 
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalControllerAdvice {
 
     @Autowired
     private NotificationManager notificationManager;
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity exceptionSend(Exception e, HttpServletRequest req){
-        e.printStackTrace();
-        notificationManager.sendNotification(e, req.getRequestURI(), getParams(req));
+    @ExceptionHandler(MetaException.class)
+    public ResponseEntity<EnvelopeResponse<MetaException>> metaExceptionHandler(MetaException exception, HttpServletRequest req) {
+        exception.printStackTrace();
+        notificationManager.sendNotification(exception, req.getRequestURI(), getParams(req));
 
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return ResponseEntity.status(exception.getInfo().getStatus())
+            .body(EnvelopeResponse.<MetaException>builder()
+                .code(exception.getInfo().getCode())
+                .message(exception.getInfo().getMessage())
+                .build());
     }
 
     private String getParams(HttpServletRequest req) {
