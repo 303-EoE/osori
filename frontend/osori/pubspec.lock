@@ -137,7 +137,7 @@ packages:
     source: hosted
     version: "0.2.2"
   http:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: http
       sha256: "5895291c13fa8a3bd82e76d5627f69e0d85ca6a30dcac95c4ea19a5d555879c2"
@@ -152,6 +152,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
+  kakao_map_plugin:
+    dependency: "direct main"
+    description:
+      name: kakao_map_plugin
+      sha256: "32a6a7939d4e315619415c00fd317a724cb441345c20705363029c7b15503fd2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   kakaomap_webview:
     dependency: "direct main"
     description:
@@ -302,7 +310,7 @@ packages:
     source: hosted
     version: "0.1.4-beta"
   webview_flutter:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: webview_flutter
       sha256: "392c1d83b70fe2495de3ea2c84531268d5b8de2de3f01086a53334d8b6030a88"
