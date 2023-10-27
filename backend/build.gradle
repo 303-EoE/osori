@@ -39,6 +39,12 @@ dependencies {
 
 	// Swagger
 	implementation 'org.springframework.data:spring-data-rest-webmvc:4.1.3'
+
+	// 쿼리문 ??에 값을 넣어주는 dependency
+	implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.8.1")
+
+	// WebClient API호출
+	implementation('org.springframework.boot:spring-boot-starter-webflux')
 }
 
 tasks.named('test') {
