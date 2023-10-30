@@ -9,6 +9,9 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.Locale;
 
+/**
+ * 쿼리문 ??에 값을 넣어주는 dependency p6spy의 포맷 설정
+ */
 @Configuration
 public class P6SpySqlFormatter implements MessageFormattingStrategy {
 
