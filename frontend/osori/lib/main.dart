@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:osori/screens/chat_screen.dart';
 import 'package:osori/screens/map_screen.dart';
@@ -6,15 +7,17 @@ import 'package:osori/screens/profile_screen.dart';
 import 'package:osori/widgets/common/bottom_navigation_widget.dart';
 import 'package:osori/widgets/feed/feed_widget.dart';
 
-void main() {
-  AuthRepository.initialize(appKey: 'c08c97c986c312f22fc43678d907b46e');
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(fileName: 'assets/env/.env');
+  AuthRepository.initialize(appKey: dotenv.env['APP_KEY'] ?? '');
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -51,8 +54,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   AppBar topHeader() {
     return AppBar(
-      backgroundColor: const Color(0xFFf9f8f8),
-      elevation: 5,
+      surfaceTintColor: const Color(0xFFf9f8f8),
+      elevation: 1,
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
