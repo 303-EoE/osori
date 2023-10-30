@@ -55,7 +55,6 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Size size = MediaQuery.of(context).size;
     Set<Marker> markers = {};
 
     return Scaffold(
@@ -64,7 +63,6 @@ class _MapScreenState extends State<MapScreen> {
           KakaoMap(
             onMapCreated: ((controller) {
               mapController = controller;
-
               markers.add(Marker(
                 markerId: UniqueKey().toString(),
                 latLng: LatLng(37.479996, 126.915363),
@@ -80,12 +78,9 @@ class _MapScreenState extends State<MapScreen> {
           ),
           GestureDetector(
             onTapUp: (details) {
-              print('push to search');
+              // print('push to search');
               Navigator.push(
                 context,
-                // MaterialPageRoute(
-                //   builder: (context) => const ProfileScreen(),
-                // ),
                 MaterialPageRoute(
                   builder: (context) => SearchScreen(
                     isInputDisabled: !isInputDisabled,
@@ -102,7 +97,7 @@ class _MapScreenState extends State<MapScreen> {
                     clipBehavior: Clip.hardEdge,
                     height: 50,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: const Color(0xFFf9f8f8),
                       borderRadius: const BorderRadius.all(Radius.circular(20)),
                       border:
                           Border.all(color: const Color(0xFF818181), width: 2),
@@ -131,6 +126,7 @@ class _MapScreenState extends State<MapScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFFf9f8f8),
         onPressed: () {
           // mapController
           //     .setCenter(LatLng(position.latitude, position.longitude));

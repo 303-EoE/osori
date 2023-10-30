@@ -10,22 +10,31 @@ class SearchScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Row(
+    Size size = MediaQuery.of(context).size;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("가게 검색"),
+        centerTitle: true,
+      ),
+      body: Column(
         children: [
-          // TextField(
-          //   decoration: const InputDecoration(
-          //     border: InputBorder.none,
-          //     hintText: "키워드를 입력하세요!!",
-          //   ),
-          //   textAlign: TextAlign.center,
-          //   readOnly: isInputDisabled,
-          //   enabled: !isInputDisabled,
-          // ),
           SizedBox(
-            height: 200,
-            child: Center(
-              child: Text("SearchScreen"),
+            width: size.width,
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10),
+                    ),
+                  ),
+                  hoverColor: Color(0xFFE8E8E8),
+                  hintText: "키워드를 입력하세요!!",
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
         ],
