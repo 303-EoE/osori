@@ -18,7 +18,7 @@ class Feed extends StatelessWidget {
               decoration: const BoxDecoration(
                 color: Color(0xFFf9f8f8),
                 border: Border.symmetric(
-                  horizontal: BorderSide(width: 0.5),
+                  horizontal: BorderSide(width: 0.1),
                 ),
               ),
               child: Column(children: [
@@ -77,6 +77,9 @@ class Feed extends StatelessWidget {
                         )
                       ],
                     ),
+                    SizedBox(
+                      height: 10,
+                    ),
                     Row(
                       children: [
                         Text(
@@ -86,11 +89,14 @@ class Feed extends StatelessWidget {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
+                        SizedBox(
+                          width: 20,
+                        ),
                         Row(
                           children: [
                             Icon(
                               Icons.star_rounded,
-                              color: Colors.yellow,
+                              color: Color.fromARGB(255, 255, 230, 0),
                             ),
                             Icon(
                               Icons.star_rounded,
@@ -112,6 +118,9 @@ class Feed extends StatelessWidget {
                         ),
                         Text("3.5"),
                       ],
+                    ),
+                    SizedBox(
+                      height: 10,
                     ),
                     Text(
                         "짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 "),
