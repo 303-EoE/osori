@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 AppBar topHeader() {
   return AppBar(
     surfaceTintColor: const Color(0xFFf9f8f8),
-    elevation: 1,
+    elevation: 0.2,
     title: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -20,7 +20,7 @@ AppBar topHeader() {
               'OSORI',
               style: TextStyle(
                   color: Colors.black,
-                  fontSize: 32,
+                  fontSize: 24,
                   fontWeight: FontWeight.w600),
             ),
           ],
@@ -31,7 +31,7 @@ AppBar topHeader() {
             Icons.notifications_none_outlined,
             // Icons.notifications,
             color: Colors.black,
-            size: 32,
+            size: 28,
           ),
         ),
       ],

@@ -128,9 +128,10 @@ class _MapScreenState extends State<MapScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFFf9f8f8),
         onPressed: () {
-          // mapController
-          //     .setCenter(LatLng(position.latitude, position.longitude));
-          mapController.panTo(LatLng(37.479996, 126.915363)); // 내 집
+          mapController
+              .setCenter(LatLng(position.latitude, position.longitude));
+          mapController.setLevel(3);
+          // mapController.panTo(LatLng(37.479996, 126.915363)); // 내 집
         },
         child: const Icon(
           Icons.navigation_outlined,
