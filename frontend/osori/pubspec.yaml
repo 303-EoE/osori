@@ -40,6 +40,13 @@ dependencies:
   http: ^0.13.6
   kakao_map_plugin: ^0.1.0
   flutter_dotenv: ^5.1.0
+  flutter_svg: ^2.0.8
+  camera: ^0.10.5+5
+  path_provider: ^2.1.1
+  path: ^1.8.3
+  gallery_saver: ^2.3.2
+  image_picker: ^1.0.4
+  flutter_gif: ^0.0.4
 
 dev_dependencies:
   flutter_test:

@@ -38,19 +38,19 @@ class _BottomNavigationState extends State<BottomNavigation> {
         switch (value) {
           case 0:
             Navigator.of(context)
-                .pushNamedAndRemoveUntil('/', (route) => route.isFirst);
+                .pushNamedAndRemoveUntil('/', (route) => false);
             break;
           case 1:
             Navigator.of(context)
-                .pushNamedAndRemoveUntil('/map', (route) => route.isFirst);
+                .pushNamedAndRemoveUntil('/map', (route) => false);
             break;
           case 2:
             Navigator.of(context)
-                .pushNamedAndRemoveUntil('/chat', (route) => route.isFirst);
+                .pushNamedAndRemoveUntil('/chat', (route) => false);
             break;
           case 3:
             Navigator.of(context)
-                .pushNamedAndRemoveUntil('/profile', (route) => route.isFirst);
+                .pushNamedAndRemoveUntil('/profile', (route) => false);
 
             break;
         }
