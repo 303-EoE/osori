@@ -37,6 +37,7 @@ public class ImageServiceImpl implements ImageService {
 
     /**
      * S3에 파일 업로드
+     *
      * @param multipartFiles List<MultipartFile>
      * @return PostImageUploadResponseDto
      * @see AmazonS3Client
@@ -72,7 +73,7 @@ public class ImageServiceImpl implements ImageService {
             String keyName = uploadFilePath + "/" + uploadFileName; // ex) 구분/년/월/일/파일.확장자
 
             // try() 안에 있는 inputStream이 PutObjectRequest의 세번째에 들어가는 값
-            try(InputStream inputStream = multipartFile.getInputStream()) {
+            try (InputStream inputStream = multipartFile.getInputStream()) {
 
                 // TODO : 외부에 공개하는 파일인 경우 Public Read 권한을 추가, ACL 확인
                 amazonS3Client.putObject(
@@ -82,7 +83,7 @@ public class ImageServiceImpl implements ImageService {
             } catch (IOException e) {
                 // 파일 읽어오기 에러
                 throw new ImageException(ImageErrorInfo.IMAGE_FILE_IO_ERROR);
-            }catch (AmazonS3Exception e) {
+            } catch (AmazonS3Exception e) {
                 // Amazon S3 서비스에서 반환한 예외 처리
                 throw new ImageException(ImageErrorInfo.AMAZON_S3_SERVICE_UPLOAD_ERROR);
             } catch (AmazonClientException e) {
@@ -98,6 +99,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     /**
+     * S3에 업로드된 파일 삭제
      *
      * @param postImageRemovalRequestDto PostImageRemovalRequestDto
      * @return void
@@ -136,6 +138,7 @@ public class ImageServiceImpl implements ImageService {
 
     /**
      * UUID 파일명 반환
+     *
      * @param fileName String
      */
     public String getUuidFileName(String fileName) {

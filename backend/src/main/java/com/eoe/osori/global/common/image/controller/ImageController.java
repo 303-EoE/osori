@@ -27,13 +27,13 @@ public class ImageController {
 
     /**
      * S3에 이미지 저장
+     *
      * @param multipartFiles List<MultipartFile>
-     * @return ResponseEntity<EnvelopeResponse<PostImageUploadResponseDto>>
+     * @return ResponseEntity<EnvelopeResponse < PostImageUploadResponseDto>>
      * @see ImageService
      */
     @PostMapping
     public ResponseEntity<EnvelopeResponse<PostImageUploadResponseDto>> uploadFiles(@RequestPart List<MultipartFile> multipartFiles) {
-        System.out.println("upload 시작 부분");
         return ResponseEntity.status((HttpStatus.OK))
                 .body(EnvelopeResponse.<PostImageUploadResponseDto>builder()
                         .code(HttpStatus.OK.value())
@@ -43,8 +43,9 @@ public class ImageController {
 
     /**
      * S3에 이미지 삭제
+     *
      * @param postImageRemovalRequestDto PostImageRemovalRequestDto
-     * @return ResponseEntity<EnvelopeResponse<Void>>
+     * @return ResponseEntity<EnvelopeResponse < Void>>
      * @see ImageService
      */
     @PostMapping("/removal")

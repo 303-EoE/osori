@@ -6,6 +6,6 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class ImageException extends RuntimeException{
-    private final ImageErrorInfo  info;
+public class ImageException extends RuntimeException {
+    private final ImageErrorInfo info;
 }

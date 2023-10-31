@@ -31,9 +31,9 @@ public class AmazonS3Config {
         // 따라서 AWSCredentials 인터페이스 형태를 띄는 credentials를 만들어서 사용한다.
         AWSCredentials basicAWSCredentials = new BasicAWSCredentials(accessKey, secretKey);
         return (AmazonS3Client) AmazonS3ClientBuilder
-            .standard()
-            .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
-            .withRegion(region)
-            .build();
+                .standard()
+                .withCredentials(new AWSStaticCredentialsProvider(basicAWSCredentials))
+                .withRegion(region)
+                .build();
     }
 }
