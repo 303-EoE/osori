@@ -10,8 +10,12 @@ public class NotificationManager {
 
     private Logger log = LoggerFactory.getLogger(NotificationManager.class);
 
-    @Autowired
     private MatterMostSender mmSender;
+
+    @Autowired
+    public NotificationManager(MatterMostSender mmSender){
+        this.mmSender = mmSender;
+    }
 
     public void sendNotification(Exception e, String uri, String params){
         log.info("#### SEND Notification");
