@@ -3,6 +3,7 @@ package com.eoe.osori.global.advice.error;
 import com.eoe.osori.domain.mattermost.component.NotificationManager;
 import com.eoe.osori.global.advice.error.exception.MetaException;
 import com.eoe.osori.global.advice.error.exception.ReceiptException;
+import com.eoe.osori.global.advice.error.exception.ReviewException;
 import com.eoe.osori.global.common.response.EnvelopeResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,18 @@ public class GlobalControllerAdvice {
                         .code(exception.getInfo().getCode())
                         .message(exception.getInfo().getMessage())
                         .build());
+    }
+
+    @ExceptionHandler(ReviewException.class)
+    public ResponseEntity<EnvelopeResponse<ReviewException>> reviewExceptionHandler(ReviewException exception, HttpServletRequest req) {
+        exception.printStackTrace();
+        notificationManager.sendNotification(exception, req.getRequestURI(), getParams(req));
+
+        return ResponseEntity.status(exception.getInfo().getStatus())
+            .body(EnvelopeResponse.<ReviewException>builder()
+                .code(exception.getInfo().getCode())
+                .message(exception.getInfo().getMessage())
+                .build());
     }
 
     private String getParams(HttpServletRequest req) {
