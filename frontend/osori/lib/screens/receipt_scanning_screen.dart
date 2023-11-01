@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter_gif/flutter_gif.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,7 +14,6 @@ class ReceiptScanningScreen extends StatefulWidget {
 
 class _ReceiptScanningScreenState extends State<ReceiptScanningScreen>
     with TickerProviderStateMixin {
-  // File? _selectedImage;
   late FlutterGifController controller;
   bool isScanning = false;
 
@@ -27,19 +26,21 @@ class _ReceiptScanningScreenState extends State<ReceiptScanningScreen>
     if (pickedImage == null) {
       return;
     }
-    /** 
-      * 백에게 영수증 스캔 요청
-      * 응답받은 내용을 다음 폼에 작성하기
-      * sleep(const Duration(seconds: 3)); // 임시
-      * 
-      * setState(() {
-      *   _selectedImage = File(pickedImage.path);
-      * });
-      * var request = new http.MultipartRequest("POST", Uri.parse(imageApiUrl));
-      * goWriteForm(response);
-      */
 
+    // 임시
     goWriteForm();
+
+    //  백에게 영수증 스캔 요청
+    //  응답받은 내용을 다음 폼에 작성하기
+    // var url = Uri.parse('osori.co.kr/api/scanning'); // 요청 api 주소 생성
+    // var request = http.MultipartRequest('POST', url); // multipart 요청 생성
+    // 담아서 보낼것들
+    // request.fields['parameter'] = '보내고 싶은 파라미터';
+    // request.fields['parameter2'] = '보내고 싶은 파라미터2';
+    // request.files.add(await http.MultipartFile.fromPath(
+    // 'receipt', pickedImage.path)) // 중요한 이미지 보내는 파트
+    // var response = await request.send(); // 요청 보내기
+    // goWriteForm(response); // 폼 작성 페이지로 넘기기
   }
 
   void goWriteForm() {
