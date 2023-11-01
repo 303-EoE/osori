@@ -66,17 +66,23 @@ public class ReviewServiceImpl implements ReviewService {
 		reviewRepository.save(review);
 
 
-		// 일단 프론트에서 List<MultipartFile> 받은 거 고대로 api 통신해서 image 처리하는 데로 보내주고
-		// 그걸 다시 api 통신으로 List<String> reviewImageList 받고 (이미지 url 리스트들만 들어옴)
+		// 일단 프론트에서 List<MultipartFile> 받은 거(List<MultipartFile> reviewImageList = reviewImages)
+		// 그대로 api 통신해서 image 처리하는 데로 보내주고
+		// 그걸 다시 api 통신으로 List<String> reviewImageURLList로 받고 (이미지 url 리스트들만 들어옴)
 		// 이걸 reviewImage 엔티티랑 연결해서 저장
-		// 이걸 통신으로 보내고
-		// List<MultipartFile> reviewImageList = reviewImages;
+
 
 		// 통신 구현해서 받자
 		List<String> reviewImageUrlList = new ArrayList<>();
 
+		/**
+		 * 지워줄 거!!!
+		 */
 		reviewImageUrlList.add("https://avatars.githubusercontent.com/u/118112177?v=4");
 		reviewImageUrlList.add("https://avatars.githubusercontent.com/u/122416904?v=4");
+		/**
+		 * 지워줄 거!!!
+		 */
 
 		for (int i = 0; i < reviewImageUrlList.size(); i++) {
 			String imageUrl = reviewImageUrlList.get(i);
@@ -114,10 +120,6 @@ public class ReviewServiceImpl implements ReviewService {
 		}
 
 		reviewRepository.delete(review);
-
-		reviewImageRepository.deleteAllByReviewId(reviewId);
-
-		// develop/images랑 통신해서 S3에 있는 이미지들도 삭제하는 로직 구현해야 함!!!!!!!!!
 	}
 
 	/**
