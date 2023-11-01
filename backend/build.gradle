@@ -45,6 +45,9 @@ dependencies {
 
 	// WebClient API호출
 	implementation('org.springframework.boot:spring-boot-starter-webflux')
+
+	// azure-ai dependency
+	implementation group: 'com.azure', name: 'azure-ai-formrecognizer', version: '4.1.1'
 }
 
 tasks.named('test') {
