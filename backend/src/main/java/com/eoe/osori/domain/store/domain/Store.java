@@ -6,6 +6,7 @@ import org.hibernate.annotations.Where;
 
 import com.eoe.osori.domain.BaseTimeEntity;
 import com.eoe.osori.domain.store.dto.PostStoreRequestDto;
+import com.eoe.osori.global.common.api.kakao.dto.GetDistrictResponseDto;
 import com.eoe.osori.global.meta.converter.StoreCategoryConverter;
 import com.eoe.osori.global.meta.domain.StoreCategory;
 
@@ -90,13 +91,15 @@ public class Store extends BaseTimeEntity {
 	@Column
 	private Boolean deleted = Boolean.FALSE;
 
-	public static Store from(PostStoreRequestDto postStoreRequestDto) {
+	public static Store of(PostStoreRequestDto postStoreRequestDto, GetDistrictResponseDto getDistrictResponseDto) {
 		return Store.builder()
 			.name(postStoreRequestDto.getName())
 			.kakaoId(postStoreRequestDto.getKakaoId())
-			.category(StoreCategory.ofName(postStoreRequestDto.getCategory()))
+			.category(StoreCategory.ofKakaoName(postStoreRequestDto.getCategory()))
 			.longitude(postStoreRequestDto.getLongitude())
 			.latitude(postStoreRequestDto.getLatitude())
+			.depth1(getDistrictResponseDto.getDepth1())
+			.depth2(getDistrictResponseDto.getDepth2())
 			.roadAddressName(postStoreRequestDto.getRoadAddressName())
 			.addressName(postStoreRequestDto.getAddressName())
 			.phone(postStoreRequestDto.getPhone())
