@@ -113,9 +113,11 @@ public class ReviewServiceImpl implements ReviewService {
 			throw new ReviewException(ReviewErrorInfo.NOT_MATCH_REVIEW_BY_MEMBERID);
 		}
 
-		// 사진 삭제 로직 추가해야됨!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 		reviewRepository.delete(review);
+
+		reviewImageRepository.deleteAllByReviewId(reviewId);
+
+		// develop/images랑 통신해서 S3에 있는 이미지들도 삭제하는 로직 구현해야 함!!!!!!!!!
 	}
 
 	/**
