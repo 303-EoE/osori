@@ -37,6 +37,10 @@ public class StoreServiceImpl implements StoreService {
 			throw new StoreException(StoreErrorInfo.INVALID_STORE_REQUEST_DATA_ERROR);
 		}
 
+		if (storeRepository.existsByKakaoId(postStoreRequestDto.getKakaoId())) {
+			throw new StoreException(StoreErrorInfo.ALREADY_REGISTERED_KAKAO_ID);
+		}
+
 		Store store = Store.of(postStoreRequestDto,
 			kakaoApi.getDistrict(GetDistrictRequestDto.from(postStoreRequestDto)));
 

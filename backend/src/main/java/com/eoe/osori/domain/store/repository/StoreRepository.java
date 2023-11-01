@@ -7,4 +7,5 @@ import com.eoe.osori.domain.store.domain.Store;
 
 @Repository
 public interface StoreRepository extends JpaRepository<Store, Long> {
+	Boolean existsByKakaoId(String kakaoId);
 }
