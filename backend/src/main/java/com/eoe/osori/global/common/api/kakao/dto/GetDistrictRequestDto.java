@@ -12,13 +12,11 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class GetDistrictRequestDto {
-	private String longitude;
-	private String latitude;
+	private String addressName;
 
 	public static GetDistrictRequestDto from(PostStoreRequestDto postStoreRequestDto) {
 		return GetDistrictRequestDto.builder()
-			.longitude(postStoreRequestDto.getLongitude())
-			.latitude(postStoreRequestDto.getLatitude())
+			.addressName(postStoreRequestDto.getAddressName())
 			.build();
 	}
 }

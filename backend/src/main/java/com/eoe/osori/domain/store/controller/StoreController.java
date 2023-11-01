@@ -27,13 +27,14 @@ public class StoreController {
 
 	/**
 	 *  가게 정보 신규 등록
-	 * 
+	 *
 	 * @param postStoreRequestDto PostStoreRequestDto
-	 * @return ResponseEntity<EnvelopeResponse<CommonIdResponseDto>>
+	 * @return ResponseEntity<EnvelopeResponse < CommonIdResponseDto>>
 	 * @see StoreService
 	 */
-	@PostMapping
-	public ResponseEntity<EnvelopeResponse<CommonIdResponseDto>> registerStore(@RequestBody PostStoreRequestDto postStoreRequestDto) {
+	@PostMapping()
+	public ResponseEntity<EnvelopeResponse<CommonIdResponseDto>> registerStore(
+		@RequestBody PostStoreRequestDto postStoreRequestDto) {
 
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonIdResponseDto>builder()

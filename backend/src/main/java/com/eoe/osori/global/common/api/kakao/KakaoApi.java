@@ -1,9 +1,13 @@
 package com.eoe.osori.global.common.api.kakao;
 
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.client.WebClient;
 
+import com.eoe.osori.global.advice.error.exception.StoreException;
+import com.eoe.osori.global.advice.error.info.StoreErrorInfo;
+import com.eoe.osori.global.common.api.kakao.dto.GetDistrictRequestDto;
+import com.eoe.osori.global.common.api.kakao.dto.GetDistrictResponseDto;
+import com.eoe.osori.global.common.api.kakao.dto.GetKakaoDistrictResponseDto;
 import com.eoe.osori.global.common.api.kakao.service.KakaoConstantProvider;
 
 import lombok.RequiredArgsConstructor;
@@ -19,40 +23,43 @@ public class KakaoApi {
 	private final KakaoConstantProvider kakaoConstantProvider;
 
 	/**
-	 *  토큰으로 사용자 정보 조회
+	 *  주소를 구역(시/구)로 변환하는 메서드
 	 *
-	 * @param accessToken String
-	 * @return 카카오에서 조회된 사용자 정보
+	 * @param getDistrictRequestDto GetDistrictRequestDto
+	 * @return GetDistrictResponseDto
 	 */
-	// public PostLoginRequestDto getKakaoProfile(String accessToken) {
-	// 	try {
-	// 		return WebClient.create()
-	// 			.get()
-	// 			.uri(kakaoConstantProvider.getAddressConvertUri())
-	// 			.headers(header -> header.setBearerAuth(accessToken))
-	// 			.retrieve()
-	// 			.bodyToMono(PostLoginRequestDto.class)
-	// 			.block();
-	// 	} catch (Exception e) {
-	// 		throw new AuthException(AuthErrorInfo.AUTH_SERVER_ERROR);
-	// 	}
-	// }
+	public GetDistrictResponseDto getDistrict(GetDistrictRequestDto getDistrictRequestDto) {
+		return GetDistrictResponseDto.from(getKakaoDistrict(getKakaoUrl(getDistrictRequestDto)));
+	}
 
 	/**
-	 *  주소 변환에 필요한 파라미터 세팅
+	 *  주소 변환 요청을 보낼 URL 생성
 	 *
-	 * @param code String
-	 * @return MultiValueMap<String, String>
+	 * @param getDistrictRequestDto GetDistrictRequestDto
+	 * @return String
 	 */
-	// private MultiValueMap<String, String> setConvertAddressParameters(String code) {
-	// 	MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-	//
-	// 	params.add("grant_type", "authorization_code");
-	// 	params.add("client_id", authConstantProvider.getClientId());
-	// 	params.add("client_secret", authConstantProvider.getClientSecret());
-	// 	params.add("redirect_uri", authConstantProvider.getLoginRedirectUri());
-	// 	params.add("code", code);
-	//
-	// 	return params;
-	// }
+	private String getKakaoUrl(GetDistrictRequestDto getDistrictRequestDto) {
+		return new StringBuilder().append(kakaoConstantProvider.getAddressConvertUri()).append("?")
+			.append("query=").append(getDistrictRequestDto.getAddressName())
+			.append("&page=").append(1).append("&size=").append(1).toString();
+	}
+
+	/**
+	 *  카카오 주소 검색 통신
+	 *
+	 * @return GetKakaoDistrictResponseDto
+	 */
+	private GetKakaoDistrictResponseDto getKakaoDistrict(String kakaoUrl) {
+		try {
+			return WebClient.create()
+				.get()
+				.uri(kakaoUrl)
+				.headers(header -> header.set("Authorization", "KakaoAK " + kakaoConstantProvider.getClientId()))
+				.retrieve()
+				.bodyToMono(GetKakaoDistrictResponseDto.class)
+				.block();
+		} catch (Exception e) {
+			throw new StoreException(StoreErrorInfo.CANNOT_CONNECT_KAKAO_LOCAL_API);
+		}
+	}
 }
