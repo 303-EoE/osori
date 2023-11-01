@@ -10,4 +10,13 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class GetDistrictResponseDto {
+	private String depth1;
+	private String depth2;
+
+	public static GetDistrictResponseDto from(GetKakaoDistrictResponseDto getKakaoDistrictResponseDto) {
+		return GetDistrictResponseDto.builder()
+			.depth1(getKakaoDistrictResponseDto.getDocuments()[0].getAddress().getRegion_1depth_name())
+			.depth2(getKakaoDistrictResponseDto.getDocuments()[0].getAddress().getRegion_2depth_name())
+			.build();
+	}
 }
