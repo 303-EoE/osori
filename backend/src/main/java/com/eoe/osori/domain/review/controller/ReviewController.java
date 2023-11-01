@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,18 +35,19 @@ public class ReviewController {
 	 * 리뷰 등록
 	 * 
 	 * @param postReviewRequestDto PostReviewRequestDto
+	 * @param reviewImages List<MultipartFile>
 	 * @return ResponseEntity<EnvelopeResponse<CommonIdResponseDto>>
 	 * @see ReviewService
 	 */
 	@PostMapping()
-	public ResponseEntity<EnvelopeResponse<CommonIdResponseDto>> registerReview(@RequestBody PostReviewRequestDto postReviewRequestDto, List<MultipartFile> multipartFileList) {
+	public ResponseEntity<EnvelopeResponse<CommonIdResponseDto>> registerReview(@RequestPart PostReviewRequestDto postReviewRequestDto, @RequestPart List<MultipartFile> reviewImages) {
 
 		// Multipartfile 처리해야되는데!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonIdResponseDto>builder()
 				.code(HttpStatus.OK.value())
-				.data(reviewService.saveReview(postReviewRequestDto))
+				.data(reviewService.saveReview(postReviewRequestDto, reviewImages))
 				.build());
 	}
 
@@ -77,7 +79,9 @@ public class ReviewController {
 	 * @see ReviewService
 	 */
 	@GetMapping("/detail")
-	public ResponseEntity<EnvelopeResponse<GetReviewDetailResponseDto>> getReviewDetail(@RequestParam Long reviewId) {
+	public ResponseEntity<EnvelopeResponse<GetReviewDetailResponseDto>> getReviewDetail(@RequestParam("review_id") Long reviewId) {
+
+		// liked, isMine, profileImage, multipartFile 처리!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<GetReviewDetailResponseDto>builder()
