@@ -31,6 +31,7 @@ public class GetReviewDetailResponseDto {
 	private String memberNickname;
 	// private String memberProfileImageUrl;
 	// private List<String> images;
+	// liked, isMine 처리도 아직 남음!!!!!!!!!!!!!!!!!!
 	private Boolean liked;
 	private Boolean isMine;
 
