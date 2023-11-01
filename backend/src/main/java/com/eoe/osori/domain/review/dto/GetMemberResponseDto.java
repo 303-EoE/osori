@@ -11,4 +11,5 @@ public class GetMemberResponseDto {
 
 	private Long memberId;
 	private String memberNickname;
+	private String memberProfileImageUrl;
 }
