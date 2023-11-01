@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.eoe.osori.domain.store.domain.Store;
+import com.eoe.osori.domain.store.dto.GetStoreRegisterResponseDto;
 import com.eoe.osori.domain.store.dto.PostStoreRequestDto;
 import com.eoe.osori.domain.store.repository.StoreRepository;
 import com.eoe.osori.global.advice.error.exception.StoreException;
@@ -47,5 +48,24 @@ public class StoreServiceImpl implements StoreService {
 		storeRepository.save(store);
 
 		return CommonIdResponseDto.from(store.getId());
+	}
+
+	/**
+	 *  카카오 아이디를 기준으로 가게 등록 여부를 확인하는 메서드
+	 *
+	 * @param kakaoId String
+	 * @return GetStoreRegisterResponseDto
+	 * @see StoreRepository
+	 */
+	@Override
+	public GetStoreRegisterResponseDto checkStoreIsRegistered(String kakaoId) {
+		if (!storeRepository.existsByKakaoId(kakaoId)) {
+			return GetStoreRegisterResponseDto.of(false, null);
+		}
+
+		Store store = storeRepository.findByKakaoId(kakaoId)
+			.orElseThrow(() -> new StoreException(StoreErrorInfo.CANNOT_FIND_STORE_BY_KAKAO_ID));
+
+		return GetStoreRegisterResponseDto.of(true, store.getId());
 	}
 }
