@@ -30,4 +30,11 @@ public class ReviewImage {
 	@NotNull
 	@Column
 	private Long reviewId;
+
+	public static ReviewImage of(Long reviewId, String url) {
+		return ReviewImage.builder()
+			.url(url)
+			.reviewId(reviewId)
+			.build();
+	}
 }
