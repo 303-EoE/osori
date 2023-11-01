@@ -79,8 +79,6 @@ public class Review extends BaseTimeEntity {
 	@Convert(converter = BillTypeConverter.class)
 	private BillType billType;
 
-	// 이미지 넣는 컬럼 추가해줘야!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 	public static Review from(PostReviewRequestDto postReviewRequestDto) {
 		return Review.builder()
 			.paidAt(postReviewRequestDto.getPaidAt())
