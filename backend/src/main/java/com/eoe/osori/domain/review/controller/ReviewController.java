@@ -42,8 +42,6 @@ public class ReviewController {
 	@PostMapping()
 	public ResponseEntity<EnvelopeResponse<CommonIdResponseDto>> registerReview(@RequestPart PostReviewRequestDto postReviewRequestDto, @RequestPart List<MultipartFile> reviewImages) {
 
-		// Multipartfile 처리해야되는데!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonIdResponseDto>builder()
 				.code(HttpStatus.OK.value())
