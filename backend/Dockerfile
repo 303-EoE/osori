@@ -5,5 +5,9 @@ FROM openjdk:17-jdk-slim
 ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} app.jar
 
+COPY src/resources/application.yml /app/application.yml
+
+WORKDIR /app
+
 #Set the entrypoint
 ENTRYPOINT ["java", "-jar", "/app.jar"]
