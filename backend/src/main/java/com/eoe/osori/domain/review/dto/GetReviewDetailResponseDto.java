@@ -2,9 +2,10 @@ package com.eoe.osori.domain.review.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.eoe.osori.domain.review.domain.Review;
-import com.eoe.osori.global.meta.domain.BillType;
+import com.eoe.osori.domain.review.domain.ReviewImage;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,13 +30,14 @@ public class GetReviewDetailResponseDto {
 	private String storeDepth2;
 	private Long memberId;
 	private String memberNickname;
-	// private String memberProfileImageUrl;
-	// private List<String> images;
+	private String memberProfileImageUrl;
+	private List<String> images;
 	// liked, isMine 처리도 아직 남음!!!!!!!!!!!!!!!!!!
 	private Boolean liked;
 	private Boolean isMine;
 
-	public static GetReviewDetailResponseDto of(Review review, GetStoreResponseDto getStoreResponseDto, GetMemberResponseDto getMemberResponseDto) {
+	public static GetReviewDetailResponseDto of(Review review, List<ReviewImage> reviewImages,
+		GetStoreResponseDto getStoreResponseDto, GetMemberResponseDto getMemberResponseDto) {
 		return GetReviewDetailResponseDto.builder()
 			.id(review.getId())
 			.createdAt(review.getCreatedAt())
@@ -43,12 +45,16 @@ public class GetReviewDetailResponseDto {
 			.content(review.getContent())
 			.rate(review.getRate())
 			.billType(review.getBillType().getName())
+			.images(reviewImages.stream()
+				.map(reviewImage -> reviewImage.getUrl())
+				.collect(Collectors.toList()))
 			.storeId(getStoreResponseDto.getStoreId())
 			.storeName(getStoreResponseDto.getStoreName())
 			.storeDepth1(getStoreResponseDto.getStoreDepth1())
 			.storeDepth2(getStoreResponseDto.getStoreDepth2())
 			.memberId(getMemberResponseDto.getMemberId())
 			.memberNickname(getMemberResponseDto.getMemberNickname())
+			.memberProfileImageUrl(getMemberResponseDto.getMemberProfileImageUrl())
 			.build();
 	}
 }
