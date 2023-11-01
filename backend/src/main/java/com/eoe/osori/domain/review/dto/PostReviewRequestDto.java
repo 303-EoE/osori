@@ -2,18 +2,14 @@ package com.eoe.osori.domain.review.dto;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.eoe.osori.global.advice.error.exception.ReviewException;
 import com.eoe.osori.global.advice.error.info.ReviewErrorInfo;
-import com.eoe.osori.global.meta.domain.BillType;
 
 import lombok.Getter;
 
 @Getter
 public class PostReviewRequestDto {
-
-	// 	"reviewImages": ["파일1", "파일2"] // List<MultipartFile>
 
 	private LocalDateTime paidAt;
 	private Integer totalPrice;
