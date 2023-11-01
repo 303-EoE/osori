@@ -138,12 +138,21 @@ public class ReviewServiceImpl implements ReviewService {
 		Review review = reviewRepository.findById(reviewId)
 			.orElseThrow(() -> new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEW_BY_ID));
 
-		// 외부 통신 로직 구현해서 가게하고 멤버 정보 받아오기....
-
+		// 외부 통신 로직 구현해서 가게하고 멤버 정보 받아와서 isMine, like 처리 추가
+		/**
+		 * 지울 거!!!!!!!!!!!!!!!!!!!!!
+		 */
 		GetStoreResponseDto getStoreResponseDto = new GetStoreResponseDto(1L, "명동 칼국수", "서울시", "강남구");
-		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤");
+		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤", "https://avatars.githubusercontent.com/u/122416904?v=4");
+		/**
+		 * 지울 거!!!!!!!!!!!!!!!!!!!!!
+		 */
+
+		List<ReviewImage> reviewImages = reviewImageRepository.findAllByReviewId(reviewId);
+
+		
 
 		// 리뷰 상세 조회 정보 보내기
-		return GetReviewDetailResponseDto.of(review, getStoreResponseDto, getMemberResponseDto);
+		return GetReviewDetailResponseDto.of(review, reviewImages, getStoreResponseDto, getMemberResponseDto);
 	}
 }
