@@ -7,12 +7,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.eoe.osori.domain.review.domain.LikeReview;
 import com.eoe.osori.domain.review.domain.Review;
 import com.eoe.osori.domain.review.domain.ReviewImage;
 import com.eoe.osori.domain.review.dto.GetMemberResponseDto;
 import com.eoe.osori.domain.review.dto.GetReviewDetailResponseDto;
 import com.eoe.osori.domain.review.dto.GetStoreResponseDto;
 import com.eoe.osori.domain.review.dto.PostReviewRequestDto;
+import com.eoe.osori.domain.review.repository.LikeReviewRepository;
 import com.eoe.osori.domain.review.repository.ReviewImageRepository;
 import com.eoe.osori.domain.review.repository.ReviewRepository;
 import com.eoe.osori.global.advice.error.exception.ReviewException;
@@ -29,6 +31,7 @@ public class ReviewServiceImpl implements ReviewService {
 
 	private final ReviewRepository reviewRepository;
 	private final ReviewImageRepository reviewImageRepository;
+	private final LikeReviewRepository likeReviewRepository;
 
 	/**
 	 *
@@ -154,5 +157,28 @@ public class ReviewServiceImpl implements ReviewService {
 
 		// 리뷰 상세 조회 정보 보내기
 		return GetReviewDetailResponseDto.of(review, reviewImages, getStoreResponseDto, getMemberResponseDto);
+	}
+
+	/**
+	 *
+	 * 좋아요 등록 / 취소
+	 *
+	 * @param reviewId Long
+	 * @param memberId Long
+	 * @see LikeReviewRepository
+	 */
+	@Transactional
+	@Override
+	public void likeOrDisLikeReivew(Long reviewId, Long memberId) {
+
+		Review review = reviewRepository.findById(reviewId)
+			.orElseThrow(() -> new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEW_BY_ID));
+
+		if (likeReviewRepository.existsByReviewIdAndMemberId(reviewId, memberId)) {
+			likeReviewRepository.deleteByReviewIdAndMemberId(reviewId, memberId);
+			return;
+		}
+
+		likeReviewRepository.save(LikeReview.of(reviewId, memberId));
 	}
 }

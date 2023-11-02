@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -85,6 +84,25 @@ public class ReviewController {
 			.body(EnvelopeResponse.<GetReviewDetailResponseDto>builder()
 				.code(HttpStatus.OK.value())
 				.data(reviewService.getReviewDetail(reviewId))
+				.build());
+	}
+
+	/**
+	 *
+	 * 리뷰 좋아요 / 취소
+	 *
+	 * @param reviewId
+	 * @return ResponseEntity<EnvelopeResponse<Void>>
+	 * @see ReviewService
+	 */
+	@PostMapping("/like")
+	public ResponseEntity<EnvelopeResponse<Void>> likeOrDislikeReview(@RequestParam("review_id") Long reviewId) {
+
+		reviewService.likeOrDisLikeReivew(reviewId, 1L);
+
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(EnvelopeResponse.<Void>builder()
+				.code(HttpStatus.OK.value())
 				.build());
 	}
 }
