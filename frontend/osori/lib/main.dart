@@ -10,7 +10,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load(fileName: 'assets/env/.env');
-  AuthRepository.initialize(appKey: dotenv.env['APP_KEY'] ?? '');
+  AuthRepository.initialize(appKey: dotenv.env['KAKAO_MAP_API_KEY'] ?? '');
 
   runApp(const Osori());
 }

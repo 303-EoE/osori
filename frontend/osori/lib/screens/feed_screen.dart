@@ -61,7 +61,11 @@ class _FeedScreenState extends State<FeedScreen> {
             ),
       body: SingleChildScrollView(
         controller: _scrollBottomBarController,
-        child: const Feed(),
+        child: Column(
+          children: [
+            for (var i in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) Feed(idx: i),
+          ],
+        ),
       ),
       bottomNavigationBar: const BottomNavigation(),
       // 나중에 다른 곳으로 옮겨질 리뷰 작성
