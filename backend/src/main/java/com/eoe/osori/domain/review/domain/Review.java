@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import com.eoe.osori.domain.BaseTimeEntity;
 import com.eoe.osori.domain.review.dto.PostReviewRequestDto;
@@ -28,6 +29,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @SQLDelete(sql = "UPDATE review SET deleted = true where id = ?")
+@Where(clause = "deleted = false")
 public class Review extends BaseTimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

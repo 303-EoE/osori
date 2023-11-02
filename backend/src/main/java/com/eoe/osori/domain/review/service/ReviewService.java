@@ -16,4 +16,6 @@ public interface ReviewService {
 	void deleteReview(Long reviewId, Long memberId);
 
 	GetReviewDetailResponseDto getReviewDetail(Long reviewId);
+
+	void likeOrDisLikeReivew(Long reviewId, Long memberId);
 }
