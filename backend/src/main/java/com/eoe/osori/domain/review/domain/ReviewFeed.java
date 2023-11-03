@@ -7,6 +7,9 @@ import java.util.List;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.eoe.osori.domain.review.dto.GetMemberResponseDto;
+import com.eoe.osori.domain.review.dto.GetStoreResponseDto;
+
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -63,4 +66,24 @@ public class ReviewFeed {
 	@Builder.Default
 	private List<String> images = new ArrayList<>();
 
+	public static ReviewFeed of(Review review, GetMemberResponseDto getMemberResponseDto,
+		GetStoreResponseDto getStoreResponseDto, List<String> reviewImageUrlList) {
+
+		return ReviewFeed.builder()
+			.id(Long.toString(review.getId()))
+			.createdAt(review.getCreatedAt())
+			.averageCost(review.getAverageCost())
+			.content(review.getContent())
+			.rate(review.getRate())
+			.billType(review.getBillType().getName())
+			.storeId(getStoreResponseDto.getId())
+			.storeName(getStoreResponseDto.getName())
+			.storeDepth1(getStoreResponseDto.getDepth1())
+			.storeDepth2(getStoreResponseDto.getDepth2())
+			.memberId(getMemberResponseDto.getId())
+			.memberNickname(getMemberResponseDto.getNickname())
+			.memberProfileImageUrl(getMemberResponseDto.getProfileImageUrl())
+			.images(reviewImageUrlList)
+			.build();
+	}
 }

@@ -11,7 +11,8 @@ import com.eoe.osori.global.common.response.CommonIdResponseDto;
 
 public interface ReviewService {
 
-	CommonIdResponseDto saveReview(PostReviewRequestDto postReviewRequestDto, List<MultipartFile> reviewImages);
+	CommonIdResponseDto saveReview(PostReviewRequestDto postReviewRequestDto, List<MultipartFile> reviewImages,
+		Long memberId);
 
 	// 후에 멤버 검증 로직 추가
 	void deleteReview(Long reviewId, Long memberId);

@@ -81,7 +81,7 @@ public class Review extends BaseTimeEntity {
 	@Convert(converter = BillTypeConverter.class)
 	private BillType billType;
 
-	public static Review from(PostReviewRequestDto postReviewRequestDto) {
+	public static Review of(PostReviewRequestDto postReviewRequestDto, Long memberId) {
 		return Review.builder()
 			.paidAt(postReviewRequestDto.getPaidAt())
 			.totalPrice(postReviewRequestDto.getTotalPrice())
@@ -89,12 +89,12 @@ public class Review extends BaseTimeEntity {
 			.factor(postReviewRequestDto.getFactor())
 			.content(postReviewRequestDto.getContent())
 			.rate(postReviewRequestDto.getRate())
+			.memberId(memberId)
 			.storeId(postReviewRequestDto.getStoreId())
 			.billType(BillType.ofName(postReviewRequestDto.getBillType()))
 			.build();
 	}
 
-	
 	/*
 	지울거
 	 */
@@ -106,7 +106,7 @@ public class Review extends BaseTimeEntity {
 	 */
 
 	/**
-	 * 
+	 *
 	 * 평균 가격 계산해주는 메서드
 	 *
 	 * @param totalPrice Integer

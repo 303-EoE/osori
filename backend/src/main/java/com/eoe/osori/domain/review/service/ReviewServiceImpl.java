@@ -49,28 +49,21 @@ public class ReviewServiceImpl implements ReviewService {
 	 */
 	@Transactional
 	@Override
-	public CommonIdResponseDto saveReview(PostReviewRequestDto postReviewRequestDto, List<MultipartFile> reviewImages) {
+	public CommonIdResponseDto saveReview(PostReviewRequestDto postReviewRequestDto, List<MultipartFile> reviewImages,
+		Long memberId) {
+		// 입력 데이터 null값 검증
 		if (postReviewRequestDto.findEmptyValue()) {
 			throw new ReviewException(ReviewErrorInfo.INVALID_REVIEW_REQUEST_DATA_ERROR);
 		}
 
+		// 가게 기준 중복 영수증 검증
 		if (reviewRepository.existsByStoreIdAndPaidAt(postReviewRequestDto.getStoreId(),
 			postReviewRequestDto.getPaidAt())) {
-			// 에러
 			throw new ReviewException(ReviewErrorInfo.DUPLICATE_RECEIPT_REQUEST_ERROR);
 		}
 
-		Review review = Review.from(postReviewRequestDto);
-
+		Review review = Review.of(postReviewRequestDto, memberId);
 		review.updateAverageCost(review.getTotalPrice(), review.getFactor(), review.getHeadcount());
-		/*
-		지울거
-		 */
-		review.setMemberId(1L);
-		/*
-		지워!!!!!!!!!!!!!!!!!!!!!
-		 */
-
 		reviewRepository.save(review);
 
 		// 일단 프론트에서 List<MultipartFile> 받은 거(List<MultipartFile> reviewImageList = reviewImages)
@@ -92,11 +85,15 @@ public class ReviewServiceImpl implements ReviewService {
 
 		for (int i = 0; i < reviewImageUrlList.size(); i++) {
 			String imageUrl = reviewImageUrlList.get(i);
-
 			ReviewImage reviewImage = ReviewImage.of(review.getId(), imageUrl);
-
 			reviewImageRepository.save(reviewImage);
 		}
+
+		// meber, store 정보 통신해서 받자
+		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤", "이미지url1");
+		GetStoreResponseDto getStoreResponseDto = new GetStoreResponseDto(10L, "명칼", "서울시", "강남구");
+
+		reviewFeedRepository.save(ReviewFeed.of(review, getMemberResponseDto, getStoreResponseDto, reviewImageUrlList));
 
 		return CommonIdResponseDto.from(review.getId());
 	}
@@ -203,6 +200,10 @@ public class ReviewServiceImpl implements ReviewService {
 		List<Long> likeReviewIdList = likeReviewList.stream()
 			.map(likeReview -> likeReview.getReviewId())
 			.collect(Collectors.toList());
+
+		System.out.println(memberId);
+		System.out.println(reviewFeedList.get(0).getMemberId());
+		System.out.println(reviewFeedList.get(0).getMemberId().equals(memberId));
 
 		return CommonReviewListResponseDto.from(reviewFeedList, likeReviewIdList, memberId);
 	}

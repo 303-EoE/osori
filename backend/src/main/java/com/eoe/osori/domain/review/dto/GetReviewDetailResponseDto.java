@@ -48,13 +48,13 @@ public class GetReviewDetailResponseDto {
 			.images(reviewImages.stream()
 				.map(reviewImage -> reviewImage.getUrl())
 				.collect(Collectors.toList()))
-			.storeId(getStoreResponseDto.getStoreId())
-			.storeName(getStoreResponseDto.getStoreName())
-			.storeDepth1(getStoreResponseDto.getStoreDepth1())
-			.storeDepth2(getStoreResponseDto.getStoreDepth2())
-			.memberId(getMemberResponseDto.getMemberId())
-			.memberNickname(getMemberResponseDto.getMemberNickname())
-			.memberProfileImageUrl(getMemberResponseDto.getMemberProfileImageUrl())
+			.storeId(getStoreResponseDto.getId())
+			.storeName(getStoreResponseDto.getName())
+			.storeDepth1(getStoreResponseDto.getDepth1())
+			.storeDepth2(getStoreResponseDto.getDepth2())
+			.memberId(getMemberResponseDto.getId())
+			.memberNickname(getMemberResponseDto.getNickname())
+			.memberProfileImageUrl(getMemberResponseDto.getProfileImageUrl())
 			.build();
 	}
 }

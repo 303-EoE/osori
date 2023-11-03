@@ -46,7 +46,7 @@ public class ReviewController {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonIdResponseDto>builder()
 				.code(HttpStatus.OK.value())
-				.data(reviewService.saveReview(postReviewRequestDto, reviewImages))
+				.data(reviewService.saveReview(postReviewRequestDto, reviewImages, 1L))
 				.build());
 	}
 
