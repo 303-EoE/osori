@@ -19,7 +19,8 @@ public class CommonReviewListResponseDto {
 	public static CommonReviewListResponseDto from(List<ReviewFeed> reviewFeedList) {
 		return CommonReviewListResponseDto.builder()
 			.reviews(reviewFeedList.stream()
-				.map(reviewFeed)
-				.collect(Collectors.toList()));
+				.map(reviewFeed -> ReviewFeedElement.from(reviewFeed))
+				.collect(Collectors.toList()))
+			.build();
 	}
 }

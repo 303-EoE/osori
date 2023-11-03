@@ -107,6 +107,15 @@ public class ReviewController {
 				.build());
 	}
 
+	/**
+	 *
+	 * 지역 리뷰 전체 조회
+	 *
+	 * @param storeDepth1 String
+	 * @param storeDepth2 String
+	 * @return ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>>
+	 * @see ReviewService
+	 */
 	@GetMapping("/region")
 	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getReviewListByRegion
 		(@RequestParam("depth1") String storeDepth1, @RequestParam("depth2") String storeDepth2) {
@@ -114,7 +123,7 @@ public class ReviewController {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
 				.code(HttpStatus.OK.value())
-				.data(null)
+					.data(reviewService.getReviewListByRegion(storeDepth1, storeDepth2))
 				.build());
 	}
 }

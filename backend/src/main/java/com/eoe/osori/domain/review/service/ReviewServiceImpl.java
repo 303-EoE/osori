@@ -186,14 +186,21 @@ public class ReviewServiceImpl implements ReviewService {
 		likeReviewRepository.save(LikeReview.of(reviewId, memberId));
 	}
 
+	/**
+	 *
+	 * 지역 리뷰 전체 조회
+	 *
+	 * @param storeDepth1 String
+	 * @param storeDepth2 String
+	 * @return CommonReviewListResponseDto
+	 * @see ReviewFeedRepository
+	 */
 	@Override
 	public CommonReviewListResponseDto getReviewListByRegion(String storeDepth1, String storeDepth2) {
 
 		List<ReviewFeed> reviewFeedList = reviewFeedRepository
 			.findAllByStoreDepth1AndStoreDepth2(storeDepth1, storeDepth2);
 
-
-
-		return null;
+		return CommonReviewListResponseDto.from(reviewFeedList);
 	}
 }
