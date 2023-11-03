@@ -56,6 +56,11 @@ public class ReviewServiceImpl implements ReviewService {
 			throw new ReviewException(ReviewErrorInfo.INVALID_REVIEW_REQUEST_DATA_ERROR);
 		}
 
+		// 리뷰 이미지 null값 검증
+		if (reviewImages == null || reviewImages.isEmpty()) {
+			throw new ReviewException(ReviewErrorInfo.INVALID_REVIEW_IMAGES_DATA_ERROR);
+		}
+
 		// 가게 기준 중복 영수증 검증
 		if (reviewRepository.existsByStoreIdAndPaidAt(postReviewRequestDto.getStoreId(),
 			postReviewRequestDto.getPaidAt())) {
