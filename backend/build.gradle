@@ -48,6 +48,9 @@ dependencies {
 
 	// azure-ai dependency
 	implementation group: 'com.azure', name: 'azure-ai-formrecognizer', version: '4.1.1'
+
+	// MongoDB dependency
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 }
 
 tasks.named('test') {

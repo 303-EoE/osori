@@ -8,9 +8,11 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity(name = "like_review")
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
