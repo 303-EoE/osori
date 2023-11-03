@@ -31,7 +31,7 @@ public class ReviewFeedElement {
 	private Boolean liked;
 	private Boolean isMine;
 
-	public static ReviewFeedElement from(ReviewFeed reviewFeed) {
+	public static ReviewFeedElement from(ReviewFeed reviewFeed, List<Long> likeReviewIdList, Long memberId) {
 		return ReviewFeedElement.builder()
 			.id(Long.parseLong(reviewFeed.getId()))
 			.createdAt(reviewFeed.getCreatedAt())
@@ -47,8 +47,8 @@ public class ReviewFeedElement {
 			.memberNickname(reviewFeed.getMemberNickname())
 			.memberProfileImageUrl(reviewFeed.getMemberProfileImageUrl())
 			.images(reviewFeed.getImages())
-			.liked(reviewFeed.getLiked())
-			.isMine(reviewFeed.getIsMine())
+			.liked(likeReviewIdList.contains(Long.parseLong(reviewFeed.getId())))
+			.isMine(reviewFeed.getMemberId().equals(memberId))
 			.build();
 	}
 }

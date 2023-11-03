@@ -13,7 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Document(collation = "review_feed")
+@Document(collection = "review_feed")
 @Getter
 @Builder
 @NoArgsConstructor
@@ -62,12 +62,5 @@ public class ReviewFeed {
 	@Field
 	@Builder.Default
 	private List<String> images = new ArrayList<>();
-
-	@Field
-	private Boolean liked;
-
-	@Field
-	private Boolean isMine;
-
 
 }

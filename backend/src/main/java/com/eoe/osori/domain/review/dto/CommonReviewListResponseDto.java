@@ -16,10 +16,11 @@ public class CommonReviewListResponseDto {
 
 	List<ReviewFeedElement> reviews;
 
-	public static CommonReviewListResponseDto from(List<ReviewFeed> reviewFeedList) {
+	public static CommonReviewListResponseDto from(List<ReviewFeed> reviewFeedList, List<Long> likeReviewIdList,
+		Long memberId) {
 		return CommonReviewListResponseDto.builder()
 			.reviews(reviewFeedList.stream()
-				.map(reviewFeed -> ReviewFeedElement.from(reviewFeed))
+				.map(reviewFeed -> ReviewFeedElement.from(reviewFeed, likeReviewIdList, memberId))
 				.collect(Collectors.toList()))
 			.build();
 	}
