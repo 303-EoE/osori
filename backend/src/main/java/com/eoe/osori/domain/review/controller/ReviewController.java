@@ -41,7 +41,8 @@ public class ReviewController {
 	 */
 	@PostMapping()
 	public ResponseEntity<EnvelopeResponse<CommonIdResponseDto>> registerReview(
-		@RequestPart PostReviewRequestDto postReviewRequestDto, @RequestPart List<MultipartFile> reviewImages) {
+		@RequestPart(value = "postReviewRequestDto") PostReviewRequestDto postReviewRequestDto,
+		@RequestPart(value = "reviewImages", required = false) List<MultipartFile> reviewImages) {
 
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonIdResponseDto>builder()
