@@ -18,7 +18,10 @@ class _MapScreenState extends State<MapScreen> {
   late Timer timer;
   bool isGPSPermissioned = false;
   late Position position;
+  late LatLng nowPos;
   bool isInputDisabled = true;
+  Set<Marker> markers = {};
+  late Marker marker;
 
   void _determinePosition(Timer timer) async {
     bool serviceEnabled;
@@ -43,6 +46,21 @@ class _MapScreenState extends State<MapScreen> {
     }
     position = await Geolocator.getCurrentPosition();
     isGPSPermissioned = true;
+
+    // 나의 현위치를 초기화해서 마커 찍기
+    nowPos = LatLng(position.latitude, position.longitude);
+    markers.removeWhere((marker) => marker.markerId == 'nowPos');
+    markers.add(Marker(
+      markerId: 'nowPos',
+      latLng: nowPos,
+      width: 40,
+      height: 40,
+      markerImageSrc:
+          'https://cdn-icons-png.flaticon.com/512/10042/10042921.png',
+    ));
+    print(nowPos);
+
+    setState(() {});
   }
 
   @override
@@ -54,46 +72,48 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    Set<Marker> markers = {};
+  void dispose() {
+    timer.cancel();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
           KakaoMap(
             onMapCreated: ((controller) {
               mapController = controller;
-              markers.add(Marker(
-                markerId: UniqueKey().toString(),
-                latLng: LatLng(37.479996, 126.915363),
-              ));
-
               setState(() {});
             }),
             markers: markers.toList(),
             center: LatLng(
-              isGPSPermissioned ? position.latitude : 33.452613, // 카카오 제주 본사
-              isGPSPermissioned ? position.longitude : 126.570888, // 카카오 제주 본사
+              37.501263, // 멀티캠퍼스
+              127.039583, // 멀티캠퍼스
             ),
           ),
           GestureDetector(
             onTapUp: (details) {
-              // print('push to search');
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SearchScreen(
-                    isInputDisabled: !isInputDisabled,
-                  ),
-                ),
-              );
+              if (nowPos.toString().isNotEmpty) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) {
+                    timer.cancel();
+                    return SearchScreen(
+                      isInputDisabled: !isInputDisabled,
+                      nowPos: nowPos,
+                    );
+                  }),
+                );
+              }
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 40),
-              child: Row(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Expanded(
-                      child: Container(
+                  Container(
                     clipBehavior: Clip.hardEdge,
                     height: 50,
                     decoration: BoxDecoration(
@@ -118,7 +138,7 @@ class _MapScreenState extends State<MapScreen> {
                         ),
                       ],
                     ),
-                  ))
+                  ),
                 ],
               ),
             ),
@@ -128,9 +148,10 @@ class _MapScreenState extends State<MapScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFFf9f8f8),
         onPressed: () {
-          mapController
-              .setCenter(LatLng(position.latitude, position.longitude));
+          LatLng nowPos = LatLng(position.latitude, position.longitude);
+          mapController.setCenter(nowPos);
           mapController.setLevel(3);
+
           // mapController.panTo(LatLng(37.479996, 126.915363)); // 내 집
         },
         child: const Icon(
@@ -141,61 +162,3 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 }
-// TextField
-// Padding(
-//               padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 40),
-//               child: Row(
-//                 children: [
-//                   Expanded(
-//                       child: Container(
-//                     clipBehavior: Clip.hardEdge,
-//                     height: 50,
-//                     decoration: BoxDecoration(
-//                       color: Colors.white,
-//                       borderRadius: const BorderRadius.all(Radius.circular(20)),
-//                       border:
-//                           Border.all(color: const Color(0xFF818181), width: 2),
-//                     ),
-//                     child: Row(
-//                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                       children: [
-//                         Expanded(
-//                           child: TextField(
-//                             decoration: const InputDecoration(
-//                               border: InputBorder.none,
-//                               hintText: "키워드를 입력하세요!!",
-//                             ),
-//                             textAlign: TextAlign.center,
-//                             readOnly: isInputDisaled,
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   ))
-//                 ],
-//               ),
-//             ),
-
-// 구식
-// KakaoMapView(
-//             width: size.width,
-//             height: 1000,
-//             kakaoMapKey: 'c08c97c986c312f22fc43678d907b46e',
-//             // ***myHouse***
-//             lat: isGPSPermissioned ? position.latitude : 37.480020,
-//             lng: isGPSPermissioned ? position.longitude : 126.915378,
-//             draggableMarker: true,
-//             mapType: MapType.BICYCLE,
-//             mapController: (controller) {
-//               _mapController = controller;
-//             },
-//             markerImageURL:
-//                 'https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png',
-//             onTapMarker: (message) {
-//               ScaffoldMessenger.of(context).showSnackBar(
-//                 SnackBar(
-//                   content: Text(message.message),
-//                 ),
-//               );
-//             },
-//           ),
