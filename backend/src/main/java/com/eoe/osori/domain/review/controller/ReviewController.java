@@ -17,6 +17,7 @@ import com.eoe.osori.domain.review.dto.GetReviewDetailResponseDto;
 import com.eoe.osori.domain.review.dto.PostReviewRequestDto;
 import com.eoe.osori.domain.review.service.ReviewService;
 import com.eoe.osori.global.common.response.CommonIdResponseDto;
+import com.eoe.osori.domain.review.dto.CommonReviewListResponseDto;
 import com.eoe.osori.global.common.response.EnvelopeResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -103,6 +104,17 @@ public class ReviewController {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<Void>builder()
 				.code(HttpStatus.OK.value())
+				.build());
+	}
+
+	@GetMapping("/region")
+	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getReviewListByRegion
+		(@RequestParam("depth1") String storeDepth1, @RequestParam("depth2") String storeDepth2) {
+
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
+				.code(HttpStatus.OK.value())
+				.data(null)
 				.build());
 	}
 }

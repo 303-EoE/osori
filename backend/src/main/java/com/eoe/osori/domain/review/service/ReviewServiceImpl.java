@@ -9,17 +9,20 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.eoe.osori.domain.review.domain.LikeReview;
 import com.eoe.osori.domain.review.domain.Review;
+import com.eoe.osori.domain.review.domain.ReviewFeed;
 import com.eoe.osori.domain.review.domain.ReviewImage;
 import com.eoe.osori.domain.review.dto.GetMemberResponseDto;
 import com.eoe.osori.domain.review.dto.GetReviewDetailResponseDto;
 import com.eoe.osori.domain.review.dto.GetStoreResponseDto;
 import com.eoe.osori.domain.review.dto.PostReviewRequestDto;
 import com.eoe.osori.domain.review.repository.LikeReviewRepository;
+import com.eoe.osori.domain.review.repository.ReviewFeedRepository;
 import com.eoe.osori.domain.review.repository.ReviewImageRepository;
 import com.eoe.osori.domain.review.repository.ReviewRepository;
 import com.eoe.osori.global.advice.error.exception.ReviewException;
 import com.eoe.osori.global.advice.error.info.ReviewErrorInfo;
 import com.eoe.osori.global.common.response.CommonIdResponseDto;
+import com.eoe.osori.domain.review.dto.CommonReviewListResponseDto;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +35,7 @@ public class ReviewServiceImpl implements ReviewService {
 	private final ReviewRepository reviewRepository;
 	private final ReviewImageRepository reviewImageRepository;
 	private final LikeReviewRepository likeReviewRepository;
+	private final ReviewFeedRepository reviewFeedRepository;
 
 	/**
 	 *
@@ -180,5 +184,16 @@ public class ReviewServiceImpl implements ReviewService {
 		}
 
 		likeReviewRepository.save(LikeReview.of(reviewId, memberId));
+	}
+
+	@Override
+	public CommonReviewListResponseDto getReviewListByRegion(String storeDepth1, String storeDepth2) {
+
+		List<ReviewFeed> reviewFeedList = reviewFeedRepository
+			.findAllByStoreDepth1AndStoreDepth2(storeDepth1, storeDepth2);
+
+
+
+		return null;
 	}
 }

@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.eoe.osori.domain.review.dto.GetReviewDetailResponseDto;
 import com.eoe.osori.domain.review.dto.PostReviewRequestDto;
 import com.eoe.osori.global.common.response.CommonIdResponseDto;
+import com.eoe.osori.domain.review.dto.CommonReviewListResponseDto;
 
 public interface ReviewService {
 
@@ -18,4 +19,6 @@ public interface ReviewService {
 	GetReviewDetailResponseDto getReviewDetail(Long reviewId);
 
 	void likeOrDisLikeReivew(Long reviewId, Long memberId);
+
+	CommonReviewListResponseDto getReviewListByRegion(String storeDepth1, String storeDepth2);
 }
