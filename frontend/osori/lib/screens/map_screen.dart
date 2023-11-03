@@ -23,7 +23,30 @@ class _MapScreenState extends State<MapScreen> {
   Set<Marker> markers = {};
   late Marker marker;
 
-  void _determinePosition(Timer timer) async {
+  Future<String> getNearStores() async {
+    // 나중에 우리 가게 DTO 짜면 위도경도 받아서 마커 찍어주기
+    /**
+     * await getNowPosition();
+     * Set<Marker> aroundStores = {};
+     * List<Store> stores = await {우리 API}
+     * // depth1, depth 2를 쿼리 스트링으로 넣음
+     * for(var store in stores){
+     * aroundStores.add(Marker(
+     * markerId:store.id.toString(),
+     * latLng : LatLng(store.latitude, store.longitude),
+     * width : 40,
+     * height : 40,
+     * markerImgSrc:"무언가",
+     * ))
+     * }
+     * // 지도 마커에 추가하기
+     * markers.addAll(stores);
+     * setState(() {});
+     */
+    return "";
+  }
+
+  Future<Position> getNowPosition() async {
     bool serviceEnabled;
     LocationPermission permission;
 
@@ -44,9 +67,12 @@ class _MapScreenState extends State<MapScreen> {
       return Future.error(
           'Location permissions are permanently denied, we cannot request permissions.');
     }
-    position = await Geolocator.getCurrentPosition();
     isGPSPermissioned = true;
+    return position = await Geolocator.getCurrentPosition();
+  }
 
+  void _determinePosition(Timer timer) async {
+    position = await getNowPosition();
     // 나의 현위치를 초기화해서 마커 찍기
     nowPos = LatLng(position.latitude, position.longitude);
     markers.removeWhere((marker) => marker.markerId == 'nowPos');
@@ -58,14 +84,16 @@ class _MapScreenState extends State<MapScreen> {
       markerImageSrc:
           'https://cdn-icons-png.flaticon.com/512/10042/10042921.png',
     ));
-    print(nowPos);
 
     setState(() {});
   }
 
   @override
-  void initState() {
+  void initState() async {
     super.initState();
+    // 내 주변 가게 마커 찍기
+    await getNearStores();
+    // 1초마다 위치 초기화하기
     setState(() {
       timer = Timer.periodic(const Duration(seconds: 1), _determinePosition);
     });
