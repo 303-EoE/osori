@@ -195,9 +195,7 @@ public class ReviewServiceImpl implements ReviewService {
 		List<ReviewFeed> reviewFeedList = reviewFeedRepository
 			.findAllByStoreDepth1AndStoreDepth2(storeDepth1, storeDepth2);
 
-		List<LikeReview> likeReviewList = likeReviewRepository.findAllByMemberId(memberId);
-
-		List<Long> likeReviewIdList = likeReviewList.stream()
+		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(memberId).stream()
 			.map(likeReview -> likeReview.getReviewId())
 			.collect(Collectors.toList());
 
