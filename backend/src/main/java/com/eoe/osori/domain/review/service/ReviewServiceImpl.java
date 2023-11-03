@@ -201,10 +201,6 @@ public class ReviewServiceImpl implements ReviewService {
 			.map(likeReview -> likeReview.getReviewId())
 			.collect(Collectors.toList());
 
-		System.out.println(memberId);
-		System.out.println(reviewFeedList.get(0).getMemberId());
-		System.out.println(reviewFeedList.get(0).getMemberId().equals(memberId));
-
 		return CommonReviewListResponseDto.from(reviewFeedList, likeReviewIdList, memberId);
 	}
 }
