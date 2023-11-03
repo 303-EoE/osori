@@ -1,53 +1,81 @@
-package com.eoe.osori.domain.review.dto;
+package com.eoe.osori.domain.review.domain;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.eoe.osori.domain.review.domain.Review;
-import com.eoe.osori.domain.review.domain.ReviewImage;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
+import com.eoe.osori.domain.review.dto.GetMemberResponseDto;
+import com.eoe.osori.domain.review.dto.GetStoreResponseDto;
+
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
+@Document(collection = "review_feed")
 @Getter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
-public class GetReviewDetailResponseDto {
+public class ReviewFeed {
 
-	private Long id;
+	@Id
+	private String id;
+
+	@Field
 	private LocalDateTime createdAt;
-	private Integer averageCost;
-	private String content;
-	private Double rate;
-	private String billType;
-	private Long storeId;
-	private String storeName;
-	private String storeDepth1;
-	private String storeDepth2;
-	private Long memberId;
-	private String memberNickname;
-	private String memberProfileImageUrl;
-	private List<String> images;
-	// liked, isMine 처리도 아직 남음!!!!!!!!!!!!!!!!!!
-	private Boolean liked;
-	private Boolean isMine;
 
-	public static GetReviewDetailResponseDto of(Review review, List<ReviewImage> reviewImages,
-		GetStoreResponseDto getStoreResponseDto, GetMemberResponseDto getMemberResponseDto) {
-		return GetReviewDetailResponseDto.builder()
-			.id(review.getId())
+	@Field
+	private Integer averageCost;
+
+	@Field
+	private String content;
+
+	@Field
+	private Double rate;
+
+	@Field
+	private String billType;
+
+	@Field
+	private Long storeId;
+
+	@Field
+	private String storeName;
+
+	@Field
+	private String storeDepth1;
+
+	@Field
+	private String storeDepth2;
+
+	@Field
+	private Long memberId;
+
+	@Field
+	private String memberNickname;
+
+	@Field
+	private String memberProfileImageUrl;
+
+	@Field
+	@Builder.Default
+	private List<String> images = new ArrayList<>();
+
+	public static ReviewFeed of(Review review, GetMemberResponseDto getMemberResponseDto,
+		GetStoreResponseDto getStoreResponseDto, List<String> reviewImageUrlList) {
+
+		return ReviewFeed.builder()
+			.id(Long.toString(review.getId()))
 			.createdAt(review.getCreatedAt())
 			.averageCost(review.getAverageCost())
 			.content(review.getContent())
 			.rate(review.getRate())
 			.billType(review.getBillType().getName())
-			.images(reviewImages.stream()
-				.map(reviewImage -> reviewImage.getUrl())
-				.collect(Collectors.toList()))
 			.storeId(getStoreResponseDto.getId())
 			.storeName(getStoreResponseDto.getName())
 			.storeDepth1(getStoreResponseDto.getDepth1())
@@ -55,6 +83,7 @@ public class GetReviewDetailResponseDto {
 			.memberId(getMemberResponseDto.getId())
 			.memberNickname(getMemberResponseDto.getNickname())
 			.memberProfileImageUrl(getMemberResponseDto.getProfileImageUrl())
+			.images(reviewImageUrlList)
 			.build();
 	}
 }
