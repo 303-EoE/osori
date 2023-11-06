@@ -13,9 +13,7 @@ import com.eoe.osori.domain.review.domain.Review;
 import com.eoe.osori.domain.review.domain.ReviewFeed;
 import com.eoe.osori.domain.review.domain.ReviewImage;
 import com.eoe.osori.domain.review.dto.CommonReviewListResponseDto;
-import com.eoe.osori.domain.review.dto.GetMemberResponseDto;
 import com.eoe.osori.domain.review.dto.GetReviewDetailResponseDto;
-import com.eoe.osori.domain.review.dto.GetStoreResponseDto;
 import com.eoe.osori.domain.review.dto.PostReviewRequestDto;
 import com.eoe.osori.domain.review.repository.LikeReviewRepository;
 import com.eoe.osori.domain.review.repository.ReviewFeedRepository;
@@ -23,6 +21,9 @@ import com.eoe.osori.domain.review.repository.ReviewImageRepository;
 import com.eoe.osori.domain.review.repository.ReviewRepository;
 import com.eoe.osori.global.advice.error.exception.ReviewException;
 import com.eoe.osori.global.advice.error.info.ReviewErrorInfo;
+import com.eoe.osori.global.common.api.store.StoreApi;
+import com.eoe.osori.global.common.api.store.dto.GetMemberResponseDto;
+import com.eoe.osori.global.common.api.store.dto.GetStoreDetailResponseDto;
 import com.eoe.osori.global.common.response.CommonIdResponseDto;
 
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class ReviewServiceImpl implements ReviewService {
 	private final ReviewImageRepository reviewImageRepository;
 	private final LikeReviewRepository likeReviewRepository;
 	private final ReviewFeedRepository reviewFeedRepository;
+	private final StoreApi storeApi;
 
 	/**
 	 *
@@ -94,9 +96,9 @@ public class ReviewServiceImpl implements ReviewService {
 			reviewImageRepository.save(reviewImage);
 		}
 
-		// meber, store 정보 통신해서 받자
+		// member 정보 통신해서 받자
 		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤", "이미지url1");
-		GetStoreResponseDto getStoreResponseDto = new GetStoreResponseDto(10L, "명칼", "서울시", "강남구");
+		GetStoreDetailResponseDto getStoreResponseDto = storeApi.getStoreDetail(review.getStoreId()).getData();
 
 		reviewFeedRepository.save(ReviewFeed.of(review, getMemberResponseDto, getStoreResponseDto, reviewImageUrlList));
 
@@ -149,7 +151,7 @@ public class ReviewServiceImpl implements ReviewService {
 		/**
 		 * 지울 거!!!!!!!!!!!!!!!!!!!!!
 		 */
-		GetStoreResponseDto getStoreResponseDto = new GetStoreResponseDto(1L, "명동 칼국수", "서울시", "강남구");
+		GetStoreDetailResponseDto getStoreResponseDto = new GetStoreDetailResponseDto(1L, "명동 칼국수", "서울시", "강남구");
 		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤",
 			"https://avatars.githubusercontent.com/u/122416904?v=4");
 		/**

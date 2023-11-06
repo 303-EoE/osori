@@ -1,4 +1,4 @@
-package com.eoe.osori.domain.review.dto;
+package com.eoe.osori.global.common.api.store.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +9,9 @@ import lombok.RequiredArgsConstructor;
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class GetStoreResponseDto {
+public class GetMemberResponseDto {
 
 	private Long id;
-	private String name;
-	private String depth1;
-	private String depth2;
+	private String nickname;
+	private String profileImageUrl;
 }

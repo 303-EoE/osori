@@ -7,8 +7,8 @@ import java.util.List;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.eoe.osori.domain.review.dto.GetMemberResponseDto;
-import com.eoe.osori.domain.review.dto.GetStoreResponseDto;
+import com.eoe.osori.global.common.api.store.dto.GetMemberResponseDto;
+import com.eoe.osori.global.common.api.store.dto.GetStoreDetailResponseDto;
 
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -67,7 +67,7 @@ public class ReviewFeed {
 	private List<String> images = new ArrayList<>();
 
 	public static ReviewFeed of(Review review, GetMemberResponseDto getMemberResponseDto,
-		GetStoreResponseDto getStoreResponseDto, List<String> reviewImageUrlList) {
+		GetStoreDetailResponseDto getStoreResponseDto, List<String> reviewImageUrlList) {
 
 		return ReviewFeed.builder()
 			.id(Long.toString(review.getId()))

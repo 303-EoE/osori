@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import com.eoe.osori.domain.review.domain.Review;
 import com.eoe.osori.domain.review.domain.ReviewImage;
+import com.eoe.osori.global.common.api.store.dto.GetMemberResponseDto;
+import com.eoe.osori.global.common.api.store.dto.GetStoreDetailResponseDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +39,7 @@ public class GetReviewDetailResponseDto {
 	private Boolean isMine;
 
 	public static GetReviewDetailResponseDto of(Review review, List<ReviewImage> reviewImages,
-		GetStoreResponseDto getStoreResponseDto, GetMemberResponseDto getMemberResponseDto) {
+		GetStoreDetailResponseDto getStoreResponseDto, GetMemberResponseDto getMemberResponseDto) {
 		return GetReviewDetailResponseDto.builder()
 			.id(review.getId())
 			.createdAt(review.getCreatedAt())
