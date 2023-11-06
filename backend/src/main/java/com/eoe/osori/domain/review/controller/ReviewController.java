@@ -116,7 +116,7 @@ public class ReviewController {
 	 *
 	 * @param storeDepth1 String
 	 * @param storeDepth2 String
-	 * @return ResponseEntity<EnvelopeResponse < CommonReviewListResponseDto>>
+	 * @return ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>>
 	 * @see ReviewService
 	 */
 	@GetMapping("/region")
@@ -129,4 +129,23 @@ public class ReviewController {
 				.data(reviewService.getReviewListByRegion(storeDepth1, storeDepth2, 1L))
 				.build());
 	}
+
+	/**
+	 *
+	 * 가게 리뷰 요약 조회
+	 *
+	 * @param storeId Long
+	 * @return ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>>
+	 * @see ReviewService
+	 */
+	@GetMapping("/store")
+	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getReviewListByStore
+		(@RequestParam("store_id") Long storeId) {
+
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
+				.code(HttpStatus.OK.value())
+				.data(reviewService.getReviewListByStore(storeId))
+				.build());
+		}
 }

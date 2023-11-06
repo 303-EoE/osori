@@ -22,4 +22,6 @@ public interface ReviewService {
 	void likeOrDisLikeReivew(Long reviewId, Long memberId);
 
 	CommonReviewListResponseDto getReviewListByRegion(String storeDepth1, String storeDepth2, Long memberId);
+
+	CommonReviewListResponseDto getReviewListByStore(Long storeId);
 }

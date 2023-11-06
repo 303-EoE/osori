@@ -228,6 +228,24 @@ public class ReviewServiceImpl implements ReviewService {
 			.map(likeReview -> likeReview.getReviewId())
 			.collect(Collectors.toList());
 
-		return CommonReviewListResponseDto.from(reviewFeedList, likeReviewIdList, memberId);
+		return CommonReviewListResponseDto.of(reviewFeedList, likeReviewIdList, memberId);
 	}
+
+	/**
+	 *
+	 * 가게 리뷰 요약 조회
+	 *
+	 * @param storeId Long
+	 * @return CommonReviewListResponseDto
+	 * @see ReviewFeedRepository
+	 */
+	@Override
+	public CommonReviewListResponseDto getReviewListByStore(Long storeId) {
+
+		List<ReviewFeed> reviewFeedList = reviewFeedRepository
+			.findAllByStoreId(storeId);
+
+		return CommonReviewListResponseDto.from(reviewFeedList);
+	}
+
 }
