@@ -23,7 +23,7 @@ import com.eoe.osori.domain.review.repository.ReviewRepository;
 import com.eoe.osori.global.advice.error.exception.ReviewException;
 import com.eoe.osori.global.advice.error.info.ReviewErrorInfo;
 import com.eoe.osori.global.common.api.store.StoreApi;
-import com.eoe.osori.global.common.api.store.dto.GetMemberResponseDto;
+import com.eoe.osori.global.common.api.member.dto.GetMemberResponseDto;
 import com.eoe.osori.global.common.api.store.dto.GetStoreDetailResponseDto;
 import com.eoe.osori.global.common.response.CommonIdResponseDto;
 import com.eoe.osori.global.common.response.EnvelopeResponse;
@@ -157,16 +157,24 @@ public class ReviewServiceImpl implements ReviewService {
 		Review review = reviewRepository.findById(reviewId)
 			.orElseThrow(() -> new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEW_BY_ID));
 
-		// 외부 통신 로직 구현해서 가게하고 멤버 정보 받아와서 isMine, like 처리 추가
+		// 외부 통신 로직 구현해서 멤버 정보 받아와서 isMine, like 처리 추가
 		/**
 		 * 지울 거!!!!!!!!!!!!!!!!!!!!!
 		 */
-		GetStoreDetailResponseDto getStoreResponseDto = new GetStoreDetailResponseDto(1L, "명동 칼국수", "서울시", "강남구");
 		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤",
 			"https://avatars.githubusercontent.com/u/122416904?v=4");
 		/**
 		 * 지울 거!!!!!!!!!!!!!!!!!!!!!
 		 */
+
+		EnvelopeResponse<GetStoreDetailResponseDto> getStoreDetailResponseDtoEnvelopeResponse =
+			storeApi.getStoreDetail(review.getStoreId());
+
+		if (!getStoreDetailResponseDtoEnvelopeResponse.getCode().equals(HttpStatus.OK.value())) {
+			throw new ReviewException(ReviewErrorInfo.FAIL_TO_FEIGN_CLIENT_REQUEST);
+		}
+
+		GetStoreDetailResponseDto getStoreResponseDto = storeApi.getStoreDetail(review.getStoreId()).getData();
 
 		List<ReviewImage> reviewImages = reviewImageRepository.findAllByReviewId(reviewId);
 
