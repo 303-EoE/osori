@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.eoe.osori.domain.store.domain.Store;
+import com.eoe.osori.domain.store.dto.GetStoreDetailResponseDto;
 import com.eoe.osori.domain.store.dto.GetStoreRegisterResponseDto;
 import com.eoe.osori.domain.store.dto.PostStoreRequestDto;
 import com.eoe.osori.domain.store.repository.StoreRepository;
@@ -67,5 +68,22 @@ public class StoreServiceImpl implements StoreService {
 			.orElseThrow(() -> new StoreException(StoreErrorInfo.CANNOT_FIND_STORE_BY_KAKAO_ID));
 
 		return GetStoreRegisterResponseDto.of(true, store.getId());
+	}
+
+	/**
+	 *  가게 상세 정보를 조회하는 메서드
+	 *
+	 * @param id Long
+	 * @return GetStoreDetailResponseDto
+	 * @see StoreRepository
+	 */
+	@Override
+	public GetStoreDetailResponseDto getStoreDetail(Long id) {
+		Store store = storeRepository.findById(id)
+			.orElseThrow(() -> new StoreException(StoreErrorInfo.CANNOT_FIND_STORE_BY_ID));
+
+		// Feign + redis 로직 추가
+
+		return GetStoreDetailResponseDto.from(store);
 	}
 }

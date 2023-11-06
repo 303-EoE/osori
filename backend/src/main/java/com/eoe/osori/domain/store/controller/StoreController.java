@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eoe.osori.domain.store.dto.GetStoreDetailResponseDto;
 import com.eoe.osori.domain.store.dto.GetStoreRegisterResponseDto;
 import com.eoe.osori.domain.store.dto.PostStoreRequestDto;
 import com.eoe.osori.domain.store.service.StoreService;
@@ -61,6 +62,24 @@ public class StoreController {
 			.body(EnvelopeResponse.<GetStoreRegisterResponseDto>builder()
 				.code(HttpStatus.OK.value())
 				.data(storeService.checkStoreIsRegistered(kakaoId))
+				.build());
+	}
+
+	/**
+	 *  가게 상세 정보 조회
+	 *
+	 * @param storeId String
+	 * @return ResponseEntity<EnvelopeResponse < GetStoreDetailResponseDto>>
+	 * @see StoreService
+	 */
+	@GetMapping("/detail")
+	public ResponseEntity<EnvelopeResponse<GetStoreDetailResponseDto>> getStoreDetail(
+		@RequestParam("store_id") Long storeId) {
+
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(EnvelopeResponse.<GetStoreDetailResponseDto>builder()
+				.code(HttpStatus.OK.value())
+				.data(storeService.getStoreDetail(storeId))
 				.build());
 	}
 }
