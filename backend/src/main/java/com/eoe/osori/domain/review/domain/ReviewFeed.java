@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.eoe.osori.global.common.api.store.dto.GetMemberResponseDto;
+import com.eoe.osori.global.common.api.member.dto.GetMemberResponseDto;
 import com.eoe.osori.global.common.api.store.dto.GetStoreDetailResponseDto;
 
 import jakarta.persistence.Id;

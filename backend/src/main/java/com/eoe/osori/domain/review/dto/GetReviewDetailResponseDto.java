@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import com.eoe.osori.domain.review.domain.Review;
 import com.eoe.osori.domain.review.domain.ReviewImage;
-import com.eoe.osori.global.common.api.store.dto.GetMemberResponseDto;
+import com.eoe.osori.global.common.api.member.dto.GetMemberResponseDto;
 import com.eoe.osori.global.common.api.store.dto.GetStoreDetailResponseDto;
 
 import lombok.AllArgsConstructor;
