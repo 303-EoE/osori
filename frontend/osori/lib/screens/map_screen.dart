@@ -23,7 +23,7 @@ class _MapScreenState extends State<MapScreen> {
   Set<Marker> markers = {};
   late Marker marker;
 
-  Future<String> getNearStores() async {
+  void getNearStores() {
     // 나중에 우리 가게 DTO 짜면 위도경도 받아서 마커 찍어주기
     /**
      * await getNowPosition();
@@ -43,7 +43,6 @@ class _MapScreenState extends State<MapScreen> {
      * markers.addAll(stores);
      * setState(() {});
      */
-    return "";
   }
 
   Future<Position> getNowPosition() async {
@@ -89,10 +88,10 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   @override
-  void initState() async {
+  void initState() {
     super.initState();
     // 내 주변 가게 마커 찍기
-    await getNearStores();
+    getNearStores();
     // 1초마다 위치 초기화하기
     setState(() {
       timer = Timer.periodic(const Duration(seconds: 1), _determinePosition);

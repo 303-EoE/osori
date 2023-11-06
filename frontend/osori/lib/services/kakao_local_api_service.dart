@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 class KakaoLocalApiService {
   static const String baseUrl = 'https://dapi.kakao.com/v2/local/search';
-  static final String apiKey = dotenv.get('KAKAO_LOCAL_REST_API_KEY');
+  static final String apiKey = dotenv.get('KAKAO_REST_API_KEY');
   static final Map<String, String> headers = {
     'content-type': "application/json;charset=UTF-8",
     "Authorization": 'KakaoAK $apiKey',
