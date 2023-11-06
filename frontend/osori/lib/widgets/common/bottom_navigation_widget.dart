@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:osori/screens/login_screen.dart';
 
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({
@@ -11,6 +12,7 @@ class BottomNavigation extends StatefulWidget {
 
 class _BottomNavigationState extends State<BottomNavigation> {
   late int selectedIndex;
+  bool isLogin = false;
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +51,15 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 .pushNamedAndRemoveUntil('/chat', (route) => false);
             break;
           case 3:
-            Navigator.of(context)
-                .pushNamedAndRemoveUntil('/profile', (route) => false);
-
+            isLogin
+                ? Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/profile', (route) => false)
+                : Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
+                    ),
+                  );
             break;
         }
       },
