@@ -99,8 +99,9 @@ public class ReviewServiceImpl implements ReviewService {
 			reviewImageRepository.save(reviewImage);
 		}
 
-		// member 정보 통신해서 받자
+		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
 		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤", "이미지url1");
+		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
 
 		EnvelopeResponse<GetStoreDetailResponseDto> getStoreDetailResponseDtoEnvelopeResponse;
 
@@ -128,10 +129,6 @@ public class ReviewServiceImpl implements ReviewService {
 	@Transactional
 	@Override
 	public void deleteReview(Long reviewId, Long memberId) {
-		// 리뷰id 기준으로 리뷰 조회 -> 에러
-		// 리뷰에 작성자 id
-		// == memberId
-		// != 에러
 
 		Review review = reviewRepository.findById(reviewId)
 			.orElseThrow(() -> new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEW_BY_ID));
@@ -159,9 +156,8 @@ public class ReviewServiceImpl implements ReviewService {
 		Review review = reviewRepository.findById(reviewId)
 			.orElseThrow(() -> new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEW_BY_ID));
 
-		// 외부 통신 로직 구현해서 멤버 정보 받아와서 isMine, like 처리 추가
 		/**
-		 * 지울 거!!!!!!!!!!!!!!!!!!!!!
+		 * 멤버 통신 구현하고 지울 거!!!!!!!!!!!!!!!!!!!!!
 		 */
 		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤",
 			"https://avatars.githubusercontent.com/u/122416904?v=4");
@@ -181,8 +177,12 @@ public class ReviewServiceImpl implements ReviewService {
 
 		List<ReviewImage> reviewImages = reviewImageRepository.findAllByReviewId(reviewId);
 
+		Boolean liked = likeReviewRepository.existsByReviewIdAndMemberId(reviewId, getMemberResponseDto.getId());
+
+		Boolean isMine = (getMemberResponseDto.getId() == review.getMemberId()) ? true : false;
+
 		// 리뷰 상세 조회 정보 보내기
-		return GetReviewDetailResponseDto.of(review, reviewImages, getStoreResponseDto, getMemberResponseDto);
+		return GetReviewDetailResponseDto.of(review, reviewImages, getStoreResponseDto, getMemberResponseDto, liked, isMine);
 	}
 
 	/**

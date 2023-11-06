@@ -82,8 +82,6 @@ public class ReviewController {
 	public ResponseEntity<EnvelopeResponse<GetReviewDetailResponseDto>> getReviewDetail(
 		@RequestParam("review_id") Long reviewId) {
 
-		// liked, isMine, profileImage, multipartFile 처리!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<GetReviewDetailResponseDto>builder()
 				.code(HttpStatus.OK.value())

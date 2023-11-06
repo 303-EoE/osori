@@ -34,12 +34,12 @@ public class GetReviewDetailResponseDto {
 	private String memberNickname;
 	private String memberProfileImageUrl;
 	private List<String> images;
-	// liked, isMine 처리도 아직 남음!!!!!!!!!!!!!!!!!!
 	private Boolean liked;
 	private Boolean isMine;
 
 	public static GetReviewDetailResponseDto of(Review review, List<ReviewImage> reviewImages,
-		GetStoreDetailResponseDto getStoreResponseDto, GetMemberResponseDto getMemberResponseDto) {
+		GetStoreDetailResponseDto getStoreResponseDto, GetMemberResponseDto getMemberResponseDto,
+		Boolean liked, Boolean isMine) {
 		return GetReviewDetailResponseDto.builder()
 			.id(review.getId())
 			.createdAt(review.getCreatedAt())
@@ -57,6 +57,8 @@ public class GetReviewDetailResponseDto {
 			.memberId(getMemberResponseDto.getId())
 			.memberNickname(getMemberResponseDto.getNickname())
 			.memberProfileImageUrl(getMemberResponseDto.getProfileImageUrl())
+			.liked(liked)
+			.isMine(isMine)
 			.build();
 	}
 }
