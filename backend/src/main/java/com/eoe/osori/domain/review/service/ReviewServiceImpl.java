@@ -28,6 +28,7 @@ import com.eoe.osori.global.common.api.store.dto.GetStoreDetailResponseDto;
 import com.eoe.osori.global.common.response.CommonIdResponseDto;
 import com.eoe.osori.global.common.response.EnvelopeResponse;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -101,14 +102,15 @@ public class ReviewServiceImpl implements ReviewService {
 		// member 정보 통신해서 받자
 		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤", "이미지url1");
 
-		EnvelopeResponse<GetStoreDetailResponseDto> getStoreDetailResponseDtoEnvelopeResponse =
-			storeApi.getStoreDetail(review.getStoreId());
+		EnvelopeResponse<GetStoreDetailResponseDto> getStoreDetailResponseDtoEnvelopeResponse;
 
-		if (!getStoreDetailResponseDtoEnvelopeResponse.getCode().equals(HttpStatus.OK.value())) {
+		try {
+			getStoreDetailResponseDtoEnvelopeResponse = storeApi.getStoreDetail(review.getStoreId());
+		} catch (FeignException e) {
 			throw new ReviewException(ReviewErrorInfo.FAIL_TO_FEIGN_CLIENT_REQUEST);
 		}
 
-		GetStoreDetailResponseDto getStoreResponseDto = storeApi.getStoreDetail(review.getStoreId()).getData();
+		GetStoreDetailResponseDto getStoreResponseDto = getStoreDetailResponseDtoEnvelopeResponse.getData();
 
 		reviewFeedRepository.save(ReviewFeed.of(review, getMemberResponseDto, getStoreResponseDto, reviewImageUrlList));
 
@@ -167,14 +169,15 @@ public class ReviewServiceImpl implements ReviewService {
 		 * 지울 거!!!!!!!!!!!!!!!!!!!!!
 		 */
 
-		EnvelopeResponse<GetStoreDetailResponseDto> getStoreDetailResponseDtoEnvelopeResponse =
-			storeApi.getStoreDetail(review.getStoreId());
+		EnvelopeResponse<GetStoreDetailResponseDto> getStoreDetailResponseDtoEnvelopeResponse;
 
-		if (!getStoreDetailResponseDtoEnvelopeResponse.getCode().equals(HttpStatus.OK.value())) {
+		try {
+			getStoreDetailResponseDtoEnvelopeResponse =	storeApi.getStoreDetail(review.getStoreId());
+		} catch (FeignException e) {
 			throw new ReviewException(ReviewErrorInfo.FAIL_TO_FEIGN_CLIENT_REQUEST);
 		}
 
-		GetStoreDetailResponseDto getStoreResponseDto = storeApi.getStoreDetail(review.getStoreId()).getData();
+		GetStoreDetailResponseDto getStoreResponseDto = getStoreDetailResponseDtoEnvelopeResponse.getData();
 
 		List<ReviewImage> reviewImages = reviewImageRepository.findAllByReviewId(reviewId);
 
