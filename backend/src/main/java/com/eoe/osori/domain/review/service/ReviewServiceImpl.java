@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,7 @@ import com.eoe.osori.global.common.api.store.StoreApi;
 import com.eoe.osori.global.common.api.store.dto.GetMemberResponseDto;
 import com.eoe.osori.global.common.api.store.dto.GetStoreDetailResponseDto;
 import com.eoe.osori.global.common.response.CommonIdResponseDto;
+import com.eoe.osori.global.common.response.EnvelopeResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -98,6 +100,14 @@ public class ReviewServiceImpl implements ReviewService {
 
 		// member 정보 통신해서 받자
 		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤", "이미지url1");
+
+		EnvelopeResponse<GetStoreDetailResponseDto> getStoreDetailResponseDtoEnvelopeResponse =
+			storeApi.getStoreDetail(review.getStoreId());
+
+		if (!getStoreDetailResponseDtoEnvelopeResponse.getCode().equals(HttpStatus.OK.value())) {
+			throw new ReviewException(ReviewErrorInfo.FAIL_TO_FEIGN_CLIENT_REQUEST);
+		}
+
 		GetStoreDetailResponseDto getStoreResponseDto = storeApi.getStoreDetail(review.getStoreId()).getData();
 
 		reviewFeedRepository.save(ReviewFeed.of(review, getMemberResponseDto, getStoreResponseDto, reviewImageUrlList));
@@ -176,8 +186,9 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public void likeOrDisLikeReivew(Long reviewId, Long memberId) {
 
-		Review review = reviewRepository.findById(reviewId)
-			.orElseThrow(() -> new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEW_BY_ID));
+		if (!reviewRepository.existsById(reviewId)) {
+			throw new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEW_BY_ID);
+		}
 
 		if (likeReviewRepository.existsByReviewIdAndMemberId(reviewId, memberId)) {
 			likeReviewRepository.deleteByReviewIdAndMemberId(reviewId, memberId);
