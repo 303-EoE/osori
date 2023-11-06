@@ -138,12 +138,30 @@ public class ReviewController {
 	 */
 	@GetMapping("/store")
 	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getReviewListByStore
-		(@RequestParam("store_id") Long storeId) {
+	(@RequestParam("store_id") Long storeId) {
 
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
 				.code(HttpStatus.OK.value())
 				.data(reviewService.getReviewListByStore(storeId))
 				.build());
-		}
+	}
+
+	/**
+	 *
+	 * 내 리뷰 전체 조회
+	 *
+	 * @param memberId Long
+	 * @return ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>>
+	 * @see ReviewService
+	 */
+	@GetMapping("/my-review")
+	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getMyReviewList(Long memberId) {
+
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
+				.code(HttpStatus.OK.value())
+				.data(null)
+				.build());
+	}
 }

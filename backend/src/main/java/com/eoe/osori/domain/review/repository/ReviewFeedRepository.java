@@ -14,4 +14,6 @@ public interface ReviewFeedRepository extends MongoRepository<ReviewFeed, String
 
 	List<ReviewFeed> findAllByStoreId(Long storeId);
 
+	List<ReviewFeed> findAllByMemberId(Long memberId);
+
 }

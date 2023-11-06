@@ -248,4 +248,20 @@ public class ReviewServiceImpl implements ReviewService {
 		return CommonReviewListResponseDto.from(reviewFeedList);
 	}
 
+	/**
+	 * 
+	 *  내 리뷰 전체 조회
+	 * 
+	 * @param memberId Long
+	 * @return CommonReviewListResponseDto
+	 * @see ReviewFeedRepository
+	 */
+	@Override
+	public CommonReviewListResponseDto getMyReviewList(Long memberId) {
+
+		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberId(memberId);
+
+		return CommonReviewListResponseDto.from(reviewFeedList);
+	}
+
 }

@@ -24,4 +24,6 @@ public interface ReviewService {
 	CommonReviewListResponseDto getReviewListByRegion(String storeDepth1, String storeDepth2, Long memberId);
 
 	CommonReviewListResponseDto getReviewListByStore(Long storeId);
+
+	CommonReviewListResponseDto getMyReviewList(Long memberId);
 }
