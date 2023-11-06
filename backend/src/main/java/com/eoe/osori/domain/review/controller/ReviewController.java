@@ -161,7 +161,26 @@ public class ReviewController {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
 				.code(HttpStatus.OK.value())
-				.data(null)
+				.data(reviewService.getMyReviewList(memberId))
+				.build());
+	}
+
+	/**
+	 *
+	 * 다른 사람 리뷰 전체 조회
+	 *
+	 * @param memberId Long
+	 * @return ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>>
+	 * @see ReviewService
+	 */
+	@GetMapping("/member")
+	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getOtherReviewList
+		(@RequestParam("member_id") Long memberId) {
+
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
+				.code(HttpStatus.OK.value())
+				.data(reviewService.getOtherReviewList(memberId))
 				.build());
 	}
 }

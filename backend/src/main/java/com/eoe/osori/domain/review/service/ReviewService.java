@@ -26,4 +26,6 @@ public interface ReviewService {
 	CommonReviewListResponseDto getReviewListByStore(Long storeId);
 
 	CommonReviewListResponseDto getMyReviewList(Long memberId);
+
+	CommonReviewListResponseDto getOtherReviewList(Long memberId);
 }
