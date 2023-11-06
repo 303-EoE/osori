@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.eoe.osori.global.common.api.store.dto.GetStoreDetailResponseDto;
 import com.eoe.osori.global.common.response.EnvelopeResponse;
 
-@FeignClient(name = "store", url = "https://test.osori.co.kr/stores")
+@FeignClient(name = "store", url = "${api.store}")
 public interface StoreApi {
 	@GetMapping("/detail")
 	EnvelopeResponse<GetStoreDetailResponseDto> getStoreDetail(@RequestParam("store_id") Long storeId);
