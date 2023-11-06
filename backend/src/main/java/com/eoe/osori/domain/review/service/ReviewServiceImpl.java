@@ -51,6 +51,9 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @param reviewImages List<MultipartFile>
 	 * @return CommonIdResponseDto
 	 * @see ReviewRepository
+	 * @see ReviewImageRepository
+	 * @see ReviewFeedRepository
+	 * @see StoreApi
 	 */
 	@Transactional
 	@Override
@@ -147,6 +150,9 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @param reviewId
 	 * @return GetReviewDetailResponseDto
 	 * @see ReviewRepository
+	 * @see ReviewImageRepository
+	 * @see LikeReviewRepository
+	 * @see StoreApi
 	 */
 	@Transactional
 	@Override
@@ -191,6 +197,7 @@ public class ReviewServiceImpl implements ReviewService {
 	 *
 	 * @param reviewId Long
 	 * @param memberId Long
+	 * @see ReviewRepository
 	 * @see LikeReviewRepository
 	 */
 	@Transactional
@@ -217,6 +224,7 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @param storeDepth2 String
 	 * @return CommonReviewListResponseDto
 	 * @see ReviewFeedRepository
+	 * @see LikeReviewRepository
 	 */
 	@Override
 	public CommonReviewListResponseDto getReviewListByRegion(String storeDepth1, String storeDepth2, Long memberId) {
@@ -255,13 +263,18 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @param memberId Long
 	 * @return CommonReviewListResponseDto
 	 * @see ReviewFeedRepository
+	 * @see LikeReviewRepository
 	 */
 	@Override
 	public CommonReviewListResponseDto getMyReviewList(Long memberId) {
 
 		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberId(memberId);
 
-		return CommonReviewListResponseDto.from(reviewFeedList);
+		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(memberId).stream()
+			.map(likeReview -> likeReview.getReviewId())
+			.collect(Collectors.toList());
+
+		return CommonReviewListResponseDto.of(reviewFeedList, likeReviewIdList, memberId);
 	}
 
 	/**
@@ -271,13 +284,39 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @param memberId Long
 	 * @return CommonReviewListResponseDto
 	 * @see ReviewFeedRepository
+	 * @see LikeReviewRepository
 	 */
 	@Override
 	public CommonReviewListResponseDto getOtherReviewList(Long memberId) {
 
 		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberId(memberId);
 
-		return CommonReviewListResponseDto.from(reviewFeedList);
+		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(memberId).stream()
+			.map(likeReview -> likeReview.getReviewId())
+			.collect(Collectors.toList());
+
+		return CommonReviewListResponseDto.of(reviewFeedList, likeReviewIdList, memberId);
+	}
+
+	/**
+	 *
+	 * 좋아요한 리뷰 전체 조회
+	 *
+	 * @param memberId Long
+	 * @return CommonReviewListResponseDto
+	 * @see ReviewFeedRepository
+	 * @see LikeReviewRepository
+	 */
+	@Override
+	public CommonReviewListResponseDto getLikeReviewList(Long memberId) {
+
+		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberId(memberId);
+
+		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(memberId).stream()
+			.map(likeReview -> likeReview.getReviewId())
+			.collect(Collectors.toList());
+
+		return CommonReviewListResponseDto.of(reviewFeedList, likeReviewIdList, memberId);
 	}
 
 }

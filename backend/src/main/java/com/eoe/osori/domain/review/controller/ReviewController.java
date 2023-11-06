@@ -20,6 +20,7 @@ import com.eoe.osori.domain.review.service.ReviewService;
 import com.eoe.osori.global.common.response.CommonIdResponseDto;
 import com.eoe.osori.global.common.response.EnvelopeResponse;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -151,17 +152,16 @@ public class ReviewController {
 	 *
 	 * 내 리뷰 전체 조회
 	 *
-	 * @param memberId Long
 	 * @return ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>>
 	 * @see ReviewService
 	 */
 	@GetMapping("/my-review")
-	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getMyReviewList(Long memberId) {
+	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getMyReviewList() {
 
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
 				.code(HttpStatus.OK.value())
-				.data(reviewService.getMyReviewList(memberId))
+				.data(reviewService.getMyReviewList(1L))
 				.build());
 	}
 
@@ -181,6 +181,23 @@ public class ReviewController {
 			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
 				.code(HttpStatus.OK.value())
 				.data(reviewService.getOtherReviewList(memberId))
+				.build());
+	}
+
+	/**
+	 *
+	 * 좋아요한 리뷰 전체 조회
+	 *
+	 * @return ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>>
+	 * @see ReviewService
+	 */
+	@GetMapping("/like")
+	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getLikeReviewList() {
+
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
+				.code(HttpStatus.OK.value())
+				.data(reviewService.getLikeReviewList(1L))
 				.build());
 	}
 }

@@ -28,4 +28,6 @@ public interface ReviewService {
 	CommonReviewListResponseDto getMyReviewList(Long memberId);
 
 	CommonReviewListResponseDto getOtherReviewList(Long memberId);
+
+	CommonReviewListResponseDto getLikeReviewList(Long memberId);
 }
