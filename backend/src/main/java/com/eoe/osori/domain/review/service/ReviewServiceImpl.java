@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -315,13 +314,20 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public CommonReviewListResponseDto getLikeReviewList(Long memberId) {
 
-		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberId(memberId);
-
 		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(memberId).stream()
 			.map(likeReview -> likeReview.getReviewId())
 			.collect(Collectors.toList());
 
-		return CommonReviewListResponseDto.of(reviewFeedList, likeReviewIdList, memberId);
+		List<ReviewFeed> reviewFeedList = new ArrayList<>();
+
+		for (int i = 0; i < likeReviewIdList.size(); i++) {
+			ReviewFeed reviewFeed = reviewFeedRepository.findById(Long.toString(likeReviewIdList.get(i)))
+				.orElseThrow(() -> new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEWFEED_BY_ID));
+
+			reviewFeedList.add(reviewFeed);
+		}
+
+		return CommonReviewListResponseDto.from(reviewFeedList);
 	}
 
 }
