@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import 'package:osori/screens/login_screen.dart';
 import 'package:osori/screens/search_screen.dart';
 import 'package:osori/widgets/common/bottom_navigation_widget.dart';
 
@@ -36,7 +37,7 @@ class _MapScreenState extends State<MapScreen> {
      * latLng : LatLng(store.latitude, store.longitude),
      * width : 40,
      * height : 40,
-     * markerImgSrc:"무언가",
+     * markerImageSrc:"무언가",
      * ))
      * }
      * // 지도 마커에 추가하기
@@ -119,6 +120,14 @@ class _MapScreenState extends State<MapScreen> {
               37.501263, // 멀티캠퍼스
               127.039583, // 멀티캠퍼스
             ),
+            onMarkerTap: (markerId, latLng, zoomLevel) => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LoginScreen(),
+                ),
+              )
+            },
           ),
           GestureDetector(
             onTapUp: (details) {

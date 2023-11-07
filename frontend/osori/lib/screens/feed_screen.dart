@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:osori/screens/receipt_scanning_screen.dart';
 import 'package:osori/widgets/common/bottom_navigation_widget.dart';
 import 'package:osori/widgets/common/top_header_widget.dart';
 import 'package:osori/widgets/feed/feed_widget.dart';
