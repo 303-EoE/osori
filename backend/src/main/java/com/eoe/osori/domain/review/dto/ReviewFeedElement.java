@@ -63,6 +63,7 @@ public class ReviewFeedElement {
 			.memberNickname(reviewFeed.getMemberNickname())
 			.memberProfileImageUrl(reviewFeed.getMemberProfileImageUrl())
 			.images(reviewFeed.getImages())
+			.liked(true)
 			.build();
 	}
 }
