@@ -16,19 +16,21 @@ public class CommonReviewListResponseDto {
 
 	List<ReviewFeedElement> reviews;
 
-	public static CommonReviewListResponseDto of(List<ReviewFeed> reviewFeedList, List<Long> likeReviewIdList,
-		Long memberId) {
+	public static CommonReviewListResponseDto ofReviewFeedListAndLikeReviewIdListAndMemberId
+		(List<ReviewFeed> reviewFeedList, List<Long> likeReviewIdList, Long memberId) {
 		return CommonReviewListResponseDto.builder()
 			.reviews(reviewFeedList.stream()
-				.map(reviewFeed -> ReviewFeedElement.of(reviewFeed, likeReviewIdList, memberId))
+				.map(reviewFeed -> ReviewFeedElement
+					.ofReviewFeedAndLikeReviewListAndMemberId(reviewFeed, likeReviewIdList, memberId))
 				.collect(Collectors.toList()))
 			.build();
 	}
 
-	public static CommonReviewListResponseDto from(List<ReviewFeed> reviewFeedList) {
+	public static CommonReviewListResponseDto ofReviewFeedListAndAndMemberId
+		(List<ReviewFeed> reviewFeedList, Long memberId) {
 		return CommonReviewListResponseDto.builder()
 			.reviews(reviewFeedList.stream()
-				.map(reviewFeed -> ReviewFeedElement.from(reviewFeed))
+				.map(reviewFeed -> ReviewFeedElement.ofReviewFeedAndMemberId(reviewFeed, memberId))
 				.collect(Collectors.toList()))
 			.build();
 	}

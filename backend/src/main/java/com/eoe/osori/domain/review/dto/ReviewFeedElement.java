@@ -31,7 +31,8 @@ public class ReviewFeedElement {
 	private Boolean liked;
 	private Boolean isMine;
 
-	public static ReviewFeedElement of(ReviewFeed reviewFeed, List<Long> likeReviewIdList, Long memberId) {
+	public static ReviewFeedElement ofReviewFeedAndLikeReviewListAndMemberId
+		(ReviewFeed reviewFeed, List<Long> likeReviewIdList, Long memberId) {
 		return ReviewFeedElement.builder()
 			.id(Long.parseLong(reviewFeed.getId()))
 			.createdAt(reviewFeed.getCreatedAt())
@@ -52,7 +53,7 @@ public class ReviewFeedElement {
 			.build();
 	}
 
-	public static ReviewFeedElement from(ReviewFeed reviewFeed) {
+	public static ReviewFeedElement ofReviewFeedAndMemberId(ReviewFeed reviewFeed, Long memberId) {
 		return ReviewFeedElement.builder()
 			.id(Long.parseLong(reviewFeed.getId()))
 			.createdAt(reviewFeed.getCreatedAt())
@@ -60,10 +61,16 @@ public class ReviewFeedElement {
 			.content(reviewFeed.getContent())
 			.rate(reviewFeed.getRate())
 			.billType(reviewFeed.getBillType())
+			.storeId(reviewFeed.getStoreId())
+			.storeName(reviewFeed.getStoreName())
+			.storeDepth1(reviewFeed.getStoreDepth1())
+			.storeDepth2(reviewFeed.getStoreDepth2())
+			.memberId(reviewFeed.getMemberId())
 			.memberNickname(reviewFeed.getMemberNickname())
 			.memberProfileImageUrl(reviewFeed.getMemberProfileImageUrl())
 			.images(reviewFeed.getImages())
 			.liked(true)
+			.isMine(reviewFeed.getMemberId().equals(memberId))
 			.build();
 	}
 }

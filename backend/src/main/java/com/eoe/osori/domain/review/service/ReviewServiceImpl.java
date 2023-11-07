@@ -240,7 +240,7 @@ public class ReviewServiceImpl implements ReviewService {
 			.map(likeReview -> likeReview.getReviewId())
 			.collect(Collectors.toList());
 
-		return CommonReviewListResponseDto.of(reviewFeedList, likeReviewIdList, memberId);
+		return CommonReviewListResponseDto.ofReviewFeedListAndLikeReviewIdListAndMemberId(reviewFeedList, likeReviewIdList, memberId);
 	}
 
 	/**
@@ -257,7 +257,8 @@ public class ReviewServiceImpl implements ReviewService {
 		List<ReviewFeed> reviewFeedList = reviewFeedRepository
 			.findAllByStoreId(storeId);
 
-		return CommonReviewListResponseDto.from(reviewFeedList);
+		return null;
+		// return CommonReviewListResponseDto.from(reviewFeedList);
 	}
 
 	/**
@@ -278,7 +279,8 @@ public class ReviewServiceImpl implements ReviewService {
 			.map(likeReview -> likeReview.getReviewId())
 			.collect(Collectors.toList());
 
-		return CommonReviewListResponseDto.of(reviewFeedList, likeReviewIdList, memberId);
+		return CommonReviewListResponseDto
+			.ofReviewFeedListAndLikeReviewIdListAndMemberId(reviewFeedList, likeReviewIdList, memberId);
 	}
 
 	/**
@@ -299,7 +301,8 @@ public class ReviewServiceImpl implements ReviewService {
 			.map(likeReview -> likeReview.getReviewId())
 			.collect(Collectors.toList());
 
-		return CommonReviewListResponseDto.of(reviewFeedList, likeReviewIdList, loginMemberId);
+		return CommonReviewListResponseDto
+			.ofReviewFeedListAndLikeReviewIdListAndMemberId(reviewFeedList, likeReviewIdList, loginMemberId);
 	}
 
 	/**
@@ -327,7 +330,7 @@ public class ReviewServiceImpl implements ReviewService {
 			reviewFeedList.add(reviewFeed);
 		}
 
-		return CommonReviewListResponseDto.from(reviewFeedList);
+		return CommonReviewListResponseDto.ofReviewFeedListAndAndMemberId(reviewFeedList, memberId);
 	}
 
 }
