@@ -1,4 +1,4 @@
-package com.eoe.osori.domain.review.dto;
+package com.eoe.osori.global.common.api.member.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
