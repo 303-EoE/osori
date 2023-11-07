@@ -13,9 +13,8 @@ import com.eoe.osori.domain.review.domain.Review;
 import com.eoe.osori.domain.review.domain.ReviewFeed;
 import com.eoe.osori.domain.review.domain.ReviewImage;
 import com.eoe.osori.domain.review.dto.CommonReviewListResponseDto;
-import com.eoe.osori.domain.review.dto.GetMemberResponseDto;
 import com.eoe.osori.domain.review.dto.GetReviewDetailResponseDto;
-import com.eoe.osori.domain.review.dto.GetStoreResponseDto;
+import com.eoe.osori.domain.review.dto.GetStoreReviewListResponseDto;
 import com.eoe.osori.domain.review.dto.PostReviewRequestDto;
 import com.eoe.osori.domain.review.repository.LikeReviewRepository;
 import com.eoe.osori.domain.review.repository.ReviewFeedRepository;
@@ -23,8 +22,13 @@ import com.eoe.osori.domain.review.repository.ReviewImageRepository;
 import com.eoe.osori.domain.review.repository.ReviewRepository;
 import com.eoe.osori.global.advice.error.exception.ReviewException;
 import com.eoe.osori.global.advice.error.info.ReviewErrorInfo;
+import com.eoe.osori.global.common.api.store.StoreApi;
+import com.eoe.osori.global.common.api.member.dto.GetMemberResponseDto;
+import com.eoe.osori.global.common.api.store.dto.GetStoreDetailResponseDto;
 import com.eoe.osori.global.common.response.CommonIdResponseDto;
+import com.eoe.osori.global.common.response.EnvelopeResponse;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,6 +41,7 @@ public class ReviewServiceImpl implements ReviewService {
 	private final ReviewImageRepository reviewImageRepository;
 	private final LikeReviewRepository likeReviewRepository;
 	private final ReviewFeedRepository reviewFeedRepository;
+	private final StoreApi storeApi;
 
 	/**
 	 *
@@ -46,6 +51,9 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @param reviewImages List<MultipartFile>
 	 * @return CommonIdResponseDto
 	 * @see ReviewRepository
+	 * @see ReviewImageRepository
+	 * @see ReviewFeedRepository
+	 * @see StoreApi
 	 */
 	@Transactional
 	@Override
@@ -94,9 +102,19 @@ public class ReviewServiceImpl implements ReviewService {
 			reviewImageRepository.save(reviewImage);
 		}
 
-		// meber, store 정보 통신해서 받자
+		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
 		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤", "이미지url1");
-		GetStoreResponseDto getStoreResponseDto = new GetStoreResponseDto(10L, "명칼", "서울시", "강남구");
+		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
+
+		EnvelopeResponse<GetStoreDetailResponseDto> getStoreDetailResponseDtoEnvelopeResponse;
+
+		try {
+			getStoreDetailResponseDtoEnvelopeResponse = storeApi.getStoreDetail(review.getStoreId());
+		} catch (FeignException e) {
+			throw new ReviewException(ReviewErrorInfo.FAIL_TO_FEIGN_CLIENT_REQUEST);
+		}
+
+		GetStoreDetailResponseDto getStoreResponseDto = getStoreDetailResponseDtoEnvelopeResponse.getData();
 
 		reviewFeedRepository.save(ReviewFeed.of(review, getMemberResponseDto, getStoreResponseDto, reviewImageUrlList));
 
@@ -110,14 +128,11 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @param reviewId Long
 	 * @param memberId Long
 	 * @see ReviewRepository
+	 * @see ReviewFeedRepository
 	 */
 	@Transactional
 	@Override
 	public void deleteReview(Long reviewId, Long memberId) {
-		// 리뷰id 기준으로 리뷰 조회 -> 에러
-		// 리뷰에 작성자 id
-		// == memberId
-		// != 에러
 
 		Review review = reviewRepository.findById(reviewId)
 			.orElseThrow(() -> new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEW_BY_ID));
@@ -126,7 +141,11 @@ public class ReviewServiceImpl implements ReviewService {
 			throw new ReviewException(ReviewErrorInfo.NOT_MATCH_REVIEW_BY_MEMBERID);
 		}
 
+		ReviewFeed reviewFeed = reviewFeedRepository.findById(Long.toString(reviewId))
+			.orElseThrow(() -> new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEWFEED_BY_ID));
+
 		reviewRepository.delete(review);
+		reviewFeedRepository.delete(reviewFeed);
 	}
 
 	/**
@@ -136,6 +155,9 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @param reviewId
 	 * @return GetReviewDetailResponseDto
 	 * @see ReviewRepository
+	 * @see ReviewImageRepository
+	 * @see LikeReviewRepository
+	 * @see StoreApi
 	 */
 	@Transactional
 	@Override
@@ -145,21 +167,33 @@ public class ReviewServiceImpl implements ReviewService {
 		Review review = reviewRepository.findById(reviewId)
 			.orElseThrow(() -> new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEW_BY_ID));
 
-		// 외부 통신 로직 구현해서 가게하고 멤버 정보 받아와서 isMine, like 처리 추가
 		/**
-		 * 지울 거!!!!!!!!!!!!!!!!!!!!!
+		 * 멤버 통신 구현하고 지울 거!!!!!!!!!!!!!!!!!!!!!
 		 */
-		GetStoreResponseDto getStoreResponseDto = new GetStoreResponseDto(1L, "명동 칼국수", "서울시", "강남구");
 		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤",
 			"https://avatars.githubusercontent.com/u/122416904?v=4");
 		/**
 		 * 지울 거!!!!!!!!!!!!!!!!!!!!!
 		 */
 
+		EnvelopeResponse<GetStoreDetailResponseDto> getStoreDetailResponseDtoEnvelopeResponse;
+
+		try {
+			getStoreDetailResponseDtoEnvelopeResponse =	storeApi.getStoreDetail(review.getStoreId());
+		} catch (FeignException e) {
+			throw new ReviewException(ReviewErrorInfo.FAIL_TO_FEIGN_CLIENT_REQUEST);
+		}
+
+		GetStoreDetailResponseDto getStoreResponseDto = getStoreDetailResponseDtoEnvelopeResponse.getData();
+
 		List<ReviewImage> reviewImages = reviewImageRepository.findAllByReviewId(reviewId);
 
+		Boolean liked = likeReviewRepository.existsByReviewIdAndMemberId(reviewId, getMemberResponseDto.getId());
+
+		Boolean isMine = (getMemberResponseDto.getId() == review.getMemberId()) ? true : false;
+
 		// 리뷰 상세 조회 정보 보내기
-		return GetReviewDetailResponseDto.of(review, reviewImages, getStoreResponseDto, getMemberResponseDto);
+		return GetReviewDetailResponseDto.of(review, reviewImages, getStoreResponseDto, getMemberResponseDto, liked, isMine);
 	}
 
 	/**
@@ -168,14 +202,16 @@ public class ReviewServiceImpl implements ReviewService {
 	 *
 	 * @param reviewId Long
 	 * @param memberId Long
+	 * @see ReviewRepository
 	 * @see LikeReviewRepository
 	 */
 	@Transactional
 	@Override
 	public void likeOrDisLikeReivew(Long reviewId, Long memberId) {
 
-		Review review = reviewRepository.findById(reviewId)
-			.orElseThrow(() -> new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEW_BY_ID));
+		if (!reviewRepository.existsById(reviewId)) {
+			throw new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEW_BY_ID);
+		}
 
 		if (likeReviewRepository.existsByReviewIdAndMemberId(reviewId, memberId)) {
 			likeReviewRepository.deleteByReviewIdAndMemberId(reviewId, memberId);
@@ -193,6 +229,7 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @param storeDepth2 String
 	 * @return CommonReviewListResponseDto
 	 * @see ReviewFeedRepository
+	 * @see LikeReviewRepository
 	 */
 	@Override
 	public CommonReviewListResponseDto getReviewListByRegion(String storeDepth1, String storeDepth2, Long memberId) {
@@ -204,6 +241,95 @@ public class ReviewServiceImpl implements ReviewService {
 			.map(likeReview -> likeReview.getReviewId())
 			.collect(Collectors.toList());
 
-		return CommonReviewListResponseDto.from(reviewFeedList, likeReviewIdList, memberId);
+		return CommonReviewListResponseDto.ofReviewFeedListAndLikeReviewIdListAndMemberId(reviewFeedList, likeReviewIdList, memberId);
 	}
+
+	/**
+	 *
+	 * 가게 리뷰 요약 조회
+	 *
+	 * @param storeId Long
+	 * @return GetStoreReviewListResponseDto
+	 * @see ReviewFeedRepository
+	 */
+	@Override
+	public GetStoreReviewListResponseDto getReviewListByStore(Long storeId) {
+
+		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByStoreId(storeId);
+
+		return GetStoreReviewListResponseDto.from(reviewFeedList);
+	}
+
+	/**
+	 * 
+	 *  내 리뷰 전체 조회
+	 * 
+	 * @param memberId Long
+	 * @return CommonReviewListResponseDto
+	 * @see ReviewFeedRepository
+	 * @see LikeReviewRepository
+	 */
+	@Override
+	public CommonReviewListResponseDto getMyReviewList(Long memberId) {
+
+		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberId(memberId);
+
+		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(memberId).stream()
+			.map(likeReview -> likeReview.getReviewId())
+			.collect(Collectors.toList());
+
+		return CommonReviewListResponseDto
+			.ofReviewFeedListAndLikeReviewIdListAndMemberId(reviewFeedList, likeReviewIdList, memberId);
+	}
+
+	/**
+	 *
+	 * 다른 사람 리뷰 전체 조회
+	 *
+	 * @param memberId Long
+	 * @return CommonReviewListResponseDto
+	 * @see ReviewFeedRepository
+	 * @see LikeReviewRepository
+	 */
+	@Override
+	public CommonReviewListResponseDto getOtherReviewList(Long memberId, Long loginMemberId) {
+
+		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberId(memberId);
+
+		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(loginMemberId).stream()
+			.map(likeReview -> likeReview.getReviewId())
+			.collect(Collectors.toList());
+
+		return CommonReviewListResponseDto
+			.ofReviewFeedListAndLikeReviewIdListAndMemberId(reviewFeedList, likeReviewIdList, loginMemberId);
+	}
+
+	/**
+	 *
+	 * 좋아요한 리뷰 전체 조회
+	 *
+	 * @param memberId Long
+	 * @return CommonReviewListResponseDto
+	 * @see ReviewFeedRepository
+	 * @see LikeReviewRepository
+	 */
+	@Override
+	public CommonReviewListResponseDto getLikeReviewList(Long memberId) {
+
+		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(memberId).stream()
+			.map(likeReview -> likeReview.getReviewId())
+			.collect(Collectors.toList());
+
+		List<ReviewFeed> reviewFeedList = new ArrayList<>();
+
+		for (int i = 0; i < likeReviewIdList.size(); i++) {
+			ReviewFeed reviewFeed = reviewFeedRepository.findById(Long.toString(likeReviewIdList.get(i)))
+				.orElseThrow(() -> new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEWFEED_BY_ID));
+
+			reviewFeedList.add(reviewFeed);
+		}
+
+		return CommonReviewListResponseDto.ofReviewFeedListAndAndMemberId(reviewFeedList, memberId);
+	}
+
 }

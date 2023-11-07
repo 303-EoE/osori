@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.eoe.osori.domain.review.dto.CommonReviewListResponseDto;
 import com.eoe.osori.domain.review.dto.GetReviewDetailResponseDto;
+import com.eoe.osori.domain.review.dto.GetStoreReviewListResponseDto;
 import com.eoe.osori.domain.review.dto.PostReviewRequestDto;
 import com.eoe.osori.domain.review.service.ReviewService;
 import com.eoe.osori.global.common.response.CommonIdResponseDto;
@@ -61,7 +62,7 @@ public class ReviewController {
 	 */
 	@DeleteMapping()
 	public ResponseEntity<EnvelopeResponse<Void>> deleteReview(@RequestParam("review_id") Long reviewId) {
-
+		
 		reviewService.deleteReview(reviewId, 1L);
 
 		return ResponseEntity.status(HttpStatus.OK)
@@ -81,8 +82,6 @@ public class ReviewController {
 	@GetMapping("/detail")
 	public ResponseEntity<EnvelopeResponse<GetReviewDetailResponseDto>> getReviewDetail(
 		@RequestParam("review_id") Long reviewId) {
-
-		// liked, isMine, profileImage, multipartFile 처리!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<GetReviewDetailResponseDto>builder()
@@ -116,7 +115,7 @@ public class ReviewController {
 	 *
 	 * @param storeDepth1 String
 	 * @param storeDepth2 String
-	 * @return ResponseEntity<EnvelopeResponse < CommonReviewListResponseDto>>
+	 * @return ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>>
 	 * @see ReviewService
 	 */
 	@GetMapping("/region")
@@ -127,6 +126,78 @@ public class ReviewController {
 			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
 				.code(HttpStatus.OK.value())
 				.data(reviewService.getReviewListByRegion(storeDepth1, storeDepth2, 1L))
+				.build());
+	}
+
+	/**
+	 *
+	 * 가게 리뷰 요약 조회
+	 *
+	 * @param storeId Long
+	 * @return ResponseEntity<EnvelopeResponse<GetStoreReviewListResponseDto>>
+	 * @see ReviewService
+	 */
+	@GetMapping("/store")
+	public ResponseEntity<EnvelopeResponse<GetStoreReviewListResponseDto>> getReviewListByStore
+	(@RequestParam("store_id") Long storeId) {
+
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(EnvelopeResponse.<GetStoreReviewListResponseDto>builder()
+				.code(HttpStatus.OK.value())
+				.data(reviewService.getReviewListByStore(storeId))
+				.build());
+	}
+
+	/**
+	 *
+	 * 내 리뷰 전체 조회
+	 *
+	 * @return ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>>
+	 * @see ReviewService
+	 */
+	@GetMapping("/my-review")
+	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getMyReviewList() {
+
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
+				.code(HttpStatus.OK.value())
+				.data(reviewService.getMyReviewList(1L))
+				.build());
+	}
+
+	/**
+	 *
+	 * 다른 사람 리뷰 전체 조회
+	 *
+	 * @param memberId Long
+	 * @return ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>>
+	 * @see ReviewService
+	 */
+	@GetMapping("/member")
+	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getOtherReviewList
+		(@RequestParam("member_id") Long memberId, Long loginMemberId) {
+
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
+				.code(HttpStatus.OK.value())
+				.data(reviewService.getOtherReviewList(memberId, loginMemberId))
+				.build());
+	}
+
+	/**
+	 *
+	 * 좋아요한 리뷰 전체 조회
+	 *
+	 * @return ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>>
+	 * @see ReviewService
+	 */
+	@GetMapping("/like")
+	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getLikeReviewList() {
+		
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
+				.code(HttpStatus.OK.value())
+				.data(reviewService.getLikeReviewList(1L))
 				.build());
 	}
 }
