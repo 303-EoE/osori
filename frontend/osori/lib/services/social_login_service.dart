@@ -1,17 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:http/http.dart' as http;
 
-class SocialApiService {
+class SocialLoginService {
   static Future<String> loginWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       return googleUser?.displayName ?? "";
     } catch (error) {
-      print(error);
+      print('구글 로그인 실패 $error');
       throw Error();
     }
   }
@@ -39,7 +38,7 @@ class SocialApiService {
       // print("**************************************************");
       return profileInfo?.toString() ?? "";
     } catch (error) {
-      print('카카오톡으로 로그인 실패 $error');
+      print('카카오 로그인 실패 $error');
       throw Error();
     }
   }

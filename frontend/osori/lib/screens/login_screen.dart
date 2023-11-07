@@ -1,24 +1,22 @@
-import 'dart:convert';
-import 'dart:io';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
-import 'package:osori/services/social_api_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:osori/services/user_login_service.dart';
 
-class LoginScreen extends StatefulWidget {
+/// bottomNavigation에서 미리 토큰 유효성을 검증하기 때문에
+/// 여기서는 로그인 과정에만 집중하면 된다.
+
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  static const GOOGLE = "GOOGLE";
-  static const KAKAO = "KAKAO";
-
-  void goToMain() {
-    Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  static const String google = "Google";
+  static const String kakao = "Kakao";
+  void goToProfile() {
+    Navigator.of(context).pushNamedAndRemoveUntil('/profile', (route) => false);
   }
 
   void createSnackBar(String nickname) {
@@ -34,24 +32,33 @@ class _LoginScreenState extends State<LoginScreen> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  void login(String loginService) async {
-    late String nickname;
-    switch (loginService) {
-      case GOOGLE:
-        nickname = await SocialApiService.loginWithGoogle();
-        break;
-      case KAKAO:
-        nickname = await SocialApiService.loginWithKakao();
-        break;
-    }
-    if (nickname == "") {
-      print('다시 로그인하세요');
-      return;
-    }
-    // 스낵바 만들기
-    createSnackBar(nickname);
-    goToMain();
+  void alertSnackBar(String message) {
+    final snackBar = SnackBar(
+      content: Text(message),
+      action: SnackBarAction(
+        label: '확인',
+        onPressed: () {
+          // Some code to undo the change.
+        },
+      ),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
+
+  void loginWithService(String serviceName) async {
+    // 요청과 동시에 프로바이더에 저장
+    final result = UserLoginService.loginWithSocialService(serviceName);
+
+    if (result.toString() != "") {
+      // 스낵바 만들기
+      createSnackBar(result.toString());
+      // 프로필로 가기
+      goToProfile();
+    } else {
+      alertSnackBar('로그인 실패!');
+    }
+  }
+  // 로그아웃
   // await GoogleSignIn().signOut();
   // await UserApi.instance.logout();
 
@@ -66,13 +73,13 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('OSORI에 가입하고 다양한 기능을 활용해보세요!'),
+            const Text('OSORI에 가입하고 다양한 기능을 누려보세요!'),
             const SizedBox(
               height: 50,
             ),
             GestureDetector(
-              onTapUp: (details) async {
-                login(GOOGLE);
+              onTapUp: (details) {
+                loginWithService(google);
               },
               child: Image.asset(
                 'assets/images/continue_with_google.png',
@@ -84,17 +91,10 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             GestureDetector(
               onTapUp: (details) async {
-                login(KAKAO);
+                loginWithService(kakao);
               },
               child: Image.asset('assets/images/continue_with_kakao.png'),
             ),
-            const SizedBox(
-              height: 50,
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.logout),
-            )
           ],
         ),
       ),
