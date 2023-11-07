@@ -287,15 +287,15 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @see LikeReviewRepository
 	 */
 	@Override
-	public CommonReviewListResponseDto getOtherReviewList(Long memberId) {
+	public CommonReviewListResponseDto getOtherReviewList(Long memberId, Long loginMemberId) {
 
 		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberId(memberId);
 
-		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(memberId).stream()
+		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(loginMemberId).stream()
 			.map(likeReview -> likeReview.getReviewId())
 			.collect(Collectors.toList());
 
-		return CommonReviewListResponseDto.of(reviewFeedList, likeReviewIdList, memberId);
+		return CommonReviewListResponseDto.of(reviewFeedList, likeReviewIdList, loginMemberId);
 	}
 
 	/**

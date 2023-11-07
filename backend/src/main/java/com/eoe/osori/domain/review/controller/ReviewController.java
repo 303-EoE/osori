@@ -63,6 +63,8 @@ public class ReviewController {
 	@DeleteMapping()
 	public ResponseEntity<EnvelopeResponse<Void>> deleteReview(@RequestParam("review_id") Long reviewId) {
 
+		// 몽고DB에서도 ReviewFeed 같이 삭제 로직 추가
+		
 		reviewService.deleteReview(reviewId, 1L);
 
 		return ResponseEntity.status(HttpStatus.OK)
@@ -175,12 +177,12 @@ public class ReviewController {
 	 */
 	@GetMapping("/member")
 	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getOtherReviewList
-		(@RequestParam("member_id") Long memberId) {
+		(@RequestParam("member_id") Long memberId, Long loginMemberId) {
 
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
 				.code(HttpStatus.OK.value())
-				.data(reviewService.getOtherReviewList(memberId))
+				.data(reviewService.getOtherReviewList(memberId, loginMemberId))
 				.build());
 	}
 
@@ -194,6 +196,8 @@ public class ReviewController {
 	@GetMapping("/like")
 	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getLikeReviewList() {
 
+		// 로직 테스트하고 고치기
+		
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
 				.code(HttpStatus.OK.value())
