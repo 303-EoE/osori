@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import 'package:osori/osori_provider_observer.dart';
 import 'package:osori/screens/chat_screen.dart';
 import 'package:osori/screens/feed_screen.dart';
 import 'package:osori/screens/login_screen.dart';
@@ -18,8 +19,11 @@ void main() async {
     nativeAppKey: dotenv.env['KAKAO_NATIVE_APP_KEY'],
     // javaScriptAppKey: dotenv.env['KAKAO_JAVASCRIPT_KEY'],
   );
-  runApp(const ProviderScope(
-    child: Osori(),
+  runApp(ProviderScope(
+    observers: [
+      OsoriProviderObserver(),
+    ],
+    child: const Osori(),
   ));
 }
 
