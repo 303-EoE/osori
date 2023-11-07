@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  auth-1:
+    container_name: osori_auth_1
+    image: mydowson/osori:releaseAuth
+    ports:
+      - '8200:8200'
+  
+  auth-2:
+    container_name: osori_auth_2
+    image: mydowson/osori:releaseAuth
+    ports:
+      - '8201:8200'
