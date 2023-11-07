@@ -128,6 +128,7 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @param reviewId Long
 	 * @param memberId Long
 	 * @see ReviewRepository
+	 * @see ReviewFeedRepository
 	 */
 	@Transactional
 	@Override
@@ -140,7 +141,11 @@ public class ReviewServiceImpl implements ReviewService {
 			throw new ReviewException(ReviewErrorInfo.NOT_MATCH_REVIEW_BY_MEMBERID);
 		}
 
+		ReviewFeed reviewFeed = reviewFeedRepository.findById(Long.toString(reviewId))
+			.orElseThrow(() -> new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEWFEED_BY_ID));
+
 		reviewRepository.delete(review);
+		reviewFeedRepository.delete(reviewFeed);
 	}
 
 	/**
