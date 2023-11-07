@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.eoe.osori.domain.review.dto.CommonReviewListResponseDto;
 import com.eoe.osori.domain.review.dto.GetReviewDetailResponseDto;
+import com.eoe.osori.domain.review.dto.GetStoreReviewListResponseDto;
 import com.eoe.osori.domain.review.dto.PostReviewRequestDto;
 import com.eoe.osori.domain.review.service.ReviewService;
 import com.eoe.osori.global.common.response.CommonIdResponseDto;
@@ -133,15 +134,15 @@ public class ReviewController {
 	 * 가게 리뷰 요약 조회
 	 *
 	 * @param storeId Long
-	 * @return ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>>
+	 * @return ResponseEntity<EnvelopeResponse<GetStoreReviewListResponseDto>>
 	 * @see ReviewService
 	 */
 	@GetMapping("/store")
-	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getReviewListByStore
+	public ResponseEntity<EnvelopeResponse<GetStoreReviewListResponseDto>> getReviewListByStore
 	(@RequestParam("store_id") Long storeId) {
 
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
+			.body(EnvelopeResponse.<GetStoreReviewListResponseDto>builder()
 				.code(HttpStatus.OK.value())
 				.data(reviewService.getReviewListByStore(storeId))
 				.build());

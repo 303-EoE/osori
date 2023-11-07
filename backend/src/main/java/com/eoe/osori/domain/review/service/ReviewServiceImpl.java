@@ -14,6 +14,7 @@ import com.eoe.osori.domain.review.domain.ReviewFeed;
 import com.eoe.osori.domain.review.domain.ReviewImage;
 import com.eoe.osori.domain.review.dto.CommonReviewListResponseDto;
 import com.eoe.osori.domain.review.dto.GetReviewDetailResponseDto;
+import com.eoe.osori.domain.review.dto.GetStoreReviewListResponseDto;
 import com.eoe.osori.domain.review.dto.PostReviewRequestDto;
 import com.eoe.osori.domain.review.repository.LikeReviewRepository;
 import com.eoe.osori.domain.review.repository.ReviewFeedRepository;
@@ -248,17 +249,15 @@ public class ReviewServiceImpl implements ReviewService {
 	 * 가게 리뷰 요약 조회
 	 *
 	 * @param storeId Long
-	 * @return CommonReviewListResponseDto
+	 * @return GetStoreReviewListResponseDto
 	 * @see ReviewFeedRepository
 	 */
 	@Override
-	public CommonReviewListResponseDto getReviewListByStore(Long storeId) {
+	public GetStoreReviewListResponseDto getReviewListByStore(Long storeId) {
 
-		List<ReviewFeed> reviewFeedList = reviewFeedRepository
-			.findAllByStoreId(storeId);
+		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByStoreId(storeId);
 
-		return null;
-		// return CommonReviewListResponseDto.from(reviewFeedList);
+		return GetStoreReviewListResponseDto.from(reviewFeedList);
 	}
 
 	/**
