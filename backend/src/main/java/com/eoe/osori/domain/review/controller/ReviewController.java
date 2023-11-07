@@ -20,7 +20,6 @@ import com.eoe.osori.domain.review.service.ReviewService;
 import com.eoe.osori.global.common.response.CommonIdResponseDto;
 import com.eoe.osori.global.common.response.EnvelopeResponse;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,8 +61,6 @@ public class ReviewController {
 	 */
 	@DeleteMapping()
 	public ResponseEntity<EnvelopeResponse<Void>> deleteReview(@RequestParam("review_id") Long reviewId) {
-
-		// 몽고DB에서도 ReviewFeed 같이 삭제 로직 추가
 		
 		reviewService.deleteReview(reviewId, 1L);
 
@@ -195,8 +192,6 @@ public class ReviewController {
 	 */
 	@GetMapping("/like")
 	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getLikeReviewList() {
-
-		// 로직 테스트하고 고치기
 		
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
