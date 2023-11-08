@@ -1,5 +1,6 @@
 package com.eoe.osori.domain.auth.domain;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -16,6 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity(name = "member")
 @Getter
@@ -24,6 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @SQLDelete(sql = "UPDATE member SET deleted = true WHERE id = ?")
 @Where(clause = "deleted = false")
+@ToString
 public class Member extends BaseTimeEntity {
 
 	@Id
@@ -43,6 +46,12 @@ public class Member extends BaseTimeEntity {
 	@NotNull
 	@Column
 	private String providerId;
+
+	@NotNull
+	@Builder.Default
+	@ColumnDefault("false")
+	@Column
+	private Boolean deleted = Boolean.FALSE;
 
 	public static Member from(PostAuthRequestDto postAuthRequestDto){
 		return Member.builder()

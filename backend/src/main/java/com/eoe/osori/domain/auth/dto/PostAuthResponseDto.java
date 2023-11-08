@@ -13,11 +13,13 @@ public class PostAuthResponseDto {
 
 	private String nickname;
 	private String accessToken;
+	private String refreshToken;
 
-	public static PostAuthResponseDto of(String nickname, String accessToken) {
+	public static PostAuthResponseDto of(String nickname, String accessToken, String refreshToken) {
 		return PostAuthResponseDto.builder()
 			.nickname(nickname)
 			.accessToken(accessToken)
+			.refreshToken(refreshToken)
 			.build();
 	}
 }
