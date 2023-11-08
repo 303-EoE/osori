@@ -5,7 +5,11 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:image_picker/image_picker.dart';
 
 class WriteReviewFormScreen extends StatefulWidget {
-  const WriteReviewFormScreen({super.key});
+  final int storeId;
+  const WriteReviewFormScreen({
+    super.key,
+    required this.storeId,
+  });
 
   @override
   State<WriteReviewFormScreen> createState() => _WriteReviewFormScreenState();
@@ -226,6 +230,9 @@ class _WriteReviewFormScreenState extends State<WriteReviewFormScreen> {
                         _formKey.currentState?.validate();
                         debugPrint(
                             _formKey.currentState?.instantValue.toString());
+
+                        // 리뷰 등록 요청 보내기
+
                         final snackBar = SnackBar(
                           content: const Text('등록이 완료되었습니다.'),
                           action: SnackBarAction(
