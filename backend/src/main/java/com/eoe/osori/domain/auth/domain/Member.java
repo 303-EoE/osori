@@ -1,9 +1,10 @@
-package com.eoe.osori.domain.member.domain;
+package com.eoe.osori.domain.auth.domain;
 
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import com.eoe.osori.domain.BaseTimeEntity;
+import com.eoe.osori.domain.auth.dto.PostAuthRequestDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,7 +30,6 @@ public class Member extends BaseTimeEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@NotNull
 	@Column
 	private String nickname;
 
@@ -43,4 +43,11 @@ public class Member extends BaseTimeEntity {
 	@NotNull
 	@Column
 	private String providerId;
+
+	public static Member from(PostAuthRequestDto postAuthRequestDto){
+		return Member.builder()
+			.provider(postAuthRequestDto.getProvider())
+			.providerId(postAuthRequestDto.getProviderId())
+			.build();
+	}
 }
