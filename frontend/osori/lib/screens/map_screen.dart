@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import 'package:osori/screens/login_screen.dart';
 import 'package:osori/screens/search_screen.dart';
 import 'package:osori/widgets/common/bottom_navigation_widget.dart';
 
@@ -23,7 +24,7 @@ class _MapScreenState extends State<MapScreen> {
   Set<Marker> markers = {};
   late Marker marker;
 
-  Future<String> getNearStores() async {
+  void getNearStores() {
     // 나중에 우리 가게 DTO 짜면 위도경도 받아서 마커 찍어주기
     /**
      * await getNowPosition();
@@ -36,14 +37,13 @@ class _MapScreenState extends State<MapScreen> {
      * latLng : LatLng(store.latitude, store.longitude),
      * width : 40,
      * height : 40,
-     * markerImgSrc:"무언가",
+     * markerImageSrc:"무언가",
      * ))
      * }
      * // 지도 마커에 추가하기
      * markers.addAll(stores);
      * setState(() {});
      */
-    return "";
   }
 
   Future<Position> getNowPosition() async {
@@ -89,10 +89,10 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   @override
-  void initState() async {
+  void initState() {
     super.initState();
     // 내 주변 가게 마커 찍기
-    await getNearStores();
+    getNearStores();
     // 1초마다 위치 초기화하기
     setState(() {
       timer = Timer.periodic(const Duration(seconds: 1), _determinePosition);
@@ -120,6 +120,14 @@ class _MapScreenState extends State<MapScreen> {
               37.501263, // 멀티캠퍼스
               127.039583, // 멀티캠퍼스
             ),
+            onMarkerTap: (markerId, latLng, zoomLevel) => {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LoginScreen(),
+                ),
+              )
+            },
           ),
           GestureDetector(
             onTapUp: (details) {

@@ -51,7 +51,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
           case 3:
             Navigator.of(context)
                 .pushNamedAndRemoveUntil('/profile', (route) => false);
-
             break;
         }
       },

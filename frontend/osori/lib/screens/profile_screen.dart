@@ -5,6 +5,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:osori/widgets/common/bottom_navigation_widget.dart';
 import 'package:osori/widgets/feed/feed_only_image_widget.dart';
 
+/// 여기서 initState로
+/// 토큰이 유효한지를 보는게 맞나...??
+/// 토큰이 유효하지 않으면 로그인 페이지로 넘어가자-removeUntil로
+
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
@@ -139,17 +143,12 @@ class ProfileScreen extends StatelessWidget {
                     },
                   );
                 },
-                child: const Positioned(
-                    right: 0,
-                    top: 0,
-                    child: Icon(
-                      Icons.settings,
-                      size: 32,
-                      color: Colors.black,
-                      shadows: [
-                        Shadow(color: Colors.white, offset: Offset(1, 1))
-                      ],
-                    )),
+                child: const Icon(
+                  Icons.settings,
+                  size: 32,
+                  color: Colors.black,
+                  shadows: [Shadow(color: Colors.white, offset: Offset(1, 1))],
+                ),
               )
             ]),
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:osori/models/kakao_store_model.dart';
+import 'package:osori/screens/receipt_scanning_screen.dart';
 import 'package:osori/services/kakao_local_api_service.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -114,7 +115,15 @@ class _SearchScreenState extends State<SearchScreen> {
                             width: 10,
                           ),
                           OutlinedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ReceiptScanningScreen(),
+                                ),
+                              );
+                            },
                             style: OutlinedButton.styleFrom(
                               padding: const EdgeInsets.all(0),
                             ),
