@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:osori/screens/receipt_scanning_screen.dart';
 import 'package:osori/widgets/common/bottom_navigation_widget.dart';
 import 'package:osori/widgets/common/top_header_widget.dart';
 import 'package:osori/widgets/feed/feed_widget.dart';
@@ -68,21 +67,6 @@ class _FeedScreenState extends State<FeedScreen> {
         ),
       ),
       bottomNavigationBar: const BottomNavigation(),
-      // 나중에 다른 곳으로 옮겨질 리뷰 작성
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFFf9f8f8),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ReceiptScanningScreen(),
-            ),
-          );
-        },
-        child: const Icon(
-          Icons.create_rounded,
-        ),
-      ),
     );
   }
 }
