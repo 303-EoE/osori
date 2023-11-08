@@ -1,6 +1,7 @@
 package com.eoe.osori.domain.auth.service;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,22 +46,17 @@ public class AuthServiceImpl implements AuthService {
 		}
 
 		// providerId로 member 존재유무 확인
-		Member member = memberRepository.findByProviderId(providerId);
+		Member member = memberRepository.findByProviderId(providerId)
+			.orElse(Member.from(postAuthRequestDto));
 
 		// member가 존재하지 않는다면 DB에 저장
-		if(member == null){
-			member = Member.from(postAuthRequestDto);
+		if(member.getId() == null){
 			memberRepository.save(member);
 			log.info("[유저 로그인] 가입전적 없음.");
 		}
 
-		System.out.println(member.toString());
-
-		log.info("[유저 로그인] 사용자 id : {}", member.getId());
-
 		String nickname = member.getNickname();
 		log.info("[유저 로그인] 사용자 닉네임 : {}", nickname);
-		log.info("[유저 로그인] 사용자 정보 : {}", member.getProfileImageUrl());
 
 		String accessToken = null;
 		String refreshToken = null;
