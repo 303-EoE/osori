@@ -6,12 +6,10 @@ import 'package:osori/services/kakao_local_api_service.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class SearchScreen extends StatefulWidget {
-  final bool isInputDisabled;
   final LatLng nowPos;
 
   const SearchScreen({
     super.key,
-    required this.isInputDisabled,
     required this.nowPos,
   });
 
@@ -119,8 +117,8 @@ class _SearchScreenState extends State<SearchScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ReceiptScanningScreen(),
+                                  builder: (context) => ReceiptScanningScreen(
+                                      storeId: int.parse(store.id)),
                                 ),
                               );
                             },

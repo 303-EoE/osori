@@ -6,7 +6,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:osori/screens/write_review_form_screen.dart';
 
 class ReceiptScanningScreen extends StatefulWidget {
-  const ReceiptScanningScreen({super.key});
+  final int storeId;
+  const ReceiptScanningScreen({
+    super.key,
+    required this.storeId,
+  });
 
   @override
   State<ReceiptScanningScreen> createState() => _ReceiptScanningScreenState();
@@ -47,7 +51,7 @@ class _ReceiptScanningScreenState extends State<ReceiptScanningScreen>
     Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => const WriteReviewFormScreen(),
+          builder: (context) => WriteReviewFormScreen(storeId: widget.storeId),
         ));
   }
 
