@@ -235,7 +235,7 @@ public class ReviewServiceImpl implements ReviewService {
 	public CommonReviewListResponseDto getReviewListByRegion(String storeDepth1, String storeDepth2, Long memberId) {
 
 		List<ReviewFeed> reviewFeedList = reviewFeedRepository
-			.findAllByStoreDepth1AndStoreDepth2(storeDepth1, storeDepth2);
+			.findAllByStoreDepth1AndStoreDepth2OrderByCreatedAtDesc(storeDepth1, storeDepth2);
 
 		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(memberId).stream()
 			.map(likeReview -> likeReview.getReviewId())
@@ -255,7 +255,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public GetStoreReviewListResponseDto getReviewListByStore(Long storeId) {
 
-		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByStoreId(storeId);
+		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByStoreIdOrderByCreatedAtDesc(storeId);
 
 		return GetStoreReviewListResponseDto.from(reviewFeedList);
 	}
@@ -272,7 +272,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public CommonReviewListResponseDto getMyReviewList(Long memberId) {
 
-		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberId(memberId);
+		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberIdOrderByCreatedAtDesc(memberId);
 
 		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(memberId).stream()
 			.map(likeReview -> likeReview.getReviewId())
@@ -294,7 +294,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public CommonReviewListResponseDto getOtherReviewList(Long memberId, Long loginMemberId) {
 
-		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberId(memberId);
+		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberIdOrderByCreatedAtDesc(memberId);
 
 		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(loginMemberId).stream()
 			.map(likeReview -> likeReview.getReviewId())
@@ -316,14 +316,14 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public CommonReviewListResponseDto getLikeReviewList(Long memberId) {
 
-		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(memberId).stream()
+		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberIdOrderByIdDesc(memberId).stream()
 			.map(likeReview -> likeReview.getReviewId())
 			.collect(Collectors.toList());
 
 		List<ReviewFeed> reviewFeedList = new ArrayList<>();
 
-		for (int i = 0; i < likeReviewIdList.size(); i++) {
-			ReviewFeed reviewFeed = reviewFeedRepository.findById(Long.toString(likeReviewIdList.get(i)))
+		for (Long likeReviewId : likeReviewIdList) {
+			ReviewFeed reviewFeed = reviewFeedRepository.findById(Long.toString(likeReviewId))
 				.orElseThrow(() -> new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEWFEED_BY_ID));
 
 			reviewFeedList.add(reviewFeed);

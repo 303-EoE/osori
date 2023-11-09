@@ -10,10 +10,10 @@ import com.eoe.osori.domain.review.domain.ReviewFeed;
 @Repository
 public interface ReviewFeedRepository extends MongoRepository<ReviewFeed, String> {
 
-	List<ReviewFeed> findAllByStoreDepth1AndStoreDepth2(String storeDepth1, String storeDepth2);
+	List<ReviewFeed> findAllByStoreDepth1AndStoreDepth2OrderByCreatedAtDesc(String storeDepth1, String storeDepth2);
 
-	List<ReviewFeed> findAllByStoreId(Long storeId);
+	List<ReviewFeed> findAllByStoreIdOrderByCreatedAtDesc(Long storeId);
 
-	List<ReviewFeed> findAllByMemberId(Long memberId);
+	List<ReviewFeed> findAllByMemberIdOrderByCreatedAtDesc(Long memberId);
 
 }
