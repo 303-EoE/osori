@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-	private JwtTokenProvider jwtTokenProvider;
+	private final JwtTokenProvider jwtTokenProvider;
 	private final UserDetailsServiceImpl userDetailsService;
 
 	/**
