@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:osori/screens/search_screen.dart';
 import 'package:osori/screens/store_screen.dart';
+import 'package:osori/services/other/device_position_service.dart';
 import 'package:osori/widgets/common/bottom_navigation_widget.dart';
 
 class MapScreen extends StatefulWidget {
@@ -17,7 +18,6 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   late KakaoMapController mapController;
   late Timer timer;
-  bool isGPSPermissioned = false;
   late Position position;
   late LatLng nowPos;
   late Marker marker;
@@ -62,33 +62,8 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {});
   }
 
-  Future<Position> getNowPosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-    isGPSPermissioned = true;
-    return position = await Geolocator.getCurrentPosition();
-  }
-
   void _determinePosition(Timer timer) async {
-    position = await getNowPosition();
+    position = await DevicePostionService.getNowPosition();
     // 나의 현위치를 초기화해서 마커 찍기
     nowPos = LatLng(position.latitude, position.longitude);
     markers.removeWhere((marker) => marker.markerId == 'nowPos');
@@ -110,7 +85,7 @@ class _MapScreenState extends State<MapScreen> {
     getNearStores();
     // 1초마다 위치 초기화하기
     setState(() {
-      timer = Timer.periodic(const Duration(seconds: 1), _determinePosition);
+      timer = Timer.periodic(const Duration(seconds: 2), _determinePosition);
     });
   }
 
@@ -206,7 +181,7 @@ class _MapScreenState extends State<MapScreen> {
         onPressed: () {
           LatLng nowPos = LatLng(position.latitude, position.longitude);
           mapController.setCenter(nowPos);
-          mapController.setLevel(3);
+          mapController.setLevel(4);
         },
         child: const Icon(
           Icons.navigation_outlined,
