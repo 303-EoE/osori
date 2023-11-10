@@ -24,6 +24,7 @@ import com.eoe.osori.global.advice.error.exception.ReviewException;
 import com.eoe.osori.global.advice.error.info.ReviewErrorInfo;
 import com.eoe.osori.global.common.api.images.ImageApi;
 import com.eoe.osori.global.common.api.images.dto.PostImageResponseDto;
+import com.eoe.osori.global.common.api.member.MemberApi;
 import com.eoe.osori.global.common.api.store.StoreApi;
 import com.eoe.osori.global.common.api.member.dto.GetMemberResponseDto;
 import com.eoe.osori.global.common.api.store.dto.GetStoreDetailResponseDto;
@@ -45,6 +46,7 @@ public class ReviewServiceImpl implements ReviewService {
 	private final ReviewFeedRepository reviewFeedRepository;
 	private final StoreApi storeApi;
 	private final ImageApi imageApi;
+	private final MemberApi memberApi;
 
 	/**
 	 *
@@ -57,6 +59,8 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @see ReviewImageRepository
 	 * @see ReviewFeedRepository
 	 * @see StoreApi
+	 * @see ImageApi
+	 * @see MemberApi
 	 */
 	@Transactional
 	@Override
@@ -102,17 +106,6 @@ public class ReviewServiceImpl implements ReviewService {
 			.map(imagePathElement -> imagePathElement.getUploadFilePath())
 			.collect(Collectors.toList());
 
-		// for (String url : reviewImageUrlList) {
-		// 	System.out.println(url);
-		// }
-		// /**
-		//  * 지워줄 거!!!
-		//  */
-		// reviewImageUrlList.add("https://avatars.githubusercontent.com/u/118112177?v=4");
-		// reviewImageUrlList.add("https://avatars.githubusercontent.com/u/122416904?v=4");
-		// /**
-		//  * 지워줄 거!!!
-		//  */
 
 		for (int i = 0; i < reviewImageUrlList.size(); i++) {
 			String imageUrl = reviewImageUrlList.get(i);
@@ -123,6 +116,22 @@ public class ReviewServiceImpl implements ReviewService {
 		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
 		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤", "이미지url1");
 		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
+
+		/**
+		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
+		 */
+		// EnvelopeResponse<GetMemberResponseDto> getMemberResponseDtoEnvelopeResponse;
+		//
+		// try {
+		// 	getMemberResponseDtoEnvelopeResponse = memberApi.getMember(review.getMemberId());
+		// } catch (FeignException e) {
+		// 	throw new ReviewException(ReviewErrorInfo.FAIL_TO_MEMBER_FEIGN_CLIENT_REQUEST);
+		// }
+		//
+		// GetMemberResponseDto getMemberResponseDto = getMemberResponseDtoEnvelopeResponse.getData();
+		/**
+		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
+		 */
 
 		EnvelopeResponse<GetStoreDetailResponseDto> getStoreDetailResponseDtoEnvelopeResponse;
 
@@ -176,6 +185,7 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @see ReviewImageRepository
 	 * @see LikeReviewRepository
 	 * @see StoreApi
+	 * @see MemberApi
 	 */
 	@Transactional
 	@Override
@@ -192,6 +202,23 @@ public class ReviewServiceImpl implements ReviewService {
 			"https://avatars.githubusercontent.com/u/122416904?v=4");
 		/**
 		 * 지울 거!!!!!!!!!!!!!!!!!!!!!
+		 */
+
+
+		/**
+		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
+		 */
+		// EnvelopeResponse<GetMemberResponseDto> getMemberResponseDtoEnvelopeResponse;
+		//
+		// try {
+		// 	getMemberResponseDtoEnvelopeResponse = memberApi.getMember(review.getMemberId());
+		// } catch (FeignException e) {
+		// 	throw new ReviewException(ReviewErrorInfo.FAIL_TO_MEMBER_FEIGN_CLIENT_REQUEST);
+		// }
+		//
+		// GetMemberResponseDto getMemberResponseDto = getMemberResponseDtoEnvelopeResponse.getData();
+		/**
+		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
 		 */
 
 		EnvelopeResponse<GetStoreDetailResponseDto> getStoreDetailResponseDtoEnvelopeResponse;
