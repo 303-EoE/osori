@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  auth-1:
+    container_name: osori_review_1
+    image: mydowson/osori:releaseReview
+    ports:
+      - '8220:8220'
+  
+  auth-2:
+    container_name: osori_review_2
+    image: mydowson/osori:releaseReview
+    ports:
+      - '8221:8220'

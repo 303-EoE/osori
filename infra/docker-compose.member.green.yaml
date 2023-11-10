@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  auth-1:
+    container_name: osori_member_3
+    image: mydowson/osori:releaseMember
+    ports:
+      - '8212:8210'
+  
+  auth-2:
+    container_name: osori_member_4
+    image: mydowson/osori:releaseMember
+    ports:
+      - '8213:8210'
