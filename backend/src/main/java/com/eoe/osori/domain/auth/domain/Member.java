@@ -5,7 +5,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import com.eoe.osori.domain.BaseTimeEntity;
-import com.eoe.osori.domain.auth.dto.PostAuthRequestDto;
+import com.eoe.osori.domain.auth.dto.PostAuthLoginRequestDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -53,10 +53,10 @@ public class Member extends BaseTimeEntity {
 	@Column
 	private Boolean deleted = Boolean.FALSE;
 
-	public static Member from(PostAuthRequestDto postAuthRequestDto){
+	public static Member from(PostAuthLoginRequestDto postAuthLoginRequestDto){
 		return Member.builder()
-			.provider(postAuthRequestDto.getProvider())
-			.providerId(postAuthRequestDto.getProviderId())
+			.provider(postAuthLoginRequestDto.getProvider())
+			.providerId(postAuthLoginRequestDto.getProviderId())
 			.build();
 	}
 }
