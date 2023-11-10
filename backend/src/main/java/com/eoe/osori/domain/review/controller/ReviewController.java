@@ -2,6 +2,8 @@ package com.eoe.osori.domain.review.controller;
 
 import java.util.List;
 
+import com.eoe.osori.global.common.receipt.dto.PostReceiptResponseDto;
+import com.eoe.osori.global.common.receipt.service.ReceiptService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ReviewController {
 	private final ReviewService reviewService;
+	private final ReceiptService receiptService;
 
 	/**
 	 *
@@ -199,5 +202,14 @@ public class ReviewController {
 				.code(HttpStatus.OK.value())
 				.data(reviewService.getLikeReviewList(1L))
 				.build());
+	}
+
+	@PostMapping("/receipt")
+	public ResponseEntity<EnvelopeResponse<PostReceiptResponseDto>> getReviewDetail(@RequestPart(required = true) MultipartFile multipartFile) {
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(EnvelopeResponse.<PostReceiptResponseDto>builder()
+						.code(HttpStatus.OK.value())
+						.data(receiptService.getReceiptInfo(multipartFile))
+						.build());
 	}
 }
