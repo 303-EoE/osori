@@ -1,17 +1,17 @@
 package com.eoe.osori.domain.auth.service;
 
-import java.util.Arrays;
-import java.util.Optional;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.eoe.osori.domain.auth.domain.Member;
-import com.eoe.osori.domain.auth.dto.PostAuthRequestDto;
-import com.eoe.osori.domain.auth.dto.PostAuthResponseDto;
+import com.eoe.osori.domain.auth.dto.PostAuthInfoRequestDto;
+import com.eoe.osori.domain.auth.dto.PostAuthInfoResponseDto;
+import com.eoe.osori.domain.auth.dto.PostAuthLoginRequestDto;
+import com.eoe.osori.domain.auth.dto.PostAuthLoginResponseDto;
 import com.eoe.osori.domain.auth.repository.MemberRepository;
 import com.eoe.osori.global.advice.error.exception.MemberException;
 import com.eoe.osori.global.advice.error.info.MemberErrorInfo;
+import com.eoe.osori.global.common.jwt.JwtHeaderUtilEnum;
 import com.eoe.osori.global.common.jwt.JwtTokenProvider;
 
 import lombok.RequiredArgsConstructor;
@@ -29,16 +29,15 @@ public class AuthServiceImpl implements AuthService {
 	/**
 	 *  로그인 / 회원가입
 	 *
-	 * @param postAuthRequestDto PostAuthRequestDto
+	 * @param postAuthLoginRequestDto PostAuthRequestDto
 	 * @return PostAuthResponseDto
 	 * @see MemberRepository
 	 */
 	@Override
 	@Transactional
-	public PostAuthResponseDto login(PostAuthRequestDto postAuthRequestDto) {
-		String provider = postAuthRequestDto.getProvider();
-		String providerId = postAuthRequestDto.getProviderId();
-		log.info("[유저 로그인] 로그인 요청. {}", providerId);
+	public PostAuthLoginResponseDto login(PostAuthLoginRequestDto postAuthLoginRequestDto) {
+		String provider = postAuthLoginRequestDto.getProvider();
+		String providerId = postAuthLoginRequestDto.getProviderId();
 
 		// 입력값 확인
 		if(provider == null || providerId == null){
@@ -47,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
 
 		// providerId로 member 존재유무 확인
 		Member member = memberRepository.findByProviderId(providerId)
-			.orElse(Member.from(postAuthRequestDto));
+			.orElse(Member.from(postAuthLoginRequestDto));
 
 		// member가 존재하지 않는다면 DB에 저장
 		if(member.getId() == null){
@@ -56,7 +55,6 @@ public class AuthServiceImpl implements AuthService {
 		}
 
 		String nickname = member.getNickname();
-		log.info("[유저 로그인] 사용자 닉네임 : {}", nickname);
 
 		String accessToken = null;
 		String refreshToken = null;
@@ -67,8 +65,36 @@ public class AuthServiceImpl implements AuthService {
 			refreshToken = jwtTokenProvider.generateRefreshToken(member.getId());
 		}
 
-		log.info("[유저 로그인] 엑세스 토큰 : {}", accessToken);
-
-		return PostAuthResponseDto.of(nickname, accessToken, refreshToken);
+		return PostAuthLoginResponseDto.of(nickname, accessToken, refreshToken);
 	}
+
+	/**
+	 * 토큰이 헤더에서 들어올 때 파싱
+	 * @param accessToken
+	 * @return
+	 */
+	private String parsingAccessToken(String accessToken){
+		return accessToken.substring(JwtHeaderUtilEnum.GRANT_TYPE.getValue().length());
+	}
+
+	@Override
+	@Transactional
+	public PostAuthInfoResponseDto info(PostAuthInfoRequestDto postAuthInfoRequestDto) {
+		// String accessToken = parsingAccessToken(postAuthInfoRequestDto.getAccessToken());
+		String accessToken = postAuthInfoRequestDto.getAccessToken();
+
+		// 토큰에서 id 가져오기
+		Long id = jwtTokenProvider.getLoginId(accessToken);
+
+		// id로 멤버 찾기
+		Member member = memberRepository.findById(id)
+			.orElseThrow(() -> new MemberException(MemberErrorInfo.MEMBER_NOT_FOUND));
+
+		return PostAuthInfoResponseDto.builder()
+			.id(id)
+			.nickname(member.getNickname())
+			.profileImageUrl(member.getProfileImageUrl())
+			.build();
+	}
+
 }

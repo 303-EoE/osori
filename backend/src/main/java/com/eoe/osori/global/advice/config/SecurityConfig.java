@@ -23,6 +23,7 @@ public class SecurityConfig {
 
 	// 허용할 URL
 	private static final String[] PERMIT_URL_ARRAY = {
+		"/",
 		"/auth/**"
 	};
 
@@ -39,9 +40,9 @@ public class SecurityConfig {
 			.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
 			.authorizeHttpRequests((authorizeRequests) ->
 					authorizeRequests
-						.requestMatchers("/").permitAll()
 						.requestMatchers(PERMIT_URL_ARRAY).permitAll()
 						.anyRequest().authenticated());
+						// .anyRequest().permitAll());
 		return http.build();
 	}
 

@@ -2,6 +2,7 @@ package com.eoe.osori.global.common.jwt;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -24,18 +25,12 @@ public class JwtTokenProvider {
 	@Value("${jwt.secret_key}")
 	private String SECRET_KEY;
 
-	@Value("${jwt.access_expiration_ms}")
-	private long accessExpirationMs;
-
-	@Value("${jwt.refresh_expiration_ms}")
-	private long refreshExpirationMs;
-
 	/**
 	 * SECRET_KEY 값 가져오기
 	 * @param secretKey
 	 * @return
 	 */
-	private Key getSigningKey(String secretKey){
+	private Key getSigningKey(String secretKey) {
 		byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
 		return Keys.hmacShaKeyFor(keyBytes);
 	}
@@ -46,8 +41,6 @@ public class JwtTokenProvider {
 	 * @return
 	 */
 	public Claims extractClaims(String token) {
-		log.info("[extractClaims] 실행 토큰 : {}", token);
-
 		return Jwts.parserBuilder()
 			.setSigningKey(getSigningKey(SECRET_KEY))
 			.build()
@@ -61,25 +54,26 @@ public class JwtTokenProvider {
 	 * @param expireTimeMs
 	 * @return
 	 */
-	private String createToken(Long id, long expireTimeMs){
+	private String createToken(Long id, long expireTimeMs) {
 		// Claim = Jwt Token에 들어갈 정보
 		Claims claims = Jwts.claims();
 		claims.put("id", id); // 로그인한 멤버 Id 넣어주기
-
+		Date issuedAt = new Date();
+		Date expired = new Date(issuedAt.getTime() + expireTimeMs);
 		return Jwts.builder()
 			.setClaims(claims)
-			.setIssuedAt(new Date(System.currentTimeMillis()))
-			.setExpiration(new Date(System.currentTimeMillis() + expireTimeMs))
+			.setIssuedAt(issuedAt)
+			.setExpiration(expired)
 			.signWith(getSigningKey(SECRET_KEY), SignatureAlgorithm.HS256)
 			.compact();
 	}
 
-	public String generateAccessToken(Long id){
-		return createToken(id, accessExpirationMs);
+	public String generateAccessToken(Long id) {
+		return createToken(id, JwtExpirationEnum.ACCESS_TOKEN_EXPIRATION_TIME.getValue());
 	}
 
-	public String generateRefreshToken(Long id){
-		return createToken(id, refreshExpirationMs);
+	public String generateRefreshToken(Long id) {
+		return createToken(id, JwtExpirationEnum.REISSUE_EXPIRATION_TIME.getValue());
 	}
 
 	/**
@@ -87,37 +81,18 @@ public class JwtTokenProvider {
 	 * @param token
 	 * @return
 	 */
-	public Boolean isTokenExpired(String token){
+	public Boolean isTokenExpired(String token) {
 		Date expiredDate = extractClaims(token).getExpiration();
-
-		// 토큰의 만료 날짜가 현재보다 이전인지 확인
 		return expiredDate.before(new Date());
 	}
 
-	// UserDetails 만들기
-	public Boolean validateToken(String token, UserDetails userDetails){
+	public Boolean validateToken(String token, UserDetails userDetails) {
 		Long id = getLoginId(token);
 		return id.toString().equals(userDetails.getUsername()) && !isTokenExpired(token);
 	}
 
-	public Long getLoginId(String token){
-		log.info("getLoginId 토큰 : {}", token);
-
-		token  = prefixToken(token);
-
+	public Long getLoginId(String token) {
 		return extractClaims(token).get("id", Long.class);
-	}
-
-	/**
-	 * UserService에서 token이 쓰이는 메서드에 확인하는 용
-	 * @param token
-	 * @return
-	 */
-	private String prefixToken(String token){
-		if(token.startsWith("Bearer "))
-			return token.substring(7);
-
-		return token;
 	}
 
 	/**
@@ -125,12 +100,9 @@ public class JwtTokenProvider {
 	 * @param token
 	 * @return
 	 */
-	public long getRemainMilliSeconds(String token){
-		token  = prefixToken(token);
-
+	public long getRemainMilliSeconds(String token) {
 		Date expiration = extractClaims(token).getExpiration();
 		Date now = new Date();
-
 		return expiration.getTime() - now.getTime();
 	}
 }
