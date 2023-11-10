@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:osori/models/kakao_store_model.dart';
-import 'package:osori/models/store/store_review_summary_model.dart';
-import 'package:osori/providers/store_review_summary_model_provider.dart';
+import 'package:osori/models/store/review_summary_model.dart';
+import 'package:osori/providers/review_summary_model_provider.dart';
 import 'package:osori/screens/receipt_scanning_screen.dart';
-import 'package:osori/services/kakao_local_api_service.dart';
+import 'package:osori/services/other/kakao_local_api_service.dart';
 
 class StoreScreen extends StatefulWidget {
   final Map<String, dynamic> tappedStore;
@@ -116,8 +116,8 @@ class _StoreScreenState extends State<StoreScreen> {
               builder: (context, ref, child) {
                 // 가게 리뷰 요약 조회 (우리 api)로 리뷰 받아오기
                 // store_id 필요
-                final AsyncValue<List<StoreReviewSummaryModel>> reviews =
-                    ref.watch(StoreReviewSummaryModelProvider(
+                final AsyncValue<List<ReviewSummaryModel>> reviews = ref.watch(
+                    reviewSummaryModelProvider(
                         widget.tappedStore['id'].toString()));
 
                 return Center(
@@ -144,15 +144,19 @@ class _StoreScreenState extends State<StoreScreen> {
                                 ],
                               ),
                               GestureDetector(
-                                onTapUp: (details) {
-                                  Navigator.push(
+                                onTapUp: (details) async {
+                                  final model = await storeModel;
+                                  if (mounted) {
+                                    Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
                                             ReceiptScanningScreen(
-                                                storeId:
-                                                    widget.tappedStore['id']),
-                                      ));
+                                          store: model!,
+                                        ),
+                                      ),
+                                    );
+                                  }
                                 },
                                 child: const Row(
                                   children: [

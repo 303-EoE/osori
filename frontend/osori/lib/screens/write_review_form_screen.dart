@@ -2,13 +2,22 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:osori/models/kakao_store_model.dart';
+import 'package:osori/services/osori/review_service.dart';
+import 'package:osori/services/osori/store_service.dart';
+import 'package:osori/widgets/common/snack_bar_manager.dart';
 
 class WriteReviewFormScreen extends StatefulWidget {
-  final int storeId;
+  final KakaoStoreModel model;
+  final String paidAt;
+  final int totalPrice;
   const WriteReviewFormScreen({
     super.key,
-    required this.storeId,
+    required this.paidAt,
+    required this.totalPrice,
+    required this.model,
   });
 
   @override
@@ -22,7 +31,7 @@ class _WriteReviewFormScreenState extends State<WriteReviewFormScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    List<String> billTypeOptions = ["횟수", "시간", "일일", "개월", "금액", "기타"];
+    List<String> billTypeOptions = ["횟수권", "시간권", "일일권", "개월권", "금액권", "기타"];
     List<double> rates = [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
     return Scaffold(
       appBar: AppBar(
@@ -41,7 +50,7 @@ class _WriteReviewFormScreenState extends State<WriteReviewFormScreen> {
                 children: [
                   FormBuilderTextField(
                     name: "date",
-                    initialValue: "2023.11.01",
+                    initialValue: widget.paidAt,
                     decoration: const InputDecoration(
                       labelText: "방문 날짜",
                       prefixIcon: Icon(Icons.date_range),
@@ -51,14 +60,18 @@ class _WriteReviewFormScreenState extends State<WriteReviewFormScreen> {
                         ),
                       ),
                     ),
+                    validator: FormBuilderValidators.compose([
+                      FormBuilderValidators.required(),
+                    ]),
                     enabled: false,
                   ),
                   const SizedBox(
                     height: 20,
                   ),
                   FormBuilderTextField(
+                    valueTransformer: (value) => int.tryParse(value!),
                     name: "price",
-                    initialValue: "000,000",
+                    initialValue: '${widget.totalPrice}',
                     decoration: const InputDecoration(
                       labelText: "총 금액",
                       suffixText: "원",
@@ -68,6 +81,9 @@ class _WriteReviewFormScreenState extends State<WriteReviewFormScreen> {
                         ),
                       ),
                     ),
+                    validator: FormBuilderValidators.compose([
+                      FormBuilderValidators.required(),
+                    ]),
                     enabled: false,
                   ),
                   const SizedBox(
@@ -79,6 +95,7 @@ class _WriteReviewFormScreenState extends State<WriteReviewFormScreen> {
                       SizedBox(
                         width: size.width / 3,
                         child: FormBuilderTextField(
+                          valueTransformer: (value) => int.tryParse(value!),
                           name: "headCount",
                           keyboardType: TextInputType.number,
                           decoration: const InputDecoration(
@@ -90,9 +107,9 @@ class _WriteReviewFormScreenState extends State<WriteReviewFormScreen> {
                               ),
                             ),
                           ),
-                          // validator: FormBuilderValidators.compose([
-                          //   FormBuilderValidators.required(),
-                          // ]),
+                          validator: FormBuilderValidators.compose([
+                            FormBuilderValidators.required(),
+                          ]),
                         ),
                       ),
                       SizedBox(
@@ -107,6 +124,9 @@ class _WriteReviewFormScreenState extends State<WriteReviewFormScreen> {
                               ),
                             ),
                           ),
+                          validator: FormBuilderValidators.compose([
+                            FormBuilderValidators.required(),
+                          ]),
                           items: rates
                               .map((rate) => DropdownMenuItem(
                                     value: rate,
@@ -143,6 +163,9 @@ class _WriteReviewFormScreenState extends State<WriteReviewFormScreen> {
                               ),
                             ),
                           ),
+                          validator: FormBuilderValidators.compose([
+                            FormBuilderValidators.required(),
+                          ]),
                           items: billTypeOptions
                               .map(
                                 (option) => DropdownMenuItem(
@@ -157,8 +180,10 @@ class _WriteReviewFormScreenState extends State<WriteReviewFormScreen> {
                       SizedBox(
                         width: size.width / 3,
                         child: FormBuilderTextField(
+                          valueTransformer: (value) => int.tryParse(value!),
                           name: "factor",
                           keyboardType: TextInputType.number,
+                          initialValue: '1',
                           decoration: InputDecoration(
                             labelText: '단위',
                             suffixText: typeUnit,
@@ -195,7 +220,8 @@ class _WriteReviewFormScreenState extends State<WriteReviewFormScreen> {
                     icon: const Icon(Icons.add_photo_alternate_outlined),
                     onPressed: () async {
                       final imagePicker = ImagePicker();
-                      final pickedImages = await imagePicker.pickMultiImage();
+                      final pickedImages =
+                          await imagePicker.pickMultiImage(imageQuality: 50);
                       // print(pickedImages);
                       for (var image in pickedImages) {
                         _selectedImages.add(File(image.path));
@@ -218,33 +244,53 @@ class _WriteReviewFormScreenState extends State<WriteReviewFormScreen> {
                         ),
                       ),
                     ),
+                    validator: FormBuilderValidators.compose([
+                      FormBuilderValidators.required(),
+                    ]),
                   ),
                   const SizedBox(
                     height: 20,
                   ),
                   ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         // Validate and save the form values
                         _formKey.currentState?.saveAndValidate();
                         debugPrint(_formKey.currentState?.value.toString());
                         _formKey.currentState?.validate();
                         debugPrint(
                             _formKey.currentState?.instantValue.toString());
-
+                        var formValues = _formKey.currentState;
+                        // 가게 등록 요청 보내기
+                        var storeId =
+                            await StoreService.getStoreId(widget.model);
+                        if (storeId == -1) {
+                          if (mounted) {
+                            SnackBarManager.alertSnackBar(
+                                context, '가게 id를 불러오는데 실패하였습니다.');
+                            return;
+                          }
+                        }
                         // 리뷰 등록 요청 보내기
-
-                        final snackBar = SnackBar(
-                          content: const Text('등록이 완료되었습니다.'),
-                          action: SnackBarAction(
-                            label: '확인',
-                            onPressed: () {
-                              // Some code to undo the change.
-                            },
-                          ),
-                        );
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        // 어디로 보낼까? 고민해보자
-                        Navigator.pop(context);
+                        int result = await ReviewService.createReview(
+                            storeId,
+                            formValues?.value['date'],
+                            formValues?.value['price'],
+                            formValues?.value['headCount'],
+                            formValues?.value['rate'],
+                            formValues?.value['billType'],
+                            formValues?.value['factor'],
+                            formValues?.value['content'],
+                            _selectedImages);
+                        if (mounted) {
+                          if (result == 200) {
+                            SnackBarManager.completeSnackBar(context, '리뷰 등록');
+                            // 어디로 보낼까? 고민해보자
+                            Navigator.pop(context);
+                          } else {
+                            SnackBarManager.alertSnackBar(
+                                context, '리뷰 등록이 실패!');
+                          }
+                        }
                       },
                       child: const Text("리뷰 등록하기")),
                 ],
