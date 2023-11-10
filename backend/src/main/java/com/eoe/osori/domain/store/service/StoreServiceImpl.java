@@ -1,5 +1,7 @@
 package com.eoe.osori.domain.store.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,8 +41,10 @@ public class StoreServiceImpl implements StoreService {
 			throw new StoreException(StoreErrorInfo.INVALID_STORE_REQUEST_DATA_ERROR);
 		}
 
-		if (storeRepository.existsByKakaoId(postStoreRequestDto.getKakaoId())) {
-			throw new StoreException(StoreErrorInfo.ALREADY_REGISTERED_KAKAO_ID);
+		Optional<Store> optionalStore = storeRepository.findByKakaoId(postStoreRequestDto.getKakaoId());
+
+		if (optionalStore.isPresent()) {
+			return CommonIdResponseDto.from(optionalStore.get().getId());
 		}
 
 		Store store = Store.of(postStoreRequestDto,
