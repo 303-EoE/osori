@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:osori/widgets/feed/feed_widget.dart';
+import 'package:osori/widgets/review/review_widget.dart';
 
-class FeedOnlyImage extends StatelessWidget {
-  const FeedOnlyImage({super.key});
+class ReviewOnlyImage extends StatelessWidget {
+  const ReviewOnlyImage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class FeedOnlyImage extends StatelessWidget {
                               borderRadius: BorderRadius.circular(20),
                             ),
                             clipBehavior: Clip.hardEdge,
-                            child: Feed(idx: i)),
+                            child: Review(review: i)),
                       ),
                     );
                   });

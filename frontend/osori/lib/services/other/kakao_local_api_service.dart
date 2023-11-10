@@ -5,7 +5,7 @@ import 'package:osori/models/kakao_store_model.dart';
 import 'package:http/http.dart' as http;
 
 class KakaoLocalApiService {
-  static const String baseUrl = 'https://dapi.kakao.com/v2/local/search';
+  static const String baseUrl = 'https://dapi.kakao.com/v2/local';
   static final String apiKey = dotenv.get('KAKAO_REST_API_KEY');
   static final Map<String, String> headers = {
     'content-type': "application/json;charset=UTF-8",
@@ -15,8 +15,8 @@ class KakaoLocalApiService {
   static Future<List<KakaoStoreModel>> getStoresByKeyword(
       String keyword, String x, String y) async {
     List<KakaoStoreModel> storeInstances = [];
-    final url =
-        Uri.parse('$baseUrl/keyword.json?query=$keyword&x=$x&y=$y&radius=2000');
+    final url = Uri.parse(
+        '$baseUrl/search/keyword.json?query=$keyword&x=$x&y=$y&radius=2000');
     final response = await http.get(url, headers: headers);
     if (response.statusCode == 200) {
       final stores = jsonDecode(response.body)['documents'];
@@ -32,7 +32,7 @@ class KakaoLocalApiService {
       String keyword, String x, String y, String id) async {
     KakaoStoreModel? storeInstance;
     final url = Uri.parse(
-        '$baseUrl/keyword.json?query=$keyword&x=$x&y=$y&radius=10000');
+        '$baseUrl/search/keyword.json?query=$keyword&x=$x&y=$y&radius=10000');
     final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
@@ -46,6 +46,21 @@ class KakaoLocalApiService {
       return storeInstance;
     }
 
+    throw Error();
+  }
+
+  static Future<Map<String, String>?> getDepthByPosition(
+      String x, String y) async {
+    final url = Uri.parse('$baseUrl/geo/coord2address.json?x=$x&y=$y');
+    final response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      final addresses = jsonDecode(response.body)['documents'][0]['address'];
+      return {
+        'depth1': addresses['region_1depth_name'],
+        'depth2': addresses['region_2depth_name'],
+      };
+    }
     throw Error();
   }
 }

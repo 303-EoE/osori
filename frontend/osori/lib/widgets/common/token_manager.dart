@@ -13,16 +13,15 @@ class TokenManager {
       key: accessToken,
       aOptions: getAndroidOptions(),
     );
-    print(value);
     return value ?? "";
   }
 
-  static Future<void> readRefreshToken() async {
+  static Future<String> readRefreshToken() async {
     final value = await storage.read(
       key: refreshToken,
       aOptions: getAndroidOptions(),
     );
-    print(value);
+    return value ?? "";
   }
 
   static Future<void> deleteAll() async {

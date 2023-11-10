@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class Feed extends StatelessWidget {
-  final int idx;
-  const Feed({
+class Review extends StatelessWidget {
+  final dynamic review;
+  const Review({
     super.key,
-    required this.idx,
+    this.review,
   });
 
   @override
@@ -35,8 +35,8 @@ class Feed extends StatelessWidget {
                 ),
                 SizedBox(
                   width: size.width / 2,
-                  child: const Text(
-                    'nicknamename',
+                  child: Text(
+                    review.memberNickname,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -47,49 +47,48 @@ class Feed extends StatelessWidget {
         ),
         AspectRatio(
           aspectRatio: 1,
-          child: Image.asset(
-            idx % 2 == 1
-                ? 'assets/images/test.jpg'
-                : 'assets/images/testWidth.jpg',
+          child: Image.network(
+            'https://osori-bucket.s3.ap-northeast-2.amazonaws.com/${review.images[0]}',
             width: size.width,
             fit: BoxFit.cover,
           ),
         ),
-        const Padding(
-          padding: EdgeInsets.all(10),
+        Padding(
+          padding: const EdgeInsets.all(10),
           child: Column(children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Flexible(
                   child: Text(
-                    "어떤 가게",
+                    review.storeName,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                        fontSize: 24, fontWeight: FontWeight.w600),
                   ),
                 ),
-                Icon(
+                const Icon(
                   Icons.favorite_outline,
                   size: 32,
                 )
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Row(
               children: [
                 Text(
-                  "000,000원",
-                  style: TextStyle(
+                  '${review.averageCost}',
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 20,
                 ),
-                Row(
+                const Row(
                   children: [
                     Icon(
                       Icons.star_rounded,
@@ -113,25 +112,25 @@ class Feed extends StatelessWidget {
                     ),
                   ],
                 ),
-                Text("3.5"),
+                Text('${review.rate}'),
               ],
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Text(
-              "짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 짱긴 텍스트지롱 헤헤 ",
+              review.content,
               maxLines: 5,
               overflow: TextOverflow.ellipsis,
             ),
-            SizedBox(
+            const SizedBox(
               height: 10,
             ),
             Row(
               children: [
                 Text(
-                  '장소 | 20xx년 yy월 dd일',
-                  style: TextStyle(color: Colors.grey),
+                  '${review.storeDepth1} ${review.storeDepth2}',
+                  style: const TextStyle(color: Colors.grey),
                 ),
               ],
             ),
