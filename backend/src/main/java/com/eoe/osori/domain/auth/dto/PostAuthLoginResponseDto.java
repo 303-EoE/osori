@@ -9,14 +9,14 @@ import lombok.RequiredArgsConstructor;
 @Builder
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class PostAuthResponseDto {
+public class PostAuthLoginResponseDto {
 
 	private String nickname;
 	private String accessToken;
 	private String refreshToken;
 
-	public static PostAuthResponseDto of(String nickname, String accessToken, String refreshToken) {
-		return PostAuthResponseDto.builder()
+	public static PostAuthLoginResponseDto of(String nickname, String accessToken, String refreshToken) {
+		return PostAuthLoginResponseDto.builder()
 			.nickname(nickname)
 			.accessToken(accessToken)
 			.refreshToken(refreshToken)

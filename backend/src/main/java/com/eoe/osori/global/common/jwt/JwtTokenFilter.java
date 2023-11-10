@@ -2,6 +2,7 @@ package com.eoe.osori.global.common.jwt;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,6 +17,8 @@ import com.eoe.osori.global.advice.error.exception.MemberException;
 import com.eoe.osori.global.advice.error.info.MemberErrorInfo;
 import com.eoe.osori.global.common.security.UserDetailsServiceImpl;
 
+import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.Jwts;
 import io.netty.util.internal.StringUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -34,6 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtTokenFilter extends OncePerRequestFilter {
 
+	@Value("${jwt.secret_key}")
+	private String SECRET_KEY;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final UserDetailsServiceImpl userDetailsService;
 
@@ -49,7 +54,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 
-		// String accessToken = getAccessToken(request);
+		// 로그아웃 체크 기능 구현3
+		// 로그아웃 상태면 엑세스 토큰 만료 전이라도 유효하지 않음
 
 		String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
@@ -67,7 +73,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
 		// 전송받은 값에서 'Bearer ' 뒷부분(JWT Token) 추출
 		String token = authorizationHeader.split(" ")[1];
-		log.info("[토큰 가져오기] accessToken : {}", token);
 
 		// 전송받은 JWT Token이 만료되었으면 다음 필터 진행 (인증X)
 		if(jwtTokenProvider.isTokenExpired(token)){
@@ -77,7 +82,6 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
 		// Jwt Token에서 id 추출
 		Long id = jwtTokenProvider.getLoginId(token);
-		log.info("[토큰 필터] id : {}", id);
 
 		// 추출한 id로 member 찾아오기
 		UserDetails userDetails = userDetailsService.loadUserByUsername(id.toString());
@@ -91,10 +95,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 		// securityContextHolder에 인증된 회원 정보 저장
 		processSecurity(request, userDetails);
 
-		log.info("[토큰 유효성 검사 완료] user: {}", userDetails.getUsername());
-
 		// 다음 순서 필터로 넘어가기
-		log.info("[다음 순서 필터로 넘어가기]");
 		filterChain.doFilter(request, response);
 
 	}
