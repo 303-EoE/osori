@@ -22,6 +22,8 @@ import com.eoe.osori.domain.review.repository.ReviewImageRepository;
 import com.eoe.osori.domain.review.repository.ReviewRepository;
 import com.eoe.osori.global.advice.error.exception.ReviewException;
 import com.eoe.osori.global.advice.error.info.ReviewErrorInfo;
+import com.eoe.osori.global.common.api.images.ImageApi;
+import com.eoe.osori.global.common.api.images.dto.PostImageResponseDto;
 import com.eoe.osori.global.common.api.store.StoreApi;
 import com.eoe.osori.global.common.api.member.dto.GetMemberResponseDto;
 import com.eoe.osori.global.common.api.store.dto.GetStoreDetailResponseDto;
@@ -42,6 +44,7 @@ public class ReviewServiceImpl implements ReviewService {
 	private final LikeReviewRepository likeReviewRepository;
 	private final ReviewFeedRepository reviewFeedRepository;
 	private final StoreApi storeApi;
+	private final ImageApi imageApi;
 
 	/**
 	 *
@@ -84,17 +87,32 @@ public class ReviewServiceImpl implements ReviewService {
 		// 그걸 다시 api 통신으로 List<String> reviewImageURLList로 받고 (이미지 url 리스트들만 들어옴)
 		// 이걸 reviewImage 엔티티랑 연결해서 저장
 
-		// 통신 구현해서 받자
-		List<String> reviewImageUrlList = new ArrayList<>();
+		EnvelopeResponse<PostImageResponseDto> postImageResponseDtoEnvelopeResponse;
 
-		/**
-		 * 지워줄 거!!!
-		 */
-		reviewImageUrlList.add("https://avatars.githubusercontent.com/u/118112177?v=4");
-		reviewImageUrlList.add("https://avatars.githubusercontent.com/u/122416904?v=4");
-		/**
-		 * 지워줄 거!!!
-		 */
+		try {
+			postImageResponseDtoEnvelopeResponse = imageApi.getReviewImages(reviewImages);
+		} catch (FeignException e) {
+			System.out.println(e.getMessage());
+			throw new ReviewException(ReviewErrorInfo.FAIL_TO_IMAGE_FEIGN_CLIENT_REQUEST);
+		}
+
+		PostImageResponseDto postImageResponseDto = postImageResponseDtoEnvelopeResponse.getData();
+
+		List<String> reviewImageUrlList = postImageResponseDto.getPath().stream()
+			.map(imagePathElement -> imagePathElement.getUploadFilePath())
+			.collect(Collectors.toList());
+
+		// for (String url : reviewImageUrlList) {
+		// 	System.out.println(url);
+		// }
+		// /**
+		//  * 지워줄 거!!!
+		//  */
+		// reviewImageUrlList.add("https://avatars.githubusercontent.com/u/118112177?v=4");
+		// reviewImageUrlList.add("https://avatars.githubusercontent.com/u/122416904?v=4");
+		// /**
+		//  * 지워줄 거!!!
+		//  */
 
 		for (int i = 0; i < reviewImageUrlList.size(); i++) {
 			String imageUrl = reviewImageUrlList.get(i);
@@ -111,7 +129,7 @@ public class ReviewServiceImpl implements ReviewService {
 		try {
 			getStoreDetailResponseDtoEnvelopeResponse = storeApi.getStoreDetail(review.getStoreId());
 		} catch (FeignException e) {
-			throw new ReviewException(ReviewErrorInfo.FAIL_TO_FEIGN_CLIENT_REQUEST);
+			throw new ReviewException(ReviewErrorInfo.FAIL_TO_STORE_FEIGN_CLIENT_REQUEST);
 		}
 
 		GetStoreDetailResponseDto getStoreResponseDto = getStoreDetailResponseDtoEnvelopeResponse.getData();
@@ -181,7 +199,7 @@ public class ReviewServiceImpl implements ReviewService {
 		try {
 			getStoreDetailResponseDtoEnvelopeResponse =	storeApi.getStoreDetail(review.getStoreId());
 		} catch (FeignException e) {
-			throw new ReviewException(ReviewErrorInfo.FAIL_TO_FEIGN_CLIENT_REQUEST);
+			throw new ReviewException(ReviewErrorInfo.FAIL_TO_STORE_FEIGN_CLIENT_REQUEST);
 		}
 
 		GetStoreDetailResponseDto getStoreResponseDto = getStoreDetailResponseDtoEnvelopeResponse.getData();
@@ -235,7 +253,7 @@ public class ReviewServiceImpl implements ReviewService {
 	public CommonReviewListResponseDto getReviewListByRegion(String storeDepth1, String storeDepth2, Long memberId) {
 
 		List<ReviewFeed> reviewFeedList = reviewFeedRepository
-			.findAllByStoreDepth1AndStoreDepth2(storeDepth1, storeDepth2);
+			.findAllByStoreDepth1AndStoreDepth2OrderByCreatedAtDesc(storeDepth1, storeDepth2);
 
 		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(memberId).stream()
 			.map(likeReview -> likeReview.getReviewId())
@@ -255,7 +273,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public GetStoreReviewListResponseDto getReviewListByStore(Long storeId) {
 
-		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByStoreId(storeId);
+		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByStoreIdOrderByCreatedAtDesc(storeId);
 
 		return GetStoreReviewListResponseDto.from(reviewFeedList);
 	}
@@ -272,7 +290,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public CommonReviewListResponseDto getMyReviewList(Long memberId) {
 
-		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberId(memberId);
+		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberIdOrderByCreatedAtDesc(memberId);
 
 		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(memberId).stream()
 			.map(likeReview -> likeReview.getReviewId())
@@ -294,7 +312,7 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public CommonReviewListResponseDto getOtherReviewList(Long memberId, Long loginMemberId) {
 
-		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberId(memberId);
+		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberIdOrderByCreatedAtDesc(memberId);
 
 		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(loginMemberId).stream()
 			.map(likeReview -> likeReview.getReviewId())
@@ -316,14 +334,14 @@ public class ReviewServiceImpl implements ReviewService {
 	@Override
 	public CommonReviewListResponseDto getLikeReviewList(Long memberId) {
 
-		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(memberId).stream()
+		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberIdOrderByIdDesc(memberId).stream()
 			.map(likeReview -> likeReview.getReviewId())
 			.collect(Collectors.toList());
 
 		List<ReviewFeed> reviewFeedList = new ArrayList<>();
 
-		for (int i = 0; i < likeReviewIdList.size(); i++) {
-			ReviewFeed reviewFeed = reviewFeedRepository.findById(Long.toString(likeReviewIdList.get(i)))
+		for (Long likeReviewId : likeReviewIdList) {
+			ReviewFeed reviewFeed = reviewFeedRepository.findById(Long.toString(likeReviewId))
 				.orElseThrow(() -> new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEWFEED_BY_ID));
 
 			reviewFeedList.add(reviewFeed);
