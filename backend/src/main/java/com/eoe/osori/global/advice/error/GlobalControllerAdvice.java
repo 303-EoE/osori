@@ -1,6 +1,7 @@
 package com.eoe.osori.global.advice.error;
 
 import com.eoe.osori.domain.mattermost.component.NotificationManager;
+import com.eoe.osori.global.advice.error.exception.ChatException;
 import com.eoe.osori.global.advice.error.exception.MetaException;
 import com.eoe.osori.global.common.response.EnvelopeResponse;
 
@@ -28,6 +29,18 @@ public class GlobalControllerAdvice {
                 .code(exception.getInfo().getCode())
                 .message(exception.getInfo().getMessage())
                 .build());
+    }
+
+    @ExceptionHandler(ChatException.class)
+    public ResponseEntity<EnvelopeResponse<ChatException>> metaExceptionHandler(ChatException exception, HttpServletRequest req) {
+        exception.printStackTrace();
+        notificationManager.sendNotification(exception, req.getRequestURI(), getParams(req));
+
+        return ResponseEntity.status(exception.getInfo().getStatus())
+                .body(EnvelopeResponse.<ChatException>builder()
+                        .code(exception.getInfo().getCode())
+                        .message(exception.getInfo().getMessage())
+                        .build());
     }
 
     private String getParams(HttpServletRequest req) {
