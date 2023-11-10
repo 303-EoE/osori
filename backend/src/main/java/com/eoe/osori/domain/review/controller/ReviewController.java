@@ -204,6 +204,14 @@ public class ReviewController {
 				.build());
 	}
 
+	/**
+	 *
+	 * 영수증 사진 스캔
+	 *
+	 * @param multipartFile MultipartFile
+	 * @return ResponseEntity<EnvelopeResponse<PostReceiptResponseDto>>
+	 * @see ReceiptService
+	 */
 	@PostMapping("/receipt")
 	public ResponseEntity<EnvelopeResponse<PostReceiptResponseDto>> getReviewDetail(@RequestPart(required = true) MultipartFile multipartFile) {
 		return ResponseEntity.status(HttpStatus.OK)
