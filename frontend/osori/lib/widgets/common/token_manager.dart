@@ -46,4 +46,34 @@ class TokenManager {
       aOptions: getAndroidOptions(),
     );
   }
+
+  static Future<String> readUserId() async {
+    final value = await storage.read(key: 'id', aOptions: getAndroidOptions());
+    return value ?? "";
+  }
+
+  static Future<String> readUserNickname() async {
+    final value =
+        await storage.read(key: 'nickname', aOptions: getAndroidOptions());
+    return value ?? "";
+  }
+
+  static Future<String> readUserProfile() async {
+    final value = await storage.read(
+        key: 'profileImageUrl', aOptions: getAndroidOptions());
+    return value ?? "";
+  }
+
+  static Future<void> renewUserInfo(Map<String, dynamic> info) async {
+    await storage.write(
+        key: 'id', value: info['id'], aOptions: getAndroidOptions());
+    await storage.write(
+        key: 'nickname',
+        value: info['nickname'],
+        aOptions: getAndroidOptions());
+    await storage.write(
+        key: 'profileImageUrl',
+        value: info['profileImageUrl'],
+        aOptions: getAndroidOptions());
+  }
 }

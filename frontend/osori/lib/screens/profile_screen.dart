@@ -3,8 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:osori/models/review/review_whole_model.dart';
+import 'package:osori/providers/review_whole_model_provider.dart';
 import 'package:osori/services/osori/member_service.dart';
 import 'package:osori/widgets/common/bottom_navigation_widget.dart';
+import 'package:osori/widgets/common/snack_bar_manager.dart';
 import 'package:osori/widgets/review/review_only_image_widget.dart';
 
 /// 여기서 initState로
@@ -21,6 +24,7 @@ class ProfileScreen extends ConsumerStatefulWidget {
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   late Map<String, dynamic>? info;
   bool isLogined = false;
+
   Future<void> validateToken() async {
     // 내 회원정보 조회 API를 날려서 에러가 뜨면 login 스크린으로 가기
     info = await MemberService.getMyProfile();
@@ -165,14 +169,24 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                         height: 20,
                                       ),
                                       OutlinedButton(
-                                        onPressed: () {
+                                        onPressed: () async {
                                           // 프로필 수정 api 쏴주기
                                           final response =
-                                              MemberService.updateProfile(
+                                              await MemberService.updateProfile(
                                                   tec.text,
-                                                  selectedImage,
+                                                  selectedImage!.isNotEmpty
+                                                      ? File(selectedImage!)
+                                                      : null,
                                                   true);
-                                          print(response);
+                                          if (mounted) {
+                                            if (response == 200) {
+                                              SnackBarManager.completeSnackBar(
+                                                  context, '프로필 수정');
+                                            } else {
+                                              SnackBarManager.alertSnackBar(
+                                                  context, '수정이 실패!!');
+                                            }
+                                          }
                                         },
                                         child: const Text("수정하기"),
                                       )
@@ -206,11 +220,37 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   ],
                 ),
               ),
-              body: const TabBarView(
+              body: TabBarView(
                 children: [
-                  ReviewOnlyImage(),
-                  Center(child: Text('내가 좋아요한 리뷰만 보여줄 예정')),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final AsyncValue<List<ReviewWholeModel>> reviews =
+                          ref.watch(reviewWholeMyModelProvider);
+                      return switch (reviews) {
+                        AsyncData(:final value) =>
+                          ReviewOnlyImage(reviews: value),
+                        AsyncError() => const Text('리뷰를 찾지 못했습니다.'),
+                        _ => const CircularProgressIndicator(),
+                      };
+                    },
+                  ),
+                  Consumer(
+                    builder: (context, ref, child) {
+                      final AsyncValue<List<ReviewWholeModel>> reviews =
+                          ref.watch(reviewWholeLikedModelProvider);
+                      return switch (reviews) {
+                        AsyncData(:final value) =>
+                          ReviewOnlyImage(reviews: value),
+                        AsyncError() => const Text('리뷰를 찾지 못했습니다.'),
+                        _ => const CircularProgressIndicator(),
+                      };
+                    },
+                  ),
                 ],
+                // children: [
+                //   ReviewOnlyImage(),
+                //   Center(child: Text('내가 좋아요한 리뷰만 보여줄 예정')),
+                // ],
               ),
               bottomNavigationBar: const BottomNavigation(),
             ),
