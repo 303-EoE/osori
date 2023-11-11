@@ -7,7 +7,7 @@ part of 'review_whole_model_provider.dart';
 // **************************************************************************
 
 String _$reviewWholeLocalModelHash() =>
-    r'7e6036072455862798f3dd8659556731037c2f2c';
+    r'4b587e2db80f3b9e3cd3448994b1da7b879c797a';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -177,5 +177,42 @@ class _ReviewWholeLocalModelProviderElement
   @override
   String get depth2 => (origin as ReviewWholeLocalModelProvider).depth2;
 }
+
+String _$reviewWholeMyModelHash() =>
+    r'e8a289585725bcdc70ce45d46ab4522bf1d3f30d';
+
+/// See also [reviewWholeMyModel].
+@ProviderFor(reviewWholeMyModel)
+final reviewWholeMyModelProvider =
+    AutoDisposeFutureProvider<List<ReviewWholeModel>>.internal(
+  reviewWholeMyModel,
+  name: r'reviewWholeMyModelProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$reviewWholeMyModelHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef ReviewWholeMyModelRef
+    = AutoDisposeFutureProviderRef<List<ReviewWholeModel>>;
+String _$reviewWholeLikedModelHash() =>
+    r'8125eb73fb00bc2ed1c19526e961c69ee1ac7a59';
+
+/// See also [reviewWholeLikedModel].
+@ProviderFor(reviewWholeLikedModel)
+final reviewWholeLikedModelProvider =
+    AutoDisposeFutureProvider<List<ReviewWholeModel>>.internal(
+  reviewWholeLikedModel,
+  name: r'reviewWholeLikedModelProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$reviewWholeLikedModelHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef ReviewWholeLikedModelRef
+    = AutoDisposeFutureProviderRef<List<ReviewWholeModel>>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member
