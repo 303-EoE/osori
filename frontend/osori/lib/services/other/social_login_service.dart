@@ -4,6 +4,10 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:http/http.dart' as http;
 
+// 로그아웃
+// await GoogleSignIn().signOut();
+// await UserApi.instance.logout();
+
 class SocialLoginService {
   // 1. 로그인을 한다
   // 2. 서비스별 고유 id를 받아온다
