@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:osori/models/review/review_whole_model.dart';
+import 'package:osori/widgets/common/token_manager.dart';
 import 'package:osori/widgets/review/review_widget.dart';
 
 class ReviewOnlyImage extends StatelessWidget {
-  const ReviewOnlyImage({super.key});
+  final List<ReviewWholeModel> reviews;
+
+  const ReviewOnlyImage({super.key, required this.reviews});
 
   @override
   Widget build(BuildContext context) {
@@ -10,29 +14,33 @@ class ReviewOnlyImage extends StatelessWidget {
     return GridView.count(
       crossAxisCount: 3,
       children: [
-        for (var i in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        for (var review in reviews)
           GestureDetector(
-            onTapUp: (details) {
-              showDialog(
-                  context: context,
-                  builder: (context) {
-                    return Dialog(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            clipBehavior: Clip.hardEdge,
-                            child: Review(review: i)),
-                      ),
-                    );
-                  });
+            onTapUp: (details) async {
+              String userId = await TokenManager.readUserId();
+              if (context.mounted) {
+                showDialog(
+                    context: context,
+                    builder: (context) {
+                      return Dialog(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              clipBehavior: Clip.hardEdge,
+                              child: Review(
+                                review: review.id,
+                                userId: userId,
+                              )),
+                        ),
+                      );
+                    });
+              }
             },
-            child: Image.asset(
-              i % 2 == 1
-                  ? 'assets/images/test.jpg'
-                  : 'assets/images/testWidth.jpg',
+            child: Image.network(
+              'https://osori-bucket.s3.ap-northeast-2.amazonaws.com/${review.images[0]}',
               width: size.width / 3,
               height: size.width / 3,
               fit: BoxFit.cover,

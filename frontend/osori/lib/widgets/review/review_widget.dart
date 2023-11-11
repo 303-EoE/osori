@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:osori/services/osori/review_service.dart';
+import 'package:osori/widgets/common/snack_bar_manager.dart';
 
 class Review extends StatelessWidget {
   final dynamic review;
+  final String userId;
   const Review({
     super.key,
     this.review,
+    required this.userId,
   });
 
   @override
@@ -42,7 +46,74 @@ class Review extends StatelessWidget {
                 ),
               ],
             ),
-            const Icon(Icons.more_vert_outlined),
+            // if (review.id == userId)
+            if (review.isMine)
+              PopupMenuButton(
+                onSelected: (value) {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return Dialog(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text(
+                                '리뷰를 삭제하시겠습니까?',
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  OutlinedButton(
+                                    onPressed: () async {
+                                      final response =
+                                          await ReviewService.deleteReview(
+                                              review.id);
+                                      if (context.mounted) {
+                                        if (response == 200) {
+                                          SnackBarManager.completeSnackBar(
+                                              context, '리뷰 삭제');
+                                        } else {
+                                          SnackBarManager.alertSnackBar(
+                                              context, '리뷰 삭제 실패!!');
+                                        }
+                                      }
+                                    },
+                                    child: const Text('삭제하기'),
+                                  ),
+                                  OutlinedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('취소하기'),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                itemBuilder: (context) {
+                  return [
+                    const PopupMenuItem(
+                      value: 'remove',
+                      child: Text('삭제하기'),
+                    )
+                  ];
+                },
+              )
           ]),
         ),
         AspectRatio(
@@ -67,9 +138,15 @@ class Review extends StatelessWidget {
                         fontSize: 24, fontWeight: FontWeight.w600),
                   ),
                 ),
-                const Icon(
-                  Icons.favorite_outline,
-                  size: 32,
+                IconButton(
+                  onPressed: () async {
+                    final result = await ReviewService.likeReview(review.id);
+                    print(result);
+                  },
+                  icon: Icon(
+                    review.liked ? Icons.favorite : Icons.favorite_outline,
+                    size: 32,
+                  ),
                 )
               ],
             ),
