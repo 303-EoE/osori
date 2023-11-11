@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:osori/models/kakao_store_model.dart';
-import 'package:osori/models/store/review_summary_model.dart';
+import 'package:osori/models/review/review_summary_model.dart';
 import 'package:osori/providers/review_summary_model_provider.dart';
 import 'package:osori/screens/receipt_scanning_screen.dart';
 import 'package:osori/services/other/kakao_local_api_service.dart';
+import 'package:osori/widgets/common/token_manager.dart';
+import 'package:osori/widgets/review/review_widget.dart';
 
 class StoreScreen extends StatefulWidget {
   final Map<String, dynamic> tappedStore;
@@ -22,6 +24,7 @@ class _StoreScreenState extends State<StoreScreen> {
   // name, latitude, longitude, id 필요
   // address_name, phone을 받아오기
   late Future<KakaoStoreModel?> storeModel;
+  late String userId;
 
   @override
   void initState() {
@@ -197,7 +200,34 @@ class _StoreScreenState extends State<StoreScreen> {
                               ],
                             )
                           else
-                            for (var review in value) Text(review.content)
+                            for (var review in value)
+                              GestureDetector(
+                                  onTapUp: (details) async {
+                                    userId = await TokenManager.readUserId();
+                                    if (mounted) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return Dialog(
+                                              child: SingleChildScrollView(
+                                                scrollDirection: Axis.vertical,
+                                                child: Container(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              20),
+                                                    ),
+                                                    clipBehavior: Clip.hardEdge,
+                                                    child: Review(
+                                                      review: review,
+                                                      userId: userId,
+                                                    )),
+                                              ),
+                                            );
+                                          });
+                                    }
+                                  },
+                                  child: Text(review.content))
                         ],
                       ),
                     AsyncError() => const Text('Error happened'),

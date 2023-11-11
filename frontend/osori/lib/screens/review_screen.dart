@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:osori/models/store/review_whole_model.dart';
+import 'package:osori/models/review/review_whole_model.dart';
 import 'package:osori/providers/review_whole_model_provider.dart';
 import 'package:osori/services/other/device_position_service.dart';
 import 'package:osori/services/other/kakao_local_api_service.dart';
 import 'package:osori/widgets/common/bottom_navigation_widget.dart';
+import 'package:osori/widgets/common/token_manager.dart';
 import 'package:osori/widgets/common/top_header_widget.dart';
 import 'package:osori/widgets/review/review_widget.dart';
 
@@ -24,11 +25,14 @@ class _FeedScreenState extends ConsumerState<ReviewScreen> {
   double bottomBarHeight = 75;
   late Map<String, String>? depths;
   bool isReady = false;
+  late String userId;
+
   void getReviews() async {
     Position nowPos = await DevicePostionService.getNowPosition();
     depths = await KakaoLocalApiService.getDepthByPosition(
         '${nowPos.longitude}', '${nowPos.latitude}');
     isReady = true;
+    userId = await TokenManager.readUserId();
     setState(() {});
   }
 
@@ -84,8 +88,13 @@ class _FeedScreenState extends ConsumerState<ReviewScreen> {
                         ref.watch(reviewWholeLocalModelProvider(
                             depths!['depth1']!, depths!['depth2']!));
                     return switch (reviews) {
-                      AsyncData(:final value) => Column(
-                          children: [for (var v in value) Review(review: v)]),
+                      AsyncData(:final value) => Column(children: [
+                          for (var v in value)
+                            Review(
+                              review: v,
+                              userId: userId,
+                            )
+                        ]),
                       AsyncError() => const Text("리뷰를 찾지 못했습니다."),
                       _ => const CircularProgressIndicator(),
                     };

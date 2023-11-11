@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:osori/models/store/review_summary_model.dart';
+import 'package:osori/models/review/review_summary_model.dart';
 import 'package:osori/widgets/common/token_manager.dart';
 import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
