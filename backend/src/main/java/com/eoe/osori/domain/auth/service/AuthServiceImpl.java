@@ -15,8 +15,8 @@ import com.eoe.osori.domain.auth.dto.PostAuthLoginRequestDto;
 import com.eoe.osori.domain.auth.dto.PostAuthLoginResponseDto;
 import com.eoe.osori.domain.auth.dto.PostAuthProfileRequestDto;
 import com.eoe.osori.domain.auth.repository.MemberRepository;
-import com.eoe.osori.global.advice.error.exception.MemberException;
-import com.eoe.osori.global.advice.error.info.MemberErrorInfo;
+import com.eoe.osori.global.advice.error.exception.AuthException;
+import com.eoe.osori.global.advice.error.info.AuthErrorInfo;
 import com.eoe.osori.global.common.api.images.ImageApi;
 import com.eoe.osori.global.common.api.images.dto.PostImageResponseDto;
 import com.eoe.osori.global.common.jwt.JwtHeaderUtilEnum;
@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
 
 		// 입력값 확인
 		if(provider == null || providerId == null){
-			throw new MemberException(MemberErrorInfo.INVALID_AUTH_REQUEST_DATA_ERROR);
+			throw new AuthException(AuthErrorInfo.INVALID_AUTH_REQUEST_DATA_ERROR);
 		}
 
 		// providerId로 member 존재유무 확인
@@ -91,27 +91,26 @@ public class AuthServiceImpl implements AuthService {
 
 	/**
 	 * 토큰에서 로그인 유저 정보 조회
-	 * @param postAuthInfoRequestDto
+	 * @param accessToken String
 	 * @return PostAuthInfoResponseDto
 	 */
 	@Override
 	@Transactional
-	public PostAuthInfoResponseDto getLoginUserInfo(PostAuthInfoRequestDto postAuthInfoRequestDto) {
-		// String accessToken = parsingAccessToken(postAuthInfoRequestDto.getAccessToken());
-		String accessToken = postAuthInfoRequestDto.getAccessToken();
-
+	public PostAuthInfoResponseDto getLoginUserInfo(String accessToken) {
+		int startIndex = accessToken.indexOf("Bearer") + "Bearer".length() + 1;
+		int endIndex = accessToken.lastIndexOf("\"");
+		String token = accessToken.substring(startIndex, endIndex);
+		if(token == null){
+			throw new AuthException(AuthErrorInfo.INVALID_AUTH_REQUEST_DATA_ERROR);
+		}
 		// 토큰에서 id 가져오기
-		Long id = jwtTokenProvider.getLoginId(accessToken);
+		Long id = jwtTokenProvider.getLoginId(token);
 
 		// id로 멤버 찾기
 		Member member = memberRepository.findById(id)
-			.orElseThrow(() -> new MemberException(MemberErrorInfo.MEMBER_NOT_FOUND));
+			.orElseThrow(() -> new AuthException(AuthErrorInfo.MEMBER_NOT_FOUND));
 
-		return PostAuthInfoResponseDto.builder()
-			.id(id)
-			.nickname(member.getNickname())
-			.profileImageUrl(member.getProfileImageUrl())
-			.build();
+		return PostAuthInfoResponseDto.of(id, member.getNickname(), member.getProfileImageUrl());
 	}
 
 	/**
@@ -133,17 +132,17 @@ public class AuthServiceImpl implements AuthService {
 		Long id = jwtTokenProvider.getLoginId(accessToken);
 		log.info("회원 정보 입력: {}", id);
 		Member member = memberRepository.findById(id)
-			.orElseThrow(() -> new MemberException(MemberErrorInfo.MEMBER_NOT_FOUND));
+			.orElseThrow(() -> new AuthException(AuthErrorInfo.MEMBER_NOT_FOUND));
 
 		// 닉네임 유효성 검사
 		String nickname = postAuthProfileRequestDto.getNickname();
 		if(StringUtils.isBlank(nickname)){
-			throw new MemberException(MemberErrorInfo.INVALID_AUTH_REQUEST_DATA_ERROR);
+			throw new AuthException(AuthErrorInfo.INVALID_AUTH_REQUEST_DATA_ERROR);
 		}
 		// 닉네임 중복 검사
 		Optional<Member> exist = memberRepository.findByNickname(nickname);
 		if(exist.isPresent() && member.getId() != exist.get().getId()){
-			throw new MemberException(MemberErrorInfo.EXIST_MEMBER_NICKNAME);
+			throw new AuthException(AuthErrorInfo.EXIST_MEMBER_NICKNAME);
 		}
 
 		String profileImageUrl = null;
@@ -158,7 +157,7 @@ public class AuthServiceImpl implements AuthService {
 				postImageResponseDtoEnvelopeResponse = imageApi.getProfileImages(profileImages);
 			} catch (FeignException e) {
 				System.out.println(e.getMessage());
-				throw new MemberException(MemberErrorInfo.FAIL_TO_IMAGE_FEIGN_CLIENT_REQUEST);
+				throw new AuthException(AuthErrorInfo.FAIL_TO_IMAGE_FEIGN_CLIENT_REQUEST);
 			}
 
 			PostImageResponseDto postImageResponseDto = postImageResponseDtoEnvelopeResponse.getData();
