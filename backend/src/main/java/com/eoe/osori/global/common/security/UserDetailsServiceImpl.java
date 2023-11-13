@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 
 import com.eoe.osori.domain.auth.domain.Member;
 import com.eoe.osori.domain.auth.repository.MemberRepository;
-import com.eoe.osori.global.advice.error.exception.MemberException;
-import com.eoe.osori.global.advice.error.info.MemberErrorInfo;
+import com.eoe.osori.global.advice.error.exception.AuthException;
+import com.eoe.osori.global.advice.error.info.AuthErrorInfo;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +21,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Member member = memberRepository.findById(Long.parseLong(username))
-			.orElseThrow(() -> new MemberException(MemberErrorInfo.MEMBER_NOT_FOUND));
+			.orElseThrow(() -> new AuthException(AuthErrorInfo.MEMBER_NOT_FOUND));
 
 		return UserDetailsImpl.builder()
 			.id(member.getId())

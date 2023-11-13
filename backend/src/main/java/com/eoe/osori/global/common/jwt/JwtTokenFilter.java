@@ -9,17 +9,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.eoe.osori.domain.auth.domain.Member;
-import com.eoe.osori.global.advice.error.exception.MemberException;
-import com.eoe.osori.global.advice.error.info.MemberErrorInfo;
+import com.eoe.osori.global.advice.error.exception.AuthException;
+import com.eoe.osori.global.advice.error.info.AuthErrorInfo;
 import com.eoe.osori.global.common.security.UserDetailsServiceImpl;
 
-import io.jsonwebtoken.JwtParser;
-import io.jsonwebtoken.Jwts;
-import io.netty.util.internal.StringUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -106,13 +101,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
 	private void equalsUsernameFromTokenAndUserDetails(String userDetailsUsername, String tokenUsername){
 		if(!userDetailsUsername.equals(tokenUsername)){
-			throw new MemberException(MemberErrorInfo.MISMATCH_TOKEN_ID);
+			throw new AuthException(AuthErrorInfo.MISMATCH_TOKEN_ID);
 		}
 	}
 
 	private void validateAccessToken(String accessToken, UserDetails userDetails){
 		if(!jwtTokenProvider.validateToken(accessToken, userDetails)){
-			throw new MemberException(MemberErrorInfo.INVALID_TOKEN);
+			throw new AuthException(AuthErrorInfo.INVALID_TOKEN);
 		}
 	}
 

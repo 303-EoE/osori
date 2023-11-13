@@ -49,16 +49,16 @@ public class AuthController {
 
 	/**
 	 * 토큰으로 회원 정보 조회
-	 * @param postAuthInfoRequestDto
+	 * @param accessToken String
 	 * @return PostAuthInfoResponseDto
 	 * @see AuthService
 	 */
 	@PostMapping("/info")
-	public ResponseEntity<EnvelopeResponse<PostAuthInfoResponseDto>> info(@RequestBody PostAuthInfoRequestDto postAuthInfoRequestDto){
+	public ResponseEntity<EnvelopeResponse<PostAuthInfoResponseDto>> info(@RequestBody String accessToken){
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<PostAuthInfoResponseDto>builder()
 				.code(HttpStatus.OK.value())
-				.data(authService.getLoginUserInfo(postAuthInfoRequestDto))
+				.data(authService.getLoginUserInfo(accessToken))
 				.build());
 	}
 
