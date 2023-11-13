@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
-import 'package:osori/screens/login_screen.dart';
 import 'package:osori/screens/search_screen.dart';
+import 'package:osori/screens/store_screen.dart';
+import 'package:osori/services/other/device_position_service.dart';
 import 'package:osori/widgets/common/bottom_navigation_widget.dart';
 
 class MapScreen extends StatefulWidget {
@@ -17,62 +18,52 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   late KakaoMapController mapController;
   late Timer timer;
-  bool isGPSPermissioned = false;
   late Position position;
   late LatLng nowPos;
-  bool isInputDisabled = true;
-  Set<Marker> markers = {};
   late Marker marker;
-
+  Set<Marker> markers = {};
+  late List<Map<String, dynamic>> stores;
   void getNearStores() {
     // 나중에 우리 가게 DTO 짜면 위도경도 받아서 마커 찍어주기
     /**
-     * await getNowPosition();
-     * Set<Marker> aroundStores = {};
+     * 먼저 현재 위치를 알아냄 await getNowPosition();
+     * // 현재 위치를 통해 depth1, depth 2를 알아내고
+     * 우리 api에 쿼리 스트링으로 넣음
      * List<Store> stores = await {우리 API}
-     * // depth1, depth 2를 쿼리 스트링으로 넣음
-     * for(var store in stores){
-     * aroundStores.add(Marker(
-     * markerId:store.id.toString(),
-     * latLng : LatLng(store.latitude, store.longitude),
-     * width : 40,
-     * height : 40,
-     * markerImageSrc:"무언가",
-     * ))
-     * }
-     * // 지도 마커에 추가하기
-     * markers.addAll(stores);
-     * setState(() {});
      */
-  }
-
-  Future<Position> getNowPosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
+    stores = [
+      {
+        "id": 26841712, // long
+        "name": "등촌샤브칼국수 역삼점", // String
+        "category": "음식점", // String
+        "longitude": "127.02477328278", // String
+        "latitude": "37.5064537970402", // String
+        "depth1": "강남구", // String
+        "depth2": "역삼동", // String
+        "averageRate": 5, // double
+        "averagePrice": 20000, // int
+        "defaultBillType": "횟수권", // String
       }
+    ];
+    Set<Marker> aroundStores = {};
+    for (var store in stores) {
+      aroundStores.add(Marker(
+        markerId: store['id'].toString(),
+        latLng: LatLng(
+            double.parse(store['latitude']), double.parse(store['longitude'])),
+        width: 40,
+        height: 40,
+        markerImageSrc:
+            'https://cdn-icons-png.flaticon.com/512/10042/10042921.png',
+      ));
     }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-    isGPSPermissioned = true;
-    return position = await Geolocator.getCurrentPosition();
+    // 지도 마커에 추가하기
+    markers.addAll(aroundStores);
+    setState(() {});
   }
 
   void _determinePosition(Timer timer) async {
-    position = await getNowPosition();
+    position = await DevicePostionService.getNowPosition();
     // 나의 현위치를 초기화해서 마커 찍기
     nowPos = LatLng(position.latitude, position.longitude);
     markers.removeWhere((marker) => marker.markerId == 'nowPos');
@@ -84,7 +75,6 @@ class _MapScreenState extends State<MapScreen> {
       markerImageSrc:
           'https://cdn-icons-png.flaticon.com/512/10042/10042921.png',
     ));
-
     setState(() {});
   }
 
@@ -95,7 +85,7 @@ class _MapScreenState extends State<MapScreen> {
     getNearStores();
     // 1초마다 위치 초기화하기
     setState(() {
-      timer = Timer.periodic(const Duration(seconds: 1), _determinePosition);
+      timer = Timer.periodic(const Duration(seconds: 2), _determinePosition);
     });
   }
 
@@ -113,6 +103,7 @@ class _MapScreenState extends State<MapScreen> {
           KakaoMap(
             onMapCreated: ((controller) {
               mapController = controller;
+              mapController.setLevel(4);
               setState(() {});
             }),
             markers: markers.toList(),
@@ -120,13 +111,18 @@ class _MapScreenState extends State<MapScreen> {
               37.501263, // 멀티캠퍼스
               127.039583, // 멀티캠퍼스
             ),
-            onMarkerTap: (markerId, latLng, zoomLevel) => {
+            onMarkerTap: (markerId, latLng, zoomLevel) {
+              timer.cancel();
+              Map<String, dynamic> tappedStore = stores
+                  .firstWhere((store) => store['id'].toString() == markerId);
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const LoginScreen(),
+                  builder: (context) => StoreScreen(
+                    tappedStore: tappedStore,
+                  ),
                 ),
-              )
+              );
             },
           ),
           GestureDetector(
@@ -137,7 +133,6 @@ class _MapScreenState extends State<MapScreen> {
                   MaterialPageRoute(builder: (context) {
                     timer.cancel();
                     return SearchScreen(
-                      isInputDisabled: !isInputDisabled,
                       nowPos: nowPos,
                     );
                   }),
@@ -158,18 +153,18 @@ class _MapScreenState extends State<MapScreen> {
                       border:
                           Border.all(color: const Color(0xFF818181), width: 2),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
                           child: TextField(
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: "키워드를 입력하세요!!",
                             ),
                             textAlign: TextAlign.center,
-                            readOnly: isInputDisabled,
-                            enabled: !isInputDisabled,
+                            readOnly: true,
+                            enabled: false,
                           ),
                         ),
                       ],
@@ -186,9 +181,7 @@ class _MapScreenState extends State<MapScreen> {
         onPressed: () {
           LatLng nowPos = LatLng(position.latitude, position.longitude);
           mapController.setCenter(nowPos);
-          mapController.setLevel(3);
-
-          // mapController.panTo(LatLng(37.479996, 126.915363)); // 내 집
+          mapController.setLevel(4);
         },
         child: const Icon(
           Icons.navigation_outlined,

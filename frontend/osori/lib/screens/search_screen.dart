@@ -2,16 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:osori/models/kakao_store_model.dart';
 import 'package:osori/screens/receipt_scanning_screen.dart';
-import 'package:osori/services/kakao_local_api_service.dart';
+import 'package:osori/services/other/kakao_local_api_service.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class SearchScreen extends StatefulWidget {
-  final bool isInputDisabled;
   final LatLng nowPos;
 
   const SearchScreen({
     super.key,
-    required this.isInputDisabled,
     required this.nowPos,
   });
 
@@ -120,7 +118,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) =>
-                                      const ReceiptScanningScreen(),
+                                      ReceiptScanningScreen(store: store),
                                 ),
                               );
                             },
