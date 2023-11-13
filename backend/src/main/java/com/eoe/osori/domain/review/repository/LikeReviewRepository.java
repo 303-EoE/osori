@@ -14,6 +14,8 @@ public interface LikeReviewRepository extends JpaRepository<LikeReview, Long> {
 
 	void deleteByReviewIdAndMemberId(Long reviewId, Long memberId);
 
+	void deleteAllByReviewId(Long reviewId);
+
 	List<LikeReview> findAllByMemberId(Long memberId);
 
 	List<LikeReview> findAllByMemberIdOrderByIdDesc(Long memberId);
