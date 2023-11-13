@@ -6,6 +6,7 @@ import org.hibernate.annotations.Where;
 
 import com.eoe.osori.domain.BaseTimeEntity;
 import com.eoe.osori.domain.auth.dto.PostAuthLoginRequestDto;
+import com.eoe.osori.domain.auth.dto.PostAuthProfileRequestDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -58,5 +59,11 @@ public class Member extends BaseTimeEntity {
 			.provider(postAuthLoginRequestDto.getProvider())
 			.providerId(postAuthLoginRequestDto.getProviderId())
 			.build();
+	}
+
+	// 회원 정보 수정
+	public void updateMember(String nickname, String profileImageUrl){
+		this.nickname = nickname;
+		this.profileImageUrl = profileImageUrl;
 	}
 }

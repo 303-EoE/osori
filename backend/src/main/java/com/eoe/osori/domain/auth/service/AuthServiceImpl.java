@@ -1,19 +1,30 @@
 package com.eoe.osori.domain.auth.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.eoe.osori.domain.auth.domain.Member;
 import com.eoe.osori.domain.auth.dto.PostAuthInfoRequestDto;
 import com.eoe.osori.domain.auth.dto.PostAuthInfoResponseDto;
 import com.eoe.osori.domain.auth.dto.PostAuthLoginRequestDto;
 import com.eoe.osori.domain.auth.dto.PostAuthLoginResponseDto;
+import com.eoe.osori.domain.auth.dto.PostAuthProfileRequestDto;
 import com.eoe.osori.domain.auth.repository.MemberRepository;
 import com.eoe.osori.global.advice.error.exception.MemberException;
 import com.eoe.osori.global.advice.error.info.MemberErrorInfo;
+import com.eoe.osori.global.common.api.images.ImageApi;
+import com.eoe.osori.global.common.api.images.dto.PostImageResponseDto;
 import com.eoe.osori.global.common.jwt.JwtHeaderUtilEnum;
 import com.eoe.osori.global.common.jwt.JwtTokenProvider;
+import com.eoe.osori.global.common.response.EnvelopeResponse;
 
+import feign.FeignException;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -24,6 +35,7 @@ public class AuthServiceImpl implements AuthService {
 
 	private final MemberRepository memberRepository;
 	private final JwtTokenProvider jwtTokenProvider;
+	private final ImageApi imageApi;
 
 
 	/**
@@ -77,9 +89,14 @@ public class AuthServiceImpl implements AuthService {
 		return accessToken.substring(JwtHeaderUtilEnum.GRANT_TYPE.getValue().length());
 	}
 
+	/**
+	 * 토큰에서 로그인 유저 정보 조회
+	 * @param postAuthInfoRequestDto
+	 * @return PostAuthInfoResponseDto
+	 */
 	@Override
 	@Transactional
-	public PostAuthInfoResponseDto info(PostAuthInfoRequestDto postAuthInfoRequestDto) {
+	public PostAuthInfoResponseDto getLoginUserInfo(PostAuthInfoRequestDto postAuthInfoRequestDto) {
 		// String accessToken = parsingAccessToken(postAuthInfoRequestDto.getAccessToken());
 		String accessToken = postAuthInfoRequestDto.getAccessToken();
 
@@ -95,6 +112,61 @@ public class AuthServiceImpl implements AuthService {
 			.nickname(member.getNickname())
 			.profileImageUrl(member.getProfileImageUrl())
 			.build();
+	}
+
+	/**
+	 * 회원 가입시 회원 정보 등록
+	 * @param accessToken String
+	 * @param postAuthProfileRequestDto PostAuthProfileRequestDto
+	 * @param profileImage MultipartFile
+	 * @see ImageApi
+	 * @see JwtTokenProvider
+	 * @see MemberRepository
+	 */
+	@Override
+	@Transactional
+	public void saveProfile(String accessToken, PostAuthProfileRequestDto postAuthProfileRequestDto, MultipartFile profileImage) {
+		log.info("파싱 전: {}", accessToken);
+		accessToken = parsingAccessToken(accessToken);
+		log.info("파싱 후: {}", accessToken);
+		// 토큰 id로 멤버 찾기
+		Long id = jwtTokenProvider.getLoginId(accessToken);
+		log.info("회원 정보 입력: {}", id);
+		Member member = memberRepository.findById(id)
+			.orElseThrow(() -> new MemberException(MemberErrorInfo.MEMBER_NOT_FOUND));
+
+		// 닉네임 유효성 검사
+		String nickname = postAuthProfileRequestDto.getNickname();
+		if(StringUtils.isBlank(nickname)){
+			throw new MemberException(MemberErrorInfo.INVALID_AUTH_REQUEST_DATA_ERROR);
+		}
+		// 닉네임 중복 검사
+		Optional<Member> exist = memberRepository.findByNickname(nickname);
+		if(exist.isPresent() && member.getId() != exist.get().getId()){
+			throw new MemberException(MemberErrorInfo.EXIST_MEMBER_NICKNAME);
+		}
+
+		String profileImageUrl = null;
+
+		// 이미지 업데이트 할 때 null이 아니면 새로 들어온 이미지 저장
+		if(profileImage != null){
+			EnvelopeResponse<PostImageResponseDto> postImageResponseDtoEnvelopeResponse;
+			List<MultipartFile> profileImages = new ArrayList<>();
+			profileImages.add(profileImage);
+
+			try{
+				postImageResponseDtoEnvelopeResponse = imageApi.getProfileImages(profileImages);
+			} catch (FeignException e) {
+				System.out.println(e.getMessage());
+				throw new MemberException(MemberErrorInfo.FAIL_TO_IMAGE_FEIGN_CLIENT_REQUEST);
+			}
+
+			PostImageResponseDto postImageResponseDto = postImageResponseDtoEnvelopeResponse.getData();
+
+			profileImageUrl = postImageResponseDto.getPath().get(0).getUploadFilePath();
+
+		}
+		member.updateMember(nickname, profileImageUrl);
 	}
 
 }
