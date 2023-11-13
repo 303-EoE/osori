@@ -13,16 +13,15 @@ class TokenManager {
       key: accessToken,
       aOptions: getAndroidOptions(),
     );
-    print(value);
     return value ?? "";
   }
 
-  static Future<void> readRefreshToken() async {
+  static Future<String> readRefreshToken() async {
     final value = await storage.read(
       key: refreshToken,
       aOptions: getAndroidOptions(),
     );
-    print(value);
+    return value ?? "";
   }
 
   static Future<void> deleteAll() async {
@@ -46,5 +45,35 @@ class TokenManager {
       value: refreshTokenValue,
       aOptions: getAndroidOptions(),
     );
+  }
+
+  static Future<String> readUserId() async {
+    final value = await storage.read(key: 'id', aOptions: getAndroidOptions());
+    return value ?? "";
+  }
+
+  static Future<String> readUserNickname() async {
+    final value =
+        await storage.read(key: 'nickname', aOptions: getAndroidOptions());
+    return value ?? "";
+  }
+
+  static Future<String> readUserProfile() async {
+    final value = await storage.read(
+        key: 'profileImageUrl', aOptions: getAndroidOptions());
+    return value ?? "";
+  }
+
+  static Future<void> renewUserInfo(Map<String, dynamic> info) async {
+    await storage.write(
+        key: 'id', value: info['id'], aOptions: getAndroidOptions());
+    await storage.write(
+        key: 'nickname',
+        value: info['nickname'],
+        aOptions: getAndroidOptions());
+    await storage.write(
+        key: 'profileImageUrl',
+        value: info['profileImageUrl'],
+        aOptions: getAndroidOptions());
   }
 }

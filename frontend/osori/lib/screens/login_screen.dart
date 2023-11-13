@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:osori/services/user_login_service.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:osori/services/osori/auth_service.dart';
+import 'package:osori/widgets/common/snack_bar_manager.dart';
 
-/// bottomNavigation에서 미리 토큰 유효성을 검증하기 때문에
+/// profile스크린에서 initState단에서 토큰이 존재하는지, 토큰이 유효한지 검증한다.
 /// 여기서는 로그인 과정에만 집중하면 된다.
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -19,48 +23,84 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     Navigator.of(context).pushNamedAndRemoveUntil('/profile', (route) => false);
   }
 
-  void createSnackBar(String nickname) {
-    final snackBar = SnackBar(
-      content: Text('$nickname님 반가워요!'),
-      action: SnackBarAction(
-        label: '저두요!',
-        onPressed: () {
-          // Some code to undo the change.
-        },
-      ),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
-  void alertSnackBar(String message) {
-    final snackBar = SnackBar(
-      content: Text(message),
-      action: SnackBarAction(
-        label: '확인',
-        onPressed: () {
-          // Some code to undo the change.
-        },
-      ),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
-  }
-
   void loginWithService(String serviceName) async {
-    // 요청과 동시에 프로바이더에 저장
-    final result = UserLoginService.loginWithSocialService(serviceName);
+    final nickname = await AuthService.loginWithSocialService(serviceName);
 
-    if (result.toString() != "") {
-      // 스낵바 만들기
-      createSnackBar(result.toString());
+    if (!mounted) return;
+
+    if (nickname == '') {
+      SnackBarManager.alertSnackBar(context, '로그인 실패!!');
+    } else if (nickname == "nickname null") {
+      SnackBarManager.alertSnackBar(context, '닉네임을 설정하는 모달 띄우기'); // 회원가입
+      showDialog(
+        context: context,
+        builder: (context) {
+          TextEditingController controller = TextEditingController();
+          String? selectedImage;
+          bool isNicknameChecked = false;
+          return Dialog(
+            child: Container(
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      const Text('닉네임'),
+                      TextField(
+                        controller: controller,
+                      ),
+                      OutlinedButton(
+                          onPressed: () {
+                            if (isNicknameChecked) {
+                              // 닉네임 중복을 체크하는 요청
+                              isNicknameChecked = true;
+                            } else {
+                              isNicknameChecked = false;
+                            }
+                          },
+                          child: const Text('중복 체크'))
+                    ],
+                  ),
+                  IconButton(
+                    onPressed: () async {
+                      final imagePicker = ImagePicker();
+                      final pickedImage = await imagePicker.pickImage(
+                        source: ImageSource.gallery,
+                        imageQuality: 50,
+                      );
+                      if (pickedImage != null) {
+                        selectedImage = pickedImage.path;
+                      }
+                    },
+                    icon: const Icon(Icons.image_outlined),
+                  ),
+                  OutlinedButton(
+                    onPressed: () async {
+                      // 닉네임, 이미지(String)으로 회원가입을 요청하는 API
+                      final result = await AuthService.registerUserInfo(
+                          nickname,
+                          selectedImage!.isNotEmpty
+                              ? File(selectedImage!)
+                              : null);
+                      if (result == 200) {
+                        if (mounted) {
+                          SnackBarManager.welcomeSnackBar(context, nickname);
+                        }
+                      }
+                    },
+                    child: const Text('회원가입'),
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+      );
+    } else {
+      SnackBarManager.welcomeSnackBar(context, nickname);
       // 프로필로 가기
       goToProfile();
-    } else {
-      alertSnackBar('로그인 실패!');
     }
   }
-  // 로그아웃
-  // await GoogleSignIn().signOut();
-  // await UserApi.instance.logout();
 
   @override
   Widget build(BuildContext context) {
@@ -95,6 +135,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               },
               child: Image.asset('assets/images/continue_with_kakao.png'),
             ),
+            const SizedBox(
+              height: 50,
+            ),
+            OutlinedButton(
+                onPressed: () {
+                  Navigator.of(context)
+                      .pushNamedAndRemoveUntil('/', (route) => false);
+                },
+                child: const Text('메인으로'))
           ],
         ),
       ),

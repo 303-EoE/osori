@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:osori/models/user/user_info_model.dart';
 import 'package:http/http.dart' as http;
-import 'package:osori/token_manager.dart';
+import 'package:osori/widgets/common/token_manager.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'user_info_model_provider.g.dart';
