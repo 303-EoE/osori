@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import lombok.Getter;
 
 @Getter
-public enum MemberErrorInfo {
+public enum AuthErrorInfo {
 
 	INVALID_AUTH_REQUEST_DATA_ERROR(HttpStatus.BAD_REQUEST, 1000, "인자가 부족합니다."),
 	MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, 1001, "사용자를 찾을 수 없습니다."),
@@ -18,7 +18,7 @@ public enum MemberErrorInfo {
 	private final Integer code;
 	private final String message;
 
-	MemberErrorInfo(HttpStatus status, Integer code, String message) {
+	AuthErrorInfo(HttpStatus status, Integer code, String message) {
 		this.status = status;
 		this.code = code;
 		this.message = message;

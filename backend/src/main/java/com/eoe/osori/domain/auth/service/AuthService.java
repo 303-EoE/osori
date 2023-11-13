@@ -11,7 +11,7 @@ import com.eoe.osori.domain.auth.dto.PostAuthProfileRequestDto;
 public interface AuthService {
 
 	PostAuthLoginResponseDto login(PostAuthLoginRequestDto postAuthLoginRequestDto);
-	PostAuthInfoResponseDto getLoginUserInfo(PostAuthInfoRequestDto postAuthInfoRequestDto);
+	PostAuthInfoResponseDto getLoginUserInfo(String accessToken);
 
 	void saveProfile(String accessToken, PostAuthProfileRequestDto postAuthProfileRequestDto, MultipartFile profileImage);
 }

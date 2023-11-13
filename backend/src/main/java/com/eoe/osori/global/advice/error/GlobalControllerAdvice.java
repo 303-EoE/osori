@@ -1,8 +1,7 @@
 package com.eoe.osori.global.advice.error;
 
-import com.eoe.osori.domain.auth.domain.Member;
 import com.eoe.osori.domain.mattermost.component.NotificationManager;
-import com.eoe.osori.global.advice.error.exception.MemberException;
+import com.eoe.osori.global.advice.error.exception.AuthException;
 import com.eoe.osori.global.advice.error.exception.MetaException;
 import com.eoe.osori.global.common.response.EnvelopeResponse;
 
@@ -32,13 +31,13 @@ public class GlobalControllerAdvice {
                 .build());
     }
 
-    @ExceptionHandler(MemberException.class)
-    public ResponseEntity<EnvelopeResponse<MemberException>> memberExceptionHandler(MemberException exception, HttpServletRequest req) {
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<EnvelopeResponse<AuthException>> memberExceptionHandler(AuthException exception, HttpServletRequest req) {
         exception.printStackTrace();
         notificationManager.sendNotification(exception, req.getRequestURI(), getParams(req));
 
         return ResponseEntity.status(exception.getInfo().getStatus())
-            .body(EnvelopeResponse.<MemberException>builder()
+            .body(EnvelopeResponse.<AuthException>builder()
                 .code(exception.getInfo().getCode())
                 .message(exception.getInfo().getMessage())
                 .build());
