@@ -88,7 +88,7 @@ public class ReviewServiceImpl implements ReviewService {
 		/**
 		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
 		 */
-		// getLoginMember();
+		// GetMemberResponseDto getMemberResponseDto = getLoginMember();
 		/**
 		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
 		 */
@@ -155,7 +155,7 @@ public class ReviewServiceImpl implements ReviewService {
 		/**
 		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
 		 */
-		// getLoginMember();
+		// GetMemberResponseDto getMemberResponseDto = getLoginMember();
 		/**
 		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
 		 */
@@ -221,7 +221,7 @@ public class ReviewServiceImpl implements ReviewService {
 		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
 		 */
 		// 로그인한 사용자 데이터 받기 (조회한 게시물이 로그인한 사용자가 작성한 건지 파악하기 위해)
-		// getLoginMember();
+		// GetMemberResponseDto getMemberResponseDto = getLoginMember();
 
 		// 리뷰에 들어갈 멤버 데이터 받기
 		// EnvelopeResponse<GetMemberResponseDto> getMemberResponseDtoEnvelopeResponseByReview;
@@ -283,7 +283,7 @@ public class ReviewServiceImpl implements ReviewService {
 		/**
 		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
 		 */
-		// getLoginMember();
+		// GetMemberResponseDto getMemberResponseDto = getLoginMember();
 		/**
 		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
 		 */
@@ -316,7 +316,7 @@ public class ReviewServiceImpl implements ReviewService {
 		/**
 		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
 		 */
-		// getLoginMember();
+		// GetMemberResponseDto getMemberResponseDto = getLoginMember();
 		/**
 		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
 		 */
@@ -366,7 +366,7 @@ public class ReviewServiceImpl implements ReviewService {
 		/**
 		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
 		 */
-		// getLoginMember();
+		// GetMemberResponseDto getMemberResponseDto = getLoginMember();
 		/**
 		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
 		 */
@@ -403,7 +403,7 @@ public class ReviewServiceImpl implements ReviewService {
 		/**
 		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
 		 */
-		// getLoginMember();
+		// GetMemberResponseDto getMemberResponseDto = getLoginMember();
 		/**
 		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
 		 */
@@ -437,7 +437,7 @@ public class ReviewServiceImpl implements ReviewService {
 		/**
 		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
 		 */
-		// getLoginMember();
+		// GetMemberResponseDto getMemberResponseDto = getLoginMember();
 		/**
 		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
 		 */
