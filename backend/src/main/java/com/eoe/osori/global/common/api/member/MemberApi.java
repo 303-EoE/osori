@@ -11,5 +11,9 @@ import com.eoe.osori.global.common.response.EnvelopeResponse;
 public interface MemberApi {
 
 	@GetMapping()
-	EnvelopeResponse<GetMemberResponseDto> getMember(@RequestParam("member_id") Long memberId);
+	EnvelopeResponse<GetMemberResponseDto> getOtherMember(@RequestParam("member_id") Long memberId);
+
+	@GetMapping("/my-page")
+	EnvelopeResponse<GetMemberResponseDto> getMember();
+
 }
