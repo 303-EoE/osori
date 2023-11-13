@@ -10,4 +10,5 @@ import com.eoe.osori.domain.auth.domain.Member;
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
 	Optional<Member> findByProviderId(String providerId);
+	Optional<Member> findByNickname(String nickname);
 }
