@@ -51,7 +51,7 @@ public class ReviewController {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonIdResponseDto>builder()
 				.code(HttpStatus.OK.value())
-				.data(reviewService.saveReview(postReviewRequestDto, reviewImages, 1L))
+				.data(reviewService.saveReview(postReviewRequestDto, reviewImages))
 				.build());
 	}
 
@@ -66,7 +66,7 @@ public class ReviewController {
 	@DeleteMapping()
 	public ResponseEntity<EnvelopeResponse<Void>> deleteReview(@RequestParam("review_id") Long reviewId) {
 		
-		reviewService.deleteReview(reviewId, 1L);
+		reviewService.deleteReview(reviewId);
 
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<Void>builder()
@@ -104,7 +104,7 @@ public class ReviewController {
 	@PostMapping("/like")
 	public ResponseEntity<EnvelopeResponse<Void>> likeOrDislikeReview(@RequestParam("review_id") Long reviewId) {
 
-		reviewService.likeOrDisLikeReivew(reviewId, 1L);
+		reviewService.likeOrDisLikeReivew(reviewId);
 
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<Void>builder()
@@ -128,7 +128,7 @@ public class ReviewController {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
 				.code(HttpStatus.OK.value())
-				.data(reviewService.getReviewListByRegion(storeDepth1, storeDepth2, 1L))
+				.data(reviewService.getReviewListByRegion(storeDepth1, storeDepth2))
 				.build());
 	}
 
@@ -164,7 +164,7 @@ public class ReviewController {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
 				.code(HttpStatus.OK.value())
-				.data(reviewService.getMyReviewList(1L))
+				.data(reviewService.getMyReviewList())
 				.build());
 	}
 
@@ -178,12 +178,12 @@ public class ReviewController {
 	 */
 	@GetMapping("/member")
 	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getOtherReviewList
-		(@RequestParam("member_id") Long memberId, Long loginMemberId) {
+		(@RequestParam("member_id") Long memberId) {
 
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
 				.code(HttpStatus.OK.value())
-				.data(reviewService.getOtherReviewList(memberId, loginMemberId))
+				.data(reviewService.getOtherReviewList(memberId))
 				.build());
 	}
 
@@ -200,7 +200,7 @@ public class ReviewController {
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
 				.code(HttpStatus.OK.value())
-				.data(reviewService.getLikeReviewList(1L))
+				.data(reviewService.getLikeReviewList())
 				.build());
 	}
 

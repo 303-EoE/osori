@@ -64,8 +64,7 @@ public class ReviewServiceImpl implements ReviewService {
 	 */
 	@Transactional
 	@Override
-	public CommonIdResponseDto saveReview(PostReviewRequestDto postReviewRequestDto, List<MultipartFile> reviewImages,
-		Long memberId) {
+	public CommonIdResponseDto saveReview(PostReviewRequestDto postReviewRequestDto, List<MultipartFile> reviewImages) {
 		// 입력 데이터 null값 검증
 		if (postReviewRequestDto.findEmptyValue()) {
 			throw new ReviewException(ReviewErrorInfo.INVALID_REVIEW_REQUEST_DATA_ERROR);
@@ -82,7 +81,19 @@ public class ReviewServiceImpl implements ReviewService {
 			throw new ReviewException(ReviewErrorInfo.DUPLICATE_RECEIPT_REQUEST_ERROR);
 		}
 
-		Review review = Review.of(postReviewRequestDto, memberId);
+		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
+		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤", "이미지url1");
+		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
+
+		/**
+		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
+		 */
+		// getLoginMember();
+		/**
+		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
+		 */
+
+		Review review = Review.of(postReviewRequestDto, getMemberResponseDto.getId());
 		review.updateAverageCost(review.getTotalPrice(), review.getFactor(), review.getHeadcount());
 		reviewRepository.save(review);
 
@@ -113,26 +124,6 @@ public class ReviewServiceImpl implements ReviewService {
 			reviewImageRepository.save(reviewImage);
 		}
 
-		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
-		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤", "이미지url1");
-		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
-
-		/**
-		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
-		 */
-		// EnvelopeResponse<GetMemberResponseDto> getMemberResponseDtoEnvelopeResponse;
-		//
-		// try {
-		// 	getMemberResponseDtoEnvelopeResponse = memberApi.getMember(review.getMemberId());
-		// } catch (FeignException e) {
-		// 	throw new ReviewException(ReviewErrorInfo.FAIL_TO_MEMBER_FEIGN_CLIENT_REQUEST);
-		// }
-		//
-		// GetMemberResponseDto getMemberResponseDto = getMemberResponseDtoEnvelopeResponse.getData();
-		/**
-		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
-		 */
-
 		EnvelopeResponse<GetStoreDetailResponseDto> getStoreDetailResponseDtoEnvelopeResponse;
 
 		try {
@@ -153,24 +144,43 @@ public class ReviewServiceImpl implements ReviewService {
 	 * 리뷰 삭제
 	 *
 	 * @param reviewId Long
-	 * @param memberId Long
+	 * @see LikeReviewRepository
 	 * @see ReviewRepository
 	 * @see ReviewFeedRepository
 	 */
 	@Transactional
 	@Override
-	public void deleteReview(Long reviewId, Long memberId) {
+	public void deleteReview(Long reviewId) {
+
+		/**
+		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
+		 */
+		// getLoginMember();
+		/**
+		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
+		 */
+
+
+		/**
+		 * 멤버 통신 구현한 뒤 지울 거!!
+		 */
+		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤",
+			"https://avatars.githubusercontent.com/u/122416904?v=4");
+		/**
+		 * 멤버 통신 구현한 뒤 지울 거!!
+		 */
 
 		Review review = reviewRepository.findById(reviewId)
 			.orElseThrow(() -> new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEW_BY_ID));
 
-		if (review.getMemberId() != memberId) {
+		if (review.getMemberId() != getMemberResponseDto.getId()) {
 			throw new ReviewException(ReviewErrorInfo.NOT_MATCH_REVIEW_BY_MEMBERID);
 		}
 
 		ReviewFeed reviewFeed = reviewFeedRepository.findById(Long.toString(reviewId))
 			.orElseThrow(() -> new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEWFEED_BY_ID));
 
+		likeReviewRepository.deleteAllByReviewId(reviewId);
 		reviewRepository.delete(review);
 		reviewFeedRepository.delete(reviewFeed);
 	}
@@ -198,7 +208,9 @@ public class ReviewServiceImpl implements ReviewService {
 		/**
 		 * 멤버 통신 구현하고 지울 거!!!!!!!!!!!!!!!!!!!!!
 		 */
-		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤",
+		GetMemberResponseDto getMemberResponseDtoByReview = new GetMemberResponseDto(1L, "디헤",
+			"https://avatars.githubusercontent.com/u/122416904?v=4");
+		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(2L, "의서기",
 			"https://avatars.githubusercontent.com/u/122416904?v=4");
 		/**
 		 * 지울 거!!!!!!!!!!!!!!!!!!!!!
@@ -208,15 +220,20 @@ public class ReviewServiceImpl implements ReviewService {
 		/**
 		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
 		 */
-		// EnvelopeResponse<GetMemberResponseDto> getMemberResponseDtoEnvelopeResponse;
+		// 로그인한 사용자 데이터 받기 (조회한 게시물이 로그인한 사용자가 작성한 건지 파악하기 위해)
+		// getLoginMember();
+
+		// 리뷰에 들어갈 멤버 데이터 받기
+		// EnvelopeResponse<GetMemberResponseDto> getMemberResponseDtoEnvelopeResponseByReview;
 		//
 		// try {
-		// 	getMemberResponseDtoEnvelopeResponse = memberApi.getMember(review.getMemberId());
+		// 	getMemberResponseDtoEnvelopeResponseByReview = memberApi.getOtherMember(review.getMemberId());
 		// } catch (FeignException e) {
 		// 	throw new ReviewException(ReviewErrorInfo.FAIL_TO_MEMBER_FEIGN_CLIENT_REQUEST);
 		// }
 		//
-		// GetMemberResponseDto getMemberResponseDto = getMemberResponseDtoEnvelopeResponse.getData();
+		// GetMemberResponseDto getMemberResponseDtoByReview = getMemberResponseDtoEnvelopeResponseByReview.getData();
+
 		/**
 		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
 		 */
@@ -233,12 +250,14 @@ public class ReviewServiceImpl implements ReviewService {
 
 		List<ReviewImage> reviewImages = reviewImageRepository.findAllByReviewId(reviewId);
 
-		Boolean liked = likeReviewRepository.existsByReviewIdAndMemberId(reviewId, getMemberResponseDto.getId());
+		Boolean liked = likeReviewRepository.existsByReviewIdAndMemberId(reviewId,
+			getMemberResponseDto.getId());
 
 		Boolean isMine = (getMemberResponseDto.getId() == review.getMemberId()) ? true : false;
 
 		// 리뷰 상세 조회 정보 보내기
-		return GetReviewDetailResponseDto.of(review, reviewImages, getStoreResponseDto, getMemberResponseDto, liked, isMine);
+		return GetReviewDetailResponseDto.of(review, reviewImages, getStoreResponseDto,
+			getMemberResponseDtoByReview, liked, isMine);
 	}
 
 	/**
@@ -246,24 +265,35 @@ public class ReviewServiceImpl implements ReviewService {
 	 * 좋아요 등록 / 취소
 	 *
 	 * @param reviewId Long
-	 * @param memberId Long
 	 * @see ReviewRepository
 	 * @see LikeReviewRepository
 	 */
 	@Transactional
 	@Override
-	public void likeOrDisLikeReivew(Long reviewId, Long memberId) {
+	public void likeOrDisLikeReivew(Long reviewId) {
 
 		if (!reviewRepository.existsById(reviewId)) {
 			throw new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEW_BY_ID);
 		}
 
-		if (likeReviewRepository.existsByReviewIdAndMemberId(reviewId, memberId)) {
-			likeReviewRepository.deleteByReviewIdAndMemberId(reviewId, memberId);
+		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
+		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤", "이미지url1");
+		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
+
+		/**
+		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
+		 */
+		// getLoginMember();
+		/**
+		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
+		 */
+
+		if (likeReviewRepository.existsByReviewIdAndMemberId(reviewId, getMemberResponseDto.getId())) {
+			likeReviewRepository.deleteByReviewIdAndMemberId(reviewId, getMemberResponseDto.getId());
 			return;
 		}
 
-		likeReviewRepository.save(LikeReview.of(reviewId, memberId));
+		likeReviewRepository.save(LikeReview.of(reviewId, getMemberResponseDto.getId()));
 	}
 
 	/**
@@ -277,16 +307,29 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @see LikeReviewRepository
 	 */
 	@Override
-	public CommonReviewListResponseDto getReviewListByRegion(String storeDepth1, String storeDepth2, Long memberId) {
+	public CommonReviewListResponseDto getReviewListByRegion(String storeDepth1, String storeDepth2) {
+
+		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
+		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤", "이미지url1");
+		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
+
+		/**
+		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
+		 */
+		// getLoginMember();
+		/**
+		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
+		 */
 
 		List<ReviewFeed> reviewFeedList = reviewFeedRepository
 			.findAllByStoreDepth1AndStoreDepth2OrderByCreatedAtDesc(storeDepth1, storeDepth2);
 
-		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(memberId).stream()
+		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(getMemberResponseDto.getId()).stream()
 			.map(likeReview -> likeReview.getReviewId())
 			.collect(Collectors.toList());
 
-		return CommonReviewListResponseDto.ofReviewFeedListAndLikeReviewIdListAndMemberId(reviewFeedList, likeReviewIdList, memberId);
+		return CommonReviewListResponseDto.ofReviewFeedListAndLikeReviewIdListAndMemberId(reviewFeedList,
+			likeReviewIdList, getMemberResponseDto.getId());
 	}
 
 	/**
@@ -308,23 +351,37 @@ public class ReviewServiceImpl implements ReviewService {
 	/**
 	 * 
 	 *  내 리뷰 전체 조회
-	 * 
-	 * @param memberId Long
+	 *
 	 * @return CommonReviewListResponseDto
 	 * @see ReviewFeedRepository
 	 * @see LikeReviewRepository
 	 */
 	@Override
-	public CommonReviewListResponseDto getMyReviewList(Long memberId) {
+	public CommonReviewListResponseDto getMyReviewList() {
 
-		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberIdOrderByCreatedAtDesc(memberId);
+		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
+		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤", "이미지url1");
+		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
 
-		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(memberId).stream()
+		/**
+		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
+		 */
+		// getLoginMember();
+		/**
+		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
+		 */
+
+		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberIdOrderByCreatedAtDesc
+			(getMemberResponseDto.getId());
+
+		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId
+				(getMemberResponseDto.getId()).stream()
 			.map(likeReview -> likeReview.getReviewId())
 			.collect(Collectors.toList());
 
 		return CommonReviewListResponseDto
-			.ofReviewFeedListAndLikeReviewIdListAndMemberId(reviewFeedList, likeReviewIdList, memberId);
+			.ofReviewFeedListAndLikeReviewIdListAndMemberId
+				(reviewFeedList, likeReviewIdList, getMemberResponseDto.getId());
 	}
 
 	/**
@@ -337,33 +394,59 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @see LikeReviewRepository
 	 */
 	@Override
-	public CommonReviewListResponseDto getOtherReviewList(Long memberId, Long loginMemberId) {
+	public CommonReviewListResponseDto getOtherReviewList(Long memberId) {
+
+		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
+		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤", "이미지url1");
+		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
+
+		/**
+		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
+		 */
+		// getLoginMember();
+		/**
+		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
+		 */
 
 		List<ReviewFeed> reviewFeedList = reviewFeedRepository.findAllByMemberIdOrderByCreatedAtDesc(memberId);
 
-		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(loginMemberId).stream()
+		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberId(getMemberResponseDto.getId()).stream()
 			.map(likeReview -> likeReview.getReviewId())
 			.collect(Collectors.toList());
 
 		return CommonReviewListResponseDto
-			.ofReviewFeedListAndLikeReviewIdListAndMemberId(reviewFeedList, likeReviewIdList, loginMemberId);
+			.ofReviewFeedListAndLikeReviewIdListAndMemberId
+				(reviewFeedList, likeReviewIdList, getMemberResponseDto.getId());
 	}
 
 	/**
 	 *
 	 * 좋아요한 리뷰 전체 조회
 	 *
-	 * @param memberId Long
 	 * @return CommonReviewListResponseDto
 	 * @see ReviewFeedRepository
 	 * @see LikeReviewRepository
 	 */
 	@Override
-	public CommonReviewListResponseDto getLikeReviewList(Long memberId) {
+	public CommonReviewListResponseDto getLikeReviewList() {
 
-		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberIdOrderByIdDesc(memberId).stream()
+		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
+		GetMemberResponseDto getMemberResponseDto = new GetMemberResponseDto(1L, "디헤", "이미지url1");
+		// member 정보 통신한 뒤 지울 거 !!!!!!!!!!!!!!!!!!!!!!!!
+
+		/**
+		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
+		 */
+		// getLoginMember();
+		/**
+		 *멤버 서비스 구현되면 이거 써야됨!!!!!!!!!!!!!!!
+		 */
+
+		List<Long> likeReviewIdList = likeReviewRepository.findAllByMemberIdOrderByIdDesc
+				(getMemberResponseDto.getId()).stream()
 			.map(likeReview -> likeReview.getReviewId())
 			.collect(Collectors.toList());
+
 
 		List<ReviewFeed> reviewFeedList = new ArrayList<>();
 
@@ -374,7 +457,30 @@ public class ReviewServiceImpl implements ReviewService {
 			reviewFeedList.add(reviewFeed);
 		}
 
-		return CommonReviewListResponseDto.ofReviewFeedListAndAndMemberId(reviewFeedList, memberId);
+		return CommonReviewListResponseDto.ofReviewFeedListAndAndMemberId(reviewFeedList, getMemberResponseDto.getId());
+	}
+
+	/**
+	 *
+	 * 로그인한 사용자 데이터 받기
+	 *
+	 * @return GetMemberResponseDto
+	 * @see MemberApi
+	 */
+	@Override
+	public GetMemberResponseDto getLoginMember() {
+
+		EnvelopeResponse<GetMemberResponseDto> getMemberResponseDtoEnvelopeResponse;
+
+		try {
+			getMemberResponseDtoEnvelopeResponse = memberApi.getMember();
+		} catch (FeignException e) {
+			throw new ReviewException(ReviewErrorInfo.FAIL_TO_MEMBER_FEIGN_CLIENT_REQUEST);
+		}
+
+		GetMemberResponseDto getMemberResponseDto = getMemberResponseDtoEnvelopeResponse.getData();
+
+		return getMemberResponseDto;
 	}
 
 }
