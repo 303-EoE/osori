@@ -14,7 +14,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // runApp() 호출 전 Flutter SDK 초기화
   await dotenv.load(fileName: 'assets/env/.env');
-  AuthRepository.initialize(appKey: dotenv.env['KAKAO_JAVASCRIPT_KEY'] ?? '');
+  AuthRepository.initialize(appKey: dotenv.env['KAKAO_JAVASCRIPT_KEY']!);
   KakaoSdk.init(
     nativeAppKey: dotenv.env['KAKAO_NATIVE_APP_KEY'],
   );

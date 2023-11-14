@@ -194,9 +194,8 @@ class _ReviewState extends State<Review> {
                 ),
                 IconButton(
                   onPressed: () async {
-                    final result =
-                        await ReviewService.likeReview(widget.review.id);
-                    print(result);
+                    await ReviewService.likeReview(widget.review.id);
+                    setState(() {});
                   },
                   icon: Icon(
                     widget.review.liked
