@@ -92,7 +92,6 @@ class _FeedScreenState extends ConsumerState<ReviewScreen> {
                           for (var v in value)
                             Review(
                               review: v,
-                              userId: userId,
                             )
                         ]),
                       AsyncError() => const Text("리뷰를 찾지 못했습니다."),
