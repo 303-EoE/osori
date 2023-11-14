@@ -5,11 +5,14 @@ import java.net.Authenticator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eoe.osori.domain.member.dto.GetMemberMyPageResponseDto;
+import com.eoe.osori.domain.member.dto.GetMemberResponseDto;
 import com.eoe.osori.domain.member.service.MemberService;
 import com.eoe.osori.global.common.response.EnvelopeResponse;
 
@@ -32,6 +35,18 @@ public class MemberController {
 			.body(EnvelopeResponse.<GetMemberMyPageResponseDto>builder()
 				.code(HttpStatus.OK.value())
 				.data(memberService.getMyInfo(accessToken))
+				.build());
+	}
+
+	@GetMapping
+	ResponseEntity<EnvelopeResponse<GetMemberResponseDto>> getMemberProfile(
+		@RequestHeader("Authorization") String accessToken,
+		@RequestParam("member_id") Long memberId
+	){
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(EnvelopeResponse.<GetMemberResponseDto>builder()
+				.code(HttpStatus.OK.value())
+				.data(memberService.getMemberInfo(accessToken, memberId))
 				.build());
 	}
 }
