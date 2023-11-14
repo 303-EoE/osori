@@ -8,6 +8,7 @@ import com.eoe.osori.domain.auth.dto.PostAuthLoginRequestDto;
 import com.eoe.osori.domain.auth.dto.PostAuthLoginResponseDto;
 import com.eoe.osori.domain.auth.dto.PostAuthProfileRequestDto;
 import com.eoe.osori.domain.auth.dto.PostAuthProfileResponseDto;
+import com.eoe.osori.domain.auth.dto.PostAuthReissueTokenResponseDto;
 
 public interface AuthService {
 

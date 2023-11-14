@@ -16,6 +16,7 @@ import com.eoe.osori.domain.auth.dto.PostAuthLoginRequestDto;
 import com.eoe.osori.domain.auth.dto.PostAuthLoginResponseDto;
 import com.eoe.osori.domain.auth.dto.PostAuthProfileRequestDto;
 import com.eoe.osori.domain.auth.dto.PostAuthProfileResponseDto;
+import com.eoe.osori.domain.auth.dto.PostAuthReissueTokenResponseDto;
 import com.eoe.osori.domain.auth.service.AuthService;
 import com.eoe.osori.global.common.response.EnvelopeResponse;
 import com.eoe.osori.global.common.security.SecurityUtils;
