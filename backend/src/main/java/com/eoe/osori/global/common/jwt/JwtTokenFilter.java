@@ -3,18 +3,23 @@ package com.eoe.osori.global.common.jwt;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.eoe.osori.global.advice.error.exception.AuthException;
 import com.eoe.osori.global.advice.error.info.AuthErrorInfo;
 import com.eoe.osori.global.common.security.UserDetailsServiceImpl;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,51 +53,28 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
-
-		// 로그아웃 체크 기능 구현3
-		// 로그아웃 상태면 엑세스 토큰 만료 전이라도 유효하지 않음
-
-		String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-
-		// Header의 Authorization 값이 비어있으면 Jwt Token을 전송하지 않음
-		if(authorizationHeader == null){
-			filterChain.doFilter(request, response);
-			return;
+		String accessToken = getAccessToken(request);
+		if(accessToken != null && !accessToken.equals("undefined")) {
+			Long id = null;
+			try {
+				id = jwtTokenProvider.getLoginId(accessToken);
+			} catch (ExpiredJwtException e) {
+				setResponse(response, HttpStatus.UNAUTHORIZED, "만료된 토큰입니다.");
+			} catch (SignatureException e) {
+				setResponse(response, HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다.");
+			}
+			if (id != null) {
+				UserDetails userDetails = userDetailsService.loadUserByUsername(id.toString());
+				// 엑세스 토큰 생성 시 사용된 아이디와 현재 아이디가 일치하는지 확인
+				equalsUsernameFromTokenAndUserDetails(userDetails.getUsername(), id.toString());
+				// 엑세스 토큰의 유효성 검증
+				validateAccessToken(accessToken, userDetails);
+				// securityContextHolder에 인증된 회원 정보 저장
+				processSecurity(request, userDetails);
+			}
 		}
-
-		// Header의 Authorization 값이 'Bearer '로 시작하지 않으면 잘못된 토큰
-		if(!authorizationHeader.startsWith("Bearer ")){
-			filterChain.doFilter(request, response);
-			return;
-		}
-
-		// 전송받은 값에서 'Bearer ' 뒷부분(JWT Token) 추출
-		String token = authorizationHeader.split(" ")[1];
-
-		// 전송받은 JWT Token이 만료되었으면 다음 필터 진행 (인증X)
-		if(jwtTokenProvider.isTokenExpired(token)){
-			filterChain.doFilter(request, response);
-			return;
-		}
-
-		// Jwt Token에서 id 추출
-		Long id = jwtTokenProvider.getLoginId(token);
-
-		// 추출한 id로 member 찾아오기
-		UserDetails userDetails = userDetailsService.loadUserByUsername(id.toString());
-
-		// 엑세스 토큰 생성 시 사용된 id와 현재 id가 일치하는지 확인
-		equalsUsernameFromTokenAndUserDetails(userDetails.getUsername(), id.toString());
-
-		// 엑세스 토큰의 유효성 검증
-		validateAccessToken(token, userDetails);
-
-		// securityContextHolder에 인증된 회원 정보 저장
-		processSecurity(request, userDetails);
-
 		// 다음 순서 필터로 넘어가기
 		filterChain.doFilter(request, response);
-
 	}
 
 	/**
@@ -117,12 +99,17 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 		SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 	}
 
-	// private String getAccessToken(HttpServletRequest request){
-	// 	String headerAuth = request.getHeader("accessToken");
-	// 	log.info("[header] {}", headerAuth);
-	// 	if(StringUtils.hasText(headerAuth) && headerAuth.startsWith(JwtHeaderUtilEnum.GRANT_TYPE.getValue())){
-	// 		return headerAuth.substring(JwtHeaderUtilEnum.GRANT_TYPE.getValue().length());
-	// 	}
-	// 	return null;
-	// }
+	private String getAccessToken(HttpServletRequest request){
+		String headerAuth = request.getHeader(JwtHeaderUtilEnum.AUTHORIZATION.getValue());
+		if(StringUtils.hasText(headerAuth) && headerAuth.startsWith(JwtHeaderUtilEnum.GRANT_TYPE.getValue())){
+			return headerAuth.substring(JwtHeaderUtilEnum.GRANT_TYPE.getValue().length());
+		}
+		return null;
+	}
+
+	private void setResponse(HttpServletResponse response, HttpStatus httpStatus, String errorMessage) throws RuntimeException, IOException {
+		response.setContentType("application/json;charset=UTF-8");
+		response.setStatus(httpStatus.value());
+		response.getWriter().print(errorMessage);
+	}
 }

@@ -171,4 +171,12 @@ public class AuthServiceImpl implements AuthService {
 		return PostAuthProfileResponseDto.of(nickname, accessToken, refreshToken);
 	}
 
+	/**
+	 * Bearer 떼고 액세스 토큰 가져옴
+	 * @return 액세스 토큰
+	 */
+	private String parsingAccessToken(String accessToken) {
+		return accessToken.substring(JwtHeaderUtilEnum.GRANT_TYPE.getValue().length());
+	}
+
 }
