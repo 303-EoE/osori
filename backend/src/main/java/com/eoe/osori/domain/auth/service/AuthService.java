@@ -7,11 +7,12 @@ import com.eoe.osori.domain.auth.dto.PostAuthInfoResponseDto;
 import com.eoe.osori.domain.auth.dto.PostAuthLoginRequestDto;
 import com.eoe.osori.domain.auth.dto.PostAuthLoginResponseDto;
 import com.eoe.osori.domain.auth.dto.PostAuthProfileRequestDto;
+import com.eoe.osori.domain.auth.dto.PostAuthProfileResponseDto;
 
 public interface AuthService {
 
 	PostAuthLoginResponseDto login(PostAuthLoginRequestDto postAuthLoginRequestDto);
 	PostAuthInfoResponseDto getLoginUserInfo(String accessToken);
 
-	void saveProfile(String accessToken, PostAuthProfileRequestDto postAuthProfileRequestDto, MultipartFile profileImage);
+	PostAuthProfileResponseDto saveProfile(PostAuthProfileRequestDto postAuthProfileRequestDto, MultipartFile profileImage);
 }

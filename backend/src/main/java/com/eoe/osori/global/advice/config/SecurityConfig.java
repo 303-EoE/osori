@@ -40,9 +40,9 @@ public class SecurityConfig {
 			.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
 			.authorizeHttpRequests((authorizeRequests) ->
 					authorizeRequests
-						.requestMatchers(PERMIT_URL_ARRAY).permitAll()
-						.anyRequest().authenticated());
-						// .anyRequest().permitAll());
+						// .requestMatchers(PERMIT_URL_ARRAY).permitAll()
+						// .anyRequest().authenticated());
+						.anyRequest().permitAll());
 		return http.build();
 	}
 
