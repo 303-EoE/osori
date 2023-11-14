@@ -15,6 +15,7 @@ import com.eoe.osori.domain.auth.dto.PostAuthInfoResponseDto;
 import com.eoe.osori.domain.auth.dto.PostAuthLoginRequestDto;
 import com.eoe.osori.domain.auth.dto.PostAuthLoginResponseDto;
 import com.eoe.osori.domain.auth.dto.PostAuthProfileRequestDto;
+import com.eoe.osori.domain.auth.dto.PostAuthProfileResponseDto;
 import com.eoe.osori.domain.auth.service.AuthService;
 import com.eoe.osori.global.common.response.EnvelopeResponse;
 import com.eoe.osori.global.common.security.SecurityUtils;
@@ -64,21 +65,20 @@ public class AuthController {
 
 	/**
 	 * 회원 가입 시 회원 정보 등록
-	 * @param accessToken String
 	 * @param postAuthProfileRequestDto PostAuthProfileRequestDto
 	 * @param profileImage MultipartFile
 	 * @return
 	 * @see AuthService
 	 */
 	@PostMapping("/profile")
-	public ResponseEntity<EnvelopeResponse<Void>> profile(
-		@RequestHeader("Authorization") String accessToken,
+	public ResponseEntity<EnvelopeResponse<PostAuthProfileResponseDto>> profile(
 		@RequestPart(value = "postAuthProfileRequestDto") PostAuthProfileRequestDto postAuthProfileRequestDto,
 		@RequestPart(value = "profileImage", required = false) MultipartFile profileImage){
-		authService.saveProfile(accessToken, postAuthProfileRequestDto, profileImage);
+		authService.saveProfile(postAuthProfileRequestDto, profileImage);
 		return ResponseEntity.status(HttpStatus.OK)
-			.body(EnvelopeResponse.<Void>builder()
+			.body(EnvelopeResponse.<PostAuthProfileResponseDto>builder()
 				.code(HttpStatus.OK.value())
+				.data(authService.saveProfile(postAuthProfileRequestDto, profileImage))
 				.build());
 	}
 }
