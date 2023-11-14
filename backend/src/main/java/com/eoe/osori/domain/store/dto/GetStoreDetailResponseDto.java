@@ -18,8 +18,8 @@ public class GetStoreDetailResponseDto {
 	private String roadAddressName;
 	private String addressName;
 	private String phone;
-	private Double avergeRate;
-	private Integer avergePrice;
+	private Double averageRate;
+	private Integer averagePrice;
 	private Integer totalReviewCount;
 	private String defaultBillType;
 	private String depth1;
@@ -33,8 +33,8 @@ public class GetStoreDetailResponseDto {
 			.roadAddressName(store.getRoadAddressName())
 			.addressName(store.getAddressName())
 			.phone(store.getPhone())
-			.avergeRate(3.5)
-			.avergePrice(10000)
+			.averageRate(3.5)
+			.averagePrice(10000)
 			.totalReviewCount(10)
 			.defaultBillType(store.getCategory().getDefaultBillType().getName())
 			.depth1(store.getDepth1())
