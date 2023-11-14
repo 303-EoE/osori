@@ -8,27 +8,28 @@ import com.eoe.osori.domain.review.dto.CommonReviewListResponseDto;
 import com.eoe.osori.domain.review.dto.GetReviewDetailResponseDto;
 import com.eoe.osori.domain.review.dto.GetStoreReviewListResponseDto;
 import com.eoe.osori.domain.review.dto.PostReviewRequestDto;
+import com.eoe.osori.global.common.api.member.dto.GetMemberResponseDto;
 import com.eoe.osori.global.common.response.CommonIdResponseDto;
 
 public interface ReviewService {
 
-	CommonIdResponseDto saveReview(PostReviewRequestDto postReviewRequestDto, List<MultipartFile> reviewImages,
-		Long memberId);
+	CommonIdResponseDto saveReview(PostReviewRequestDto postReviewRequestDto, List<MultipartFile> reviewImages);
 
-	// 후에 멤버 검증 로직 추가
-	void deleteReview(Long reviewId, Long memberId);
+	void deleteReview(Long reviewId);
 
 	GetReviewDetailResponseDto getReviewDetail(Long reviewId);
 
-	void likeOrDisLikeReivew(Long reviewId, Long memberId);
+	void likeOrDisLikeReivew(Long reviewId);
 
-	CommonReviewListResponseDto getReviewListByRegion(String storeDepth1, String storeDepth2, Long memberId);
+	CommonReviewListResponseDto getReviewListByRegion(String storeDepth1, String storeDepth2);
 
 	GetStoreReviewListResponseDto getReviewListByStore(Long storeId);
 
-	CommonReviewListResponseDto getMyReviewList(Long memberId);
+	CommonReviewListResponseDto getMyReviewList();
 
-	CommonReviewListResponseDto getOtherReviewList(Long memberId, Long loginMemberId);
+	CommonReviewListResponseDto getOtherReviewList(Long memberId);
 
-	CommonReviewListResponseDto getLikeReviewList(Long memberId);
+	CommonReviewListResponseDto getLikeReviewList();
+
+	GetMemberResponseDto getLoginMember();
 }
