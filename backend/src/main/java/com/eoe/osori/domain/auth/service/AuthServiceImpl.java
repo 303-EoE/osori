@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.eoe.osori.domain.auth.domain.Member;
-import com.eoe.osori.domain.auth.dto.PostAuthInfoRequestDto;
 import com.eoe.osori.domain.auth.dto.PostAuthInfoResponseDto;
 import com.eoe.osori.domain.auth.dto.PostAuthLoginRequestDto;
 import com.eoe.osori.domain.auth.dto.PostAuthLoginResponseDto;
@@ -82,15 +81,6 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	/**
-	 * 토큰이 헤더에서 들어올 때 파싱
-	 * @param accessToken
-	 * @return
-	 */
-	private String parsingAccessToken(String accessToken){
-		return accessToken.substring(JwtHeaderUtilEnum.GRANT_TYPE.getValue().length());
-	}
-
-	/**
 	 * 토큰에서 로그인 유저 정보 조회
 	 * @param accessToken String
 	 * @return PostAuthInfoResponseDto
@@ -98,12 +88,17 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	@Transactional
 	public PostAuthInfoResponseDto getLoginUserInfo(String accessToken) {
-		int startIndex = accessToken.indexOf("Bearer") + "Bearer".length() + 1;
-		int endIndex = accessToken.lastIndexOf("\"");
-		String token = accessToken.substring(startIndex, endIndex);
-		if(token == null){
+
+		// 입력값 검증
+		if(accessToken == null){
 			throw new AuthException(AuthErrorInfo.INVALID_AUTH_REQUEST_DATA_ERROR);
 		}
+
+		// 토큰 파싱
+		int startIndex = accessToken.indexOf("Bearer") + "Bearer".length() + 1;
+		int endIndex = accessToken.length();
+		String token = accessToken.substring(startIndex, endIndex);
+
 		// 토큰에서 id 가져오기
 		Long id = jwtTokenProvider.getLoginId(token);
 
