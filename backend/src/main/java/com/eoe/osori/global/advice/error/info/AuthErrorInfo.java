@@ -12,7 +12,8 @@ public enum AuthErrorInfo {
 	MISMATCH_TOKEN_ID(HttpStatus.CONFLICT, 1002, "토큰 생성에 사용된 아이디와 일치하지 않습니다."),
 	INVALID_TOKEN(HttpStatus.UNAUTHORIZED, 1003, "유효하지 않은 토큰입니다."),
 	EXIST_MEMBER_NICKNAME(HttpStatus.BAD_REQUEST, 1004, "이미 존재하는 닉네임입니다."),
-	FAIL_TO_IMAGE_FEIGN_CLIENT_REQUEST(HttpStatus.BAD_REQUEST, 1005, "Image Feign Client 통신에 실패했습니다.");
+	FAIL_TO_IMAGE_FEIGN_CLIENT_REQUEST(HttpStatus.BAD_REQUEST, 1005, "Image Feign Client 통신에 실패했습니다."),
+	EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, 1006, "리프레시 토큰이 만료되었습니다.");
 
 	private final HttpStatus status;
 	private final Integer code;

@@ -14,6 +14,7 @@ import com.eoe.osori.domain.auth.dto.PostAuthLoginRequestDto;
 import com.eoe.osori.domain.auth.dto.PostAuthLoginResponseDto;
 import com.eoe.osori.domain.auth.dto.PostAuthProfileRequestDto;
 import com.eoe.osori.domain.auth.dto.PostAuthProfileResponseDto;
+import com.eoe.osori.domain.auth.dto.PostAuthReissueTokenResponseDto;
 import com.eoe.osori.domain.auth.repository.MemberRepository;
 import com.eoe.osori.global.advice.error.exception.AuthException;
 import com.eoe.osori.global.advice.error.info.AuthErrorInfo;
@@ -169,6 +170,14 @@ public class AuthServiceImpl implements AuthService {
 		String refreshToken = jwtTokenProvider.generateRefreshToken(member.getId());
 
 		return PostAuthProfileResponseDto.of(nickname, accessToken, refreshToken);
+	}
+
+	/**
+	 * Bearer 떼고 액세스 토큰 가져옴
+	 * @return 액세스 토큰
+	 */
+	private String parsingAccessToken(String accessToken) {
+		return accessToken.substring(JwtHeaderUtilEnum.GRANT_TYPE.getValue().length());
 	}
 
 }
