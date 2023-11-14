@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:osori/services/other/social_login_service.dart';
 import 'package:osori/widgets/common/token_manager.dart';
@@ -11,7 +12,8 @@ class AuthService {
   static const String google = "Google";
   static const String kakao = "Kakao";
   // 로그인/회원가입
-  static Future<String> loginWithSocialService(String serviceName) async {
+  static Future<Map<String, dynamic>> loginWithSocialService(
+      String serviceName) async {
     try {
       late String provider;
       late String providerId;
@@ -33,16 +35,22 @@ class AuthService {
       });
       final json = response.data['data'];
       if (json['nickname'] == null) {
-        return 'nickname null';
+        return {
+          'providerId': providerId,
+          'nickname': 'null',
+        };
       } else {
         await TokenManager.renewAllToken(
             json['accessToken'], json['refreshToken']);
         await getUserInfo(); // 저장소에 회원정보 저장하기
-        return json['nickname'];
+        return {
+          'providerId': providerId,
+          'nickname': json['nickname'],
+        };
       }
     } catch (error) {
-      print(error);
-      return "";
+      debugPrint('$error');
+      return {'nickname': ""};
     }
   }
 
@@ -61,20 +69,24 @@ class AuthService {
 
   // 회원정보 신규 등록
   static Future<int> registerUserInfo(
-      String nickname, File? profileImage) async {
+      String providerId, String nickname, File? profileImage) async {
     try {
       var dio = Dio();
       const url = '$baseUrl/profile';
       var formData = FormData.fromMap({
         if (profileImage != null)
           'profileImageUrl': MultipartFile.fromFileSync(profileImage.path),
-        'nickname': MultipartFile.fromString(jsonEncode({'nickname': nickname}),
+        'nickname': MultipartFile.fromString(
+            jsonEncode({
+              'providerId': providerId,
+              'nickname': nickname,
+            }),
             contentType: MediaType.parse('application/json')),
       });
       final response = await dio.post(url, data: formData);
       return response.statusCode ?? -1;
     } catch (error) {
-      print(error);
+      debugPrint('$error');
       return -1;
     }
   }

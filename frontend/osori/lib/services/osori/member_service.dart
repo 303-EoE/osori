@@ -24,6 +24,20 @@ class MemberService {
     }
   }
 
+  static Future<Map<String, dynamic>?> getMemberProfile(String memberId) async {
+    try {
+      final token = await TokenManager.readAccessToken();
+      var dio = Dio();
+      dio.options.headers = {"Authorization": token};
+      final url = '$baseUrl/member_id=$memberId';
+      final response = await dio.get(url);
+      return response.data['data'];
+    } catch (error) {
+      debugPrint('$error');
+      return null;
+    }
+  }
+
   static Future<int> updateProfile(
       String nickname, File? image, bool useDefault) async {
     try {

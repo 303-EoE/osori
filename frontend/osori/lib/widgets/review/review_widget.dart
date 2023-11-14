@@ -1,16 +1,26 @@
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:osori/models/review/review_whole_model.dart';
+import 'package:osori/screens/profile_screen.dart';
 import 'package:osori/services/osori/review_service.dart';
 import 'package:osori/widgets/common/snack_bar_manager.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class Review extends StatelessWidget {
-  final dynamic review;
-  final String userId;
+class Review extends StatefulWidget {
+  final ReviewWholeModel review;
   const Review({
     super.key,
-    this.review,
-    required this.userId,
+    required this.review,
   });
 
+  @override
+  State<Review> createState() => _ReviewState();
+}
+
+class _ReviewState extends State<Review> {
+  int activeIndex = 0;
+  var numberFormat = NumberFormat('###,###,###,###');
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -28,26 +38,40 @@ class Review extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Row(
-              children: [
-                Image.asset(
-                  'assets/images/288X288.png',
-                  height: 32,
-                ),
-                const SizedBox(
-                  width: 16,
-                ),
-                SizedBox(
-                  width: size.width / 2,
-                  child: Text(
-                    review.memberNickname,
-                    overflow: TextOverflow.ellipsis,
+            GestureDetector(
+              onTapUp: (details) {
+                // 사용자 프로필로 넘어가기
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) {
+                    return ProfileScreen('${widget.review.memberId}');
+                  },
+                ));
+              },
+              child: Row(
+                children: [
+                  // Image.network(
+                  //   'https://osori-bucket.s3.ap-northeast-2.amazonaws.com/${widget.review.memberProfileImageUrl}',
+                  //   height: 32,
+                  // ),
+                  Image.asset(
+                    'assets/images/288X288.png',
+                    height: 32,
                   ),
-                ),
-              ],
+                  const SizedBox(
+                    width: 16,
+                  ),
+                  SizedBox(
+                    width: size.width / 2,
+                    child: Text(
+                      widget.review.memberNickname,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
             ),
             // if (review.id == userId)
-            if (review.isMine)
+            if (widget.review.isMine)
               PopupMenuButton(
                 onSelected: (value) {
                   showDialog(
@@ -77,8 +101,9 @@ class Review extends StatelessWidget {
                                     onPressed: () async {
                                       final response =
                                           await ReviewService.deleteReview(
-                                              review.id);
+                                              widget.review.id);
                                       if (context.mounted) {
+                                        Navigator.pop(context);
                                         if (response == 200) {
                                           SnackBarManager.completeSnackBar(
                                               context, '리뷰 삭제');
@@ -116,14 +141,43 @@ class Review extends StatelessWidget {
               )
           ]),
         ),
-        AspectRatio(
-          aspectRatio: 1,
-          child: Image.network(
-            'https://osori-bucket.s3.ap-northeast-2.amazonaws.com/${review.images[0]}',
-            width: size.width,
-            fit: BoxFit.cover,
+        Stack(children: [
+          AspectRatio(
+            aspectRatio: 1,
+            child: CarouselSlider.builder(
+              options: CarouselOptions(
+                aspectRatio: 1,
+                enableInfiniteScroll: false,
+                initialPage: 0,
+                viewportFraction: 1,
+                enlargeCenterPage: true,
+                onPageChanged: (index, reason) => setState(() {
+                  activeIndex = index;
+                }),
+              ),
+              itemCount: widget.review.images.length,
+              itemBuilder: (context, index, realIndex) {
+                return Image.network(
+                  'https://osori-bucket.s3.ap-northeast-2.amazonaws.com/${widget.review.images[index]}',
+                  width: size.width,
+                  fit: BoxFit.cover,
+                );
+              },
+            ),
           ),
-        ),
+          Container(
+              margin: const EdgeInsets.only(top: 20.0),
+              alignment: Alignment.bottomCenter,
+              child: AnimatedSmoothIndicator(
+                activeIndex: activeIndex,
+                count: widget.review.images.length,
+                effect: const JumpingDotEffect(
+                    dotHeight: 6,
+                    dotWidth: 6,
+                    activeDotColor: Colors.black,
+                    dotColor: Colors.grey),
+              )),
+        ]),
         Padding(
           padding: const EdgeInsets.all(10),
           child: Column(children: [
@@ -132,7 +186,7 @@ class Review extends StatelessWidget {
               children: [
                 Flexible(
                   child: Text(
-                    review.storeName,
+                    widget.review.storeName,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
                         fontSize: 24, fontWeight: FontWeight.w600),
@@ -140,11 +194,14 @@ class Review extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () async {
-                    final result = await ReviewService.likeReview(review.id);
+                    final result =
+                        await ReviewService.likeReview(widget.review.id);
                     print(result);
                   },
                   icon: Icon(
-                    review.liked ? Icons.favorite : Icons.favorite_outline,
+                    widget.review.liked
+                        ? Icons.favorite
+                        : Icons.favorite_outline,
                     size: 32,
                   ),
                 )
@@ -156,7 +213,7 @@ class Review extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  '${review.averageCost}',
+                  '${numberFormat.format(widget.review.averageCost)}원',
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w500,
@@ -189,14 +246,20 @@ class Review extends StatelessWidget {
                     ),
                   ],
                 ),
-                Text('${review.rate}'),
+                const SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  '${widget.review.rate}',
+                  style: const TextStyle(fontWeight: FontWeight.w600),
+                ),
               ],
             ),
             const SizedBox(
               height: 10,
             ),
             Text(
-              review.content,
+              widget.review.content,
               maxLines: 5,
               overflow: TextOverflow.ellipsis,
             ),
@@ -206,7 +269,7 @@ class Review extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  '${review.storeDepth1} ${review.storeDepth2}',
+                  '${widget.review.storeDepth1} ${widget.review.storeDepth2}',
                   style: const TextStyle(color: Colors.grey),
                 ),
               ],

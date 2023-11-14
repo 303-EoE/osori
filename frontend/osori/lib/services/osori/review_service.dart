@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:osori/models/review/review_whole_model.dart';
 import 'package:osori/widgets/common/token_manager.dart';
 
 class ReviewService {
@@ -20,7 +22,7 @@ class ReviewService {
         return response.data['data']['reviews'];
       }
     } catch (error) {
-      print('$error');
+      debugPrint('$error');
       return null;
     }
     return null;
@@ -38,7 +40,7 @@ class ReviewService {
         return response.data['data']['reviews'];
       }
     } catch (error) {
-      print('$error');
+      debugPrint('$error');
       return null;
     }
     return null;
@@ -58,7 +60,7 @@ class ReviewService {
         return response.data;
       }
     } catch (error) {
-      print(error);
+      debugPrint('$error');
     }
     return null;
   }
@@ -103,13 +105,13 @@ class ReviewService {
       final response = await dio.post(url, data: formData);
       return response.statusCode ?? -1;
     } catch (error) {
-      print(error);
+      debugPrint('$error');
       return -1;
     }
   }
 
   // 리뷰 상세 조회
-  static Future<Map<String, dynamic>?> getDetailedReview(int reviewId) async {
+  static Future<ReviewWholeModel?> getDetailedReview(int reviewId) async {
     try {
       final token = await TokenManager.readAccessToken();
       final url = '$baseUrl/detail?review_id=$reviewId';
@@ -120,7 +122,7 @@ class ReviewService {
         return response.data['data'];
       }
     } catch (error) {
-      print('$error');
+      debugPrint('$error');
       return null;
     }
     return null;
@@ -130,13 +132,13 @@ class ReviewService {
   static Future<int> deleteReview(int reviewId) async {
     try {
       final token = await TokenManager.readAccessToken();
-      final url = '$baseUrl/detail?review_id=$reviewId';
+      final url = '$baseUrl?review_id=$reviewId';
       var dio = Dio();
       dio.options.headers = {'Authorization': token};
       final response = await dio.delete(url);
       return response.statusCode ?? -1;
     } catch (error) {
-      print('$error');
+      debugPrint('$error');
       return -1;
     }
   }
@@ -151,7 +153,7 @@ class ReviewService {
       final response = await dio.post(url);
       return response.statusCode ?? -1;
     } catch (error) {
-      print(error);
+      debugPrint('$error');
       return -1;
     }
   }

@@ -35,7 +35,7 @@ class Osori extends StatelessWidget {
       routes: {
         "/map": (context) => const MapScreen(),
         "/chat": (context) => const ChatScreen(),
-        "/profile": (context) => const ProfileScreen(),
+        "/profile": (context) => const ProfileScreen(null),
         "/login": (context) => const LoginScreen(),
       },
       title: 'OSORI',
