@@ -9,11 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.eoe.osori.domain.auth.domain.Member;
-import com.eoe.osori.domain.auth.dto.PostAuthInfoRequestDto;
 import com.eoe.osori.domain.auth.dto.PostAuthInfoResponseDto;
 import com.eoe.osori.domain.auth.dto.PostAuthLoginRequestDto;
 import com.eoe.osori.domain.auth.dto.PostAuthLoginResponseDto;
 import com.eoe.osori.domain.auth.dto.PostAuthProfileRequestDto;
+import com.eoe.osori.domain.auth.dto.PostAuthProfileResponseDto;
 import com.eoe.osori.domain.auth.repository.MemberRepository;
 import com.eoe.osori.global.advice.error.exception.AuthException;
 import com.eoe.osori.global.advice.error.info.AuthErrorInfo;
@@ -81,15 +81,6 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	/**
-	 * 토큰이 헤더에서 들어올 때 파싱
-	 * @param accessToken
-	 * @return
-	 */
-	private String parsingAccessToken(String accessToken){
-		return accessToken.substring(JwtHeaderUtilEnum.GRANT_TYPE.getValue().length());
-	}
-
-	/**
 	 * 토큰에서 로그인 유저 정보 조회
 	 * @param accessToken String
 	 * @return PostAuthInfoResponseDto
@@ -97,12 +88,17 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	@Transactional
 	public PostAuthInfoResponseDto getLoginUserInfo(String accessToken) {
-		int startIndex = accessToken.indexOf("Bearer") + "Bearer".length() + 1;
-		int endIndex = accessToken.lastIndexOf("\"");
-		String token = accessToken.substring(startIndex, endIndex);
-		if(token == null){
+
+		// 입력값 검증
+		if(accessToken == null){
 			throw new AuthException(AuthErrorInfo.INVALID_AUTH_REQUEST_DATA_ERROR);
 		}
+
+		// 토큰 파싱
+		int startIndex = accessToken.indexOf("Bearer") + "Bearer".length() + 1;
+		int endIndex = accessToken.length();
+		String token = accessToken.substring(startIndex, endIndex);
+
 		// 토큰에서 id 가져오기
 		Long id = jwtTokenProvider.getLoginId(token);
 
@@ -115,23 +111,23 @@ public class AuthServiceImpl implements AuthService {
 
 	/**
 	 * 회원 가입시 회원 정보 등록
-	 * @param accessToken String
 	 * @param postAuthProfileRequestDto PostAuthProfileRequestDto
 	 * @param profileImage MultipartFile
+	 * @return PostAuthProfileResponseDto
 	 * @see ImageApi
-	 * @see JwtTokenProvider
 	 * @see MemberRepository
 	 */
 	@Override
 	@Transactional
-	public void saveProfile(String accessToken, PostAuthProfileRequestDto postAuthProfileRequestDto, MultipartFile profileImage) {
-		log.info("파싱 전: {}", accessToken);
-		accessToken = parsingAccessToken(accessToken);
-		log.info("파싱 후: {}", accessToken);
-		// 토큰 id로 멤버 찾기
-		Long id = jwtTokenProvider.getLoginId(accessToken);
-		log.info("회원 정보 입력: {}", id);
-		Member member = memberRepository.findById(id)
+	public PostAuthProfileResponseDto saveProfile(PostAuthProfileRequestDto postAuthProfileRequestDto, MultipartFile profileImage) {
+		// providerId 유효성 검사
+		String providerId = postAuthProfileRequestDto.getProviderId();
+		if(StringUtils.isBlank(providerId)){
+			throw new AuthException(AuthErrorInfo.INVALID_AUTH_REQUEST_DATA_ERROR);
+		}
+
+		// providerId로 멤버 찾기
+		Member member = memberRepository.findByProviderId(providerId)
 			.orElseThrow(() -> new AuthException(AuthErrorInfo.MEMBER_NOT_FOUND));
 
 		// 닉네임 유효성 검사
@@ -165,7 +161,14 @@ public class AuthServiceImpl implements AuthService {
 			profileImageUrl = postImageResponseDto.getPath().get(0).getUploadFilePath();
 
 		}
+		// 멤버 정보 수정
 		member.updateMember(nickname, profileImageUrl);
+
+		// 토큰 발급
+		String accessToken = jwtTokenProvider.generateAccessToken(member.getId());
+		String refreshToken = jwtTokenProvider.generateRefreshToken(member.getId());
+
+		return PostAuthProfileResponseDto.of(nickname, accessToken, refreshToken);
 	}
 
 }

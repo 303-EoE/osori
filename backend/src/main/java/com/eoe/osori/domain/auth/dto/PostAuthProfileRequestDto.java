@@ -4,5 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class PostAuthProfileRequestDto {
+	private String providerId;
 	private String nickname;
 }
