@@ -196,6 +196,142 @@ final reviewWholeMyModelProvider =
 
 typedef ReviewWholeMyModelRef
     = AutoDisposeFutureProviderRef<List<ReviewWholeModel>>;
+String _$reviewWholeMemberModelHash() =>
+    r'b8fc5f50912aa1406fe3cdbd9891312ef4e7fc78';
+
+/// See also [reviewWholeMemberModel].
+@ProviderFor(reviewWholeMemberModel)
+const reviewWholeMemberModelProvider = ReviewWholeMemberModelFamily();
+
+/// See also [reviewWholeMemberModel].
+class ReviewWholeMemberModelFamily
+    extends Family<AsyncValue<List<ReviewWholeModel>>> {
+  /// See also [reviewWholeMemberModel].
+  const ReviewWholeMemberModelFamily();
+
+  /// See also [reviewWholeMemberModel].
+  ReviewWholeMemberModelProvider call(
+    String memberId,
+  ) {
+    return ReviewWholeMemberModelProvider(
+      memberId,
+    );
+  }
+
+  @override
+  ReviewWholeMemberModelProvider getProviderOverride(
+    covariant ReviewWholeMemberModelProvider provider,
+  ) {
+    return call(
+      provider.memberId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'reviewWholeMemberModelProvider';
+}
+
+/// See also [reviewWholeMemberModel].
+class ReviewWholeMemberModelProvider
+    extends AutoDisposeFutureProvider<List<ReviewWholeModel>> {
+  /// See also [reviewWholeMemberModel].
+  ReviewWholeMemberModelProvider(
+    String memberId,
+  ) : this._internal(
+          (ref) => reviewWholeMemberModel(
+            ref as ReviewWholeMemberModelRef,
+            memberId,
+          ),
+          from: reviewWholeMemberModelProvider,
+          name: r'reviewWholeMemberModelProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$reviewWholeMemberModelHash,
+          dependencies: ReviewWholeMemberModelFamily._dependencies,
+          allTransitiveDependencies:
+              ReviewWholeMemberModelFamily._allTransitiveDependencies,
+          memberId: memberId,
+        );
+
+  ReviewWholeMemberModelProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.memberId,
+  }) : super.internal();
+
+  final String memberId;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<ReviewWholeModel>> Function(
+            ReviewWholeMemberModelRef provider)
+        create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: ReviewWholeMemberModelProvider._internal(
+        (ref) => create(ref as ReviewWholeMemberModelRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        memberId: memberId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<ReviewWholeModel>> createElement() {
+    return _ReviewWholeMemberModelProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ReviewWholeMemberModelProvider &&
+        other.memberId == memberId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, memberId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin ReviewWholeMemberModelRef
+    on AutoDisposeFutureProviderRef<List<ReviewWholeModel>> {
+  /// The parameter `memberId` of this provider.
+  String get memberId;
+}
+
+class _ReviewWholeMemberModelProviderElement
+    extends AutoDisposeFutureProviderElement<List<ReviewWholeModel>>
+    with ReviewWholeMemberModelRef {
+  _ReviewWholeMemberModelProviderElement(super.provider);
+
+  @override
+  String get memberId => (origin as ReviewWholeMemberModelProvider).memberId;
+}
+
 String _$reviewWholeLikedModelHash() =>
     r'8125eb73fb00bc2ed1c19526e961c69ee1ac7a59';
 
