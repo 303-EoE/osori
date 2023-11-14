@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:osori/models/kakao_store_model.dart';
 import 'package:osori/models/review/review_summary_model.dart';
+import 'package:osori/models/store/store_description_model.dart';
 import 'package:osori/providers/review_summary_model_provider.dart';
 import 'package:osori/screens/receipt_scanning_screen.dart';
-import 'package:osori/services/other/kakao_local_api_service.dart';
-import 'package:osori/widgets/common/token_manager.dart';
+import 'package:osori/services/osori/review_service.dart';
+import 'package:osori/services/osori/store_service.dart';
 import 'package:osori/widgets/review/review_widget.dart';
 
 class StoreScreen extends StatefulWidget {
-  final Map<String, dynamic> tappedStore;
+  final int storeId;
   const StoreScreen({
     super.key,
-    required this.tappedStore,
+    required this.storeId,
   });
 
   @override
@@ -23,17 +23,13 @@ class _StoreScreenState extends State<StoreScreen> {
   // 키워드로 장소 검색하기 활용
   // name, latitude, longitude, id 필요
   // address_name, phone을 받아오기
-  late Future<KakaoStoreModel?> storeModel;
+  late Future<StoreDescriptionModel> storeModel;
   late String userId;
 
   @override
   void initState() {
     super.initState();
-    storeModel = KakaoLocalApiService.getStoreDesciptionByKeyword(
-        widget.tappedStore['name'],
-        widget.tappedStore['longitude'],
-        widget.tappedStore['latitude'],
-        widget.tappedStore['id'].toString());
+    storeModel = StoreService.getStoreDescription(widget.storeId);
   }
 
   @override
@@ -59,7 +55,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.tappedStore['name'],
+                          snapshot.data!.name,
                           style: const TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.w600,
@@ -69,7 +65,7 @@ class _StoreScreenState extends State<StoreScreen> {
                           children: [
                             const Icon(Icons.savings_outlined),
                             Text(
-                              ' ${widget.tappedStore['averagePrice'].toString()}원',
+                              ' ${snapshot.data!.averagePrice.toString()}원',
                               style: const TextStyle(
                                 fontSize: 20,
                               ),
@@ -82,7 +78,7 @@ class _StoreScreenState extends State<StoreScreen> {
                               Icons.star_outline,
                             ),
                             Text(
-                              ' ${widget.tappedStore['averageRate'].toString()} / 5',
+                              ' ${snapshot.data!.averageRate.toString()} / 5',
                               style: const TextStyle(
                                 fontSize: 20,
                               ),
@@ -120,8 +116,7 @@ class _StoreScreenState extends State<StoreScreen> {
                 // 가게 리뷰 요약 조회 (우리 api)로 리뷰 받아오기
                 // store_id 필요
                 final AsyncValue<List<ReviewSummaryModel>> reviews = ref.watch(
-                    reviewSummaryModelProvider(
-                        widget.tappedStore['id'].toString()));
+                    reviewSummaryModelProvider(widget.storeId.toString()));
 
                 return Center(
                   child: switch (reviews) {
@@ -155,7 +150,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                       MaterialPageRoute(
                                         builder: (context) =>
                                             ReceiptScanningScreen(
-                                          store: model!,
+                                          storeId: model.id,
                                         ),
                                       ),
                                     );
@@ -203,7 +198,9 @@ class _StoreScreenState extends State<StoreScreen> {
                             for (var review in value)
                               GestureDetector(
                                   onTapUp: (details) async {
-                                    userId = await TokenManager.readUserId();
+                                    final wholeReview =
+                                        await ReviewService.getDetailedReview(
+                                            review.id);
                                     if (mounted) {
                                       showDialog(
                                           context: context,
@@ -219,8 +216,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                                     ),
                                                     clipBehavior: Clip.hardEdge,
                                                     child: Review(
-                                                      review: review,
-                                                      userId: userId,
+                                                      review: wholeReview!,
                                                     )),
                                               ),
                                             );

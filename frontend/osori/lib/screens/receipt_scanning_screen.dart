@@ -2,15 +2,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_gif/flutter_gif.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:osori/models/kakao_store_model.dart';
 import 'package:osori/screens/write_review_form_screen.dart';
 import 'package:osori/services/osori/review_service.dart';
 
 class ReceiptScanningScreen extends StatefulWidget {
-  final KakaoStoreModel store;
+  final int storeId;
   const ReceiptScanningScreen({
     super.key,
-    required this.store,
+    required this.storeId,
   });
 
   @override
@@ -35,12 +34,11 @@ class _ReceiptScanningScreenState extends State<ReceiptScanningScreen>
     Map<String, dynamic>? result =
         await ReviewService.scanImage(File(pickedImage.path));
     if (mounted) {
-      print(result);
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => WriteReviewFormScreen(
-                model: widget.store,
+                storeId: widget.storeId,
                 paidAt: result?['data']['paidAt'],
                 totalPrice: result?['data']['totalPrice']),
           ));

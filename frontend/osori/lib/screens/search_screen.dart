@@ -117,8 +117,8 @@ class _SearchScreenState extends State<SearchScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      ReceiptScanningScreen(store: store),
+                                  builder: (context) => ReceiptScanningScreen(
+                                      storeId: int.parse(store.id)),
                                 ),
                               );
                             },

@@ -46,6 +46,25 @@ Future<List<ReviewWholeModel>> reviewWholeMyModel(
 }
 
 @riverpod
+Future<List<ReviewWholeModel>> reviewWholeMemberModel(
+    ReviewWholeMemberModelRef ref, String memberId) async {
+  List<ReviewWholeModel> reviewInstances = [];
+  final token = TokenManager.readAccessToken();
+  var dio = Dio();
+  dio.options.headers = {"Authorization": token};
+  final url = '$baseUrl/member?member_id=$memberId';
+  final response = await dio.get(url);
+  if (response.statusCode == 200) {
+    final reviews = response.data['data']['reviews'];
+    for (var review in reviews) {
+      reviewInstances.add(ReviewWholeModel.fromJson(review));
+    }
+    return reviewInstances;
+  }
+  throw Error();
+}
+
+@riverpod
 Future<List<ReviewWholeModel>> reviewWholeLikedModel(
     ReviewWholeLikedModelRef ref) async {
   List<ReviewWholeModel> reviewInstances = [];

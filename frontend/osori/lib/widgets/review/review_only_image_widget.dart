@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:osori/models/review/review_whole_model.dart';
-import 'package:osori/widgets/common/token_manager.dart';
 import 'package:osori/widgets/review/review_widget.dart';
 
 class ReviewOnlyImage extends StatelessWidget {
@@ -17,7 +16,6 @@ class ReviewOnlyImage extends StatelessWidget {
         for (var review in reviews)
           GestureDetector(
             onTapUp: (details) async {
-              String userId = await TokenManager.readUserId();
               if (context.mounted) {
                 showDialog(
                     context: context,
@@ -31,8 +29,7 @@ class ReviewOnlyImage extends StatelessWidget {
                               ),
                               clipBehavior: Clip.hardEdge,
                               child: Review(
-                                review: review.id,
-                                userId: userId,
+                                review: review,
                               )),
                         ),
                       );
