@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:http/http.dart' as http;
@@ -19,7 +20,7 @@ class SocialLoginService {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       return googleUser?.id.toString() ?? "";
     } catch (error) {
-      print('구글 로그인 실패 $error');
+      debugPrint('구글 로그인 실패 $error');
       throw Error();
     }
   }
@@ -44,7 +45,7 @@ class SocialLoginService {
 
       return profileInfo['id'].toString();
     } catch (error) {
-      print('카카오 로그인 실패 $error');
+      debugPrint('카카오 로그인 실패 $error');
       throw Error();
     }
   }

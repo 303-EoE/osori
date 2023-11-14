@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class OsoriProviderObserver extends ProviderObserver {
@@ -7,7 +8,7 @@ class OsoriProviderObserver extends ProviderObserver {
     Object? value,
     ProviderContainer container,
   ) {
-    print('Provider $provider was initialized with $value');
+    debugPrint('Provider $provider was initialized with $value');
   }
 
   @override
@@ -15,7 +16,7 @@ class OsoriProviderObserver extends ProviderObserver {
     ProviderBase<Object?> provider,
     ProviderContainer container,
   ) {
-    print('Provider $provider was disposed');
+    debugPrint('Provider $provider was disposed');
   }
 
   @override
@@ -25,7 +26,7 @@ class OsoriProviderObserver extends ProviderObserver {
     Object? newValue,
     ProviderContainer container,
   ) {
-    print('Provider $provider updated from $previousValue to $newValue');
+    debugPrint('Provider $provider updated from $previousValue to $newValue');
   }
 
   @override
@@ -35,6 +36,6 @@ class OsoriProviderObserver extends ProviderObserver {
     StackTrace stackTrace,
     ProviderContainer container,
   ) {
-    print('Provider $provider threw $error at $stackTrace');
+    debugPrint('Provider $provider threw $error at $stackTrace');
   }
 }

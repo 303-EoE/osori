@@ -1,35 +1,38 @@
 import 'package:dio/dio.dart';
-import 'package:osori/models/kakao_store_model.dart';
+import 'package:osori/models/store/store_description_model.dart';
+import 'package:osori/models/store/store_model.dart';
 import 'package:osori/widgets/common/token_manager.dart';
 
 class StoreService {
   static const String baseUrl = "https://test.osori.co.kr/stores";
 
-  static Future<int> getStoreId(KakaoStoreModel model) async {
-    try {
-      final token = await TokenManager.readAccessToken();
-      var dio = Dio();
-      dio.options.headers = {'Authorization': token};
-
-      const url = baseUrl;
-      final response = await dio.post(url, data: {
-        "name": model.placeName, // String
-        "kakaoId": model.id, // String
-        "category": model.categoryName, // String
-        "longitude": model.x, // String
-        "latitude": model.y, // String
-        "roadAddressName": model.roadAddressName, // String
-        "addressName": model.addressName, // String
-        "phone": model.phone
-      });
-      if (response.statusCode == 200) {
-        print(response);
-        return response.data['data']['id'];
+  static Future<List<StoreModel>> getNearStores(
+      String depth1, String depth2) async {
+    List<StoreModel> storeInstances = [];
+    final token = await TokenManager.readAccessToken();
+    var dio = Dio();
+    dio.options.headers = {"Authorization": token};
+    final url = '$baseUrl/region?depth1=$depth1&depth2=$depth2';
+    final response = await dio.get(url);
+    if (response.statusCode == 200) {
+      final stores = response.data['data']['stores'];
+      for (var store in stores) {
+        storeInstances.add(StoreModel.fromJson(store));
       }
-      return -1;
-    } catch (error) {
-      print(error);
-      return -1;
+      return storeInstances;
     }
+    throw Error();
+  }
+
+  static Future<StoreDescriptionModel> getStoreDescription(int storeId) async {
+    final token = TokenManager.readAccessToken();
+    var dio = Dio();
+    dio.options.headers = {"Authorization": token};
+    final url = '$baseUrl/detail?store_id=$storeId';
+    final response = await dio.get(url);
+    if (response.statusCode == 200) {
+      return response.data['data'];
+    }
+    throw Error();
   }
 }
