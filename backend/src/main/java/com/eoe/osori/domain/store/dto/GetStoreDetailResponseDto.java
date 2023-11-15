@@ -1,6 +1,7 @@
 package com.eoe.osori.domain.store.dto;
 
 import com.eoe.osori.domain.store.domain.Store;
+import com.eoe.osori.global.common.redis.domain.StoreInfo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +26,7 @@ public class GetStoreDetailResponseDto {
 	private String depth1;
 	private String depth2;
 
-	public static GetStoreDetailResponseDto from(Store store) {
+	public static GetStoreDetailResponseDto of(Store store, StoreInfo storeInfo) {
 		return GetStoreDetailResponseDto.builder()
 			.id(store.getId())
 			.name(store.getName())
@@ -33,9 +34,9 @@ public class GetStoreDetailResponseDto {
 			.roadAddressName(store.getRoadAddressName())
 			.addressName(store.getAddressName())
 			.phone(store.getPhone())
-			.averageRate(3.5)
-			.averagePrice(10000)
-			.totalReviewCount(10)
+			.averageRate(storeInfo.getAverageRate())
+			.averagePrice(storeInfo.getAveragePrice())
+			.totalReviewCount(storeInfo.getTotalReviewCount())
 			.defaultBillType(store.getCategory().getDefaultBillType().getName())
 			.depth1(store.getDepth1())
 			.depth2(store.getDepth2())
