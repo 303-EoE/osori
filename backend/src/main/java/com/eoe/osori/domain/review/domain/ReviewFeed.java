@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import com.eoe.osori.global.common.api.member.dto.GetMemberResponseDto;
+import com.eoe.osori.domain.review.dto.PostReviewRequestDto;
 import com.eoe.osori.global.common.api.store.dto.GetStoreDetailResponseDto;
 
 import jakarta.persistence.Id;
@@ -66,7 +66,7 @@ public class ReviewFeed {
 	@Builder.Default
 	private List<String> images = new ArrayList<>();
 
-	public static ReviewFeed of(Review review, GetMemberResponseDto getMemberResponseDto,
+	public static ReviewFeed of(Review review, PostReviewRequestDto postReviewRequestDto,
 		GetStoreDetailResponseDto getStoreResponseDto, List<String> reviewImageUrlList) {
 
 		return ReviewFeed.builder()
@@ -80,9 +80,9 @@ public class ReviewFeed {
 			.storeName(getStoreResponseDto.getName())
 			.storeDepth1(getStoreResponseDto.getDepth1())
 			.storeDepth2(getStoreResponseDto.getDepth2())
-			.memberId(getMemberResponseDto.getId())
-			.memberNickname(getMemberResponseDto.getNickname())
-			.memberProfileImageUrl(getMemberResponseDto.getProfileImageUrl())
+			.memberId(postReviewRequestDto.getMemberId())
+			.memberNickname(postReviewRequestDto.getMemberNickname())
+			.memberProfileImageUrl(postReviewRequestDto.getMemberProfileImageUrl())
 			.images(reviewImageUrlList)
 			.build();
 	}
