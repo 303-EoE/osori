@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eoe.osori.domain.store.dto.GetStoreDetailResponseDto;
+import com.eoe.osori.domain.store.dto.GetStoreListResponseDto;
 import com.eoe.osori.domain.store.dto.GetStoreRegisterResponseDto;
 import com.eoe.osori.domain.store.dto.PostStoreRequestDto;
 import com.eoe.osori.domain.store.service.StoreService;
@@ -83,7 +84,22 @@ public class StoreController {
 				.build());
 	}
 
-	// 가게 리스트로 조회
-	// 데이터 중에 하나라도 0이면 store에서 처리
-	// 프론트로 넘겨줄 리스트에서 제거하기
+	/**
+	 *  지역으로 가게 목록 조회
+	 *
+	 * @param depth1 String
+	 * @param depth2 String
+	 * @return ResponseEntity<EnvelopeResponse < GetStoreListResponseDto>>
+	 * @see StoreService
+	 */
+	@GetMapping("/region")
+	public ResponseEntity<EnvelopeResponse<GetStoreListResponseDto>> getStoreListByRegion(
+		@RequestParam("depth1") String depth1, @RequestParam("depth2") String depth2) {
+
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(EnvelopeResponse.<GetStoreListResponseDto>builder()
+				.code(HttpStatus.OK.value())
+				.data(storeService.getStoreListByRegion(depth1, depth2))
+				.build());
+	}
 }
