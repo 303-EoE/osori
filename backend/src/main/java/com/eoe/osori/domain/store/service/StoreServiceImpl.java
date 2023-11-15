@@ -98,6 +98,7 @@ public class StoreServiceImpl implements StoreService {
 		Optional<StoreInfo> optionalStoreInfo = storeInfoRedisRepository.findById(id);
 
 		if (optionalStoreInfo.isPresent()) {
+			storeInfoRedisRepository.save(optionalStoreInfo.get());
 			return GetStoreDetailResponseDto.of(store, optionalStoreInfo.get());
 		}
 

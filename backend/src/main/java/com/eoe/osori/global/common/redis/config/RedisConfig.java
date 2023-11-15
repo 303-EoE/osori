@@ -1,8 +1,6 @@
 package com.eoe.osori.global.common.redis.config;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
@@ -52,7 +50,7 @@ public class RedisConfig {
 	public CacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
 		RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig()
 			.disableCachingNullValues()
-			.entryTtl(Duration.ofSeconds(CacheKey.DEFAULT_EXPIRE_SEC))
+			.entryTtl(Duration.ofSeconds(360))
 			.computePrefixWith(CacheKeyPrefix.simple())
 			.serializeKeysWith(
 				RedisSerializationContext.SerializationPair
@@ -62,15 +60,9 @@ public class RedisConfig {
 				.SerializationPair
 				.fromSerializer(new GenericJackson2JsonRedisSerializer()));
 
-		// 캐시키 별 default 유효시간 설정
-		Map<String, RedisCacheConfiguration> cacheConfiguration = new HashMap<>();
-		cacheConfiguration.put(CacheKey.ZONE, RedisCacheConfiguration.defaultCacheConfig()
-			.entryTtl(Duration.ofSeconds(CacheKey.ZONE_EXPIRE_SEC)));
-
 		return RedisCacheManager.RedisCacheManagerBuilder
 			.fromConnectionFactory(redisConnectionFactory)
 			.cacheDefaults(configuration)
-			.withInitialCacheConfigurations(cacheConfiguration)
 			.build();
 	}
 }
