@@ -31,11 +31,11 @@ class _MapScreenState extends State<MapScreen> {
   var numberFormat = NumberFormat('###,###,###,###');
   void getNearStores() async {
     position = await DevicePostionService.getNowPosition();
-    // 나의 현위치를 초기화해서 마커 찍기
-    // nowPos = LatLng(position.latitude, position.longitude);
+    nowPos = LatLng(position.latitude, position.longitude);
     // Map<String, String>? depths = await KakaoLocalApiService.getDepthByPosition(
     //     '${nowPos.longitude}', '${nowPos.latitude}');
-    // stores = await StoreService.getNearStores(depths!['depth1']!, depths['depth2']!);
+    // stores =
+    //     await StoreService.getNearStores(depths!['depth1']!, depths['depth2']!);
     stores.add(StoreModel.fromJson({
       "id": 26841712, // long
       "name": "등촌샤브칼국수 역삼점", // String
@@ -78,8 +78,10 @@ class _MapScreenState extends State<MapScreen> {
           '</div>';
       final customOverlay = CustomOverlay(
         customOverlayId: store.id.toString(),
-        latLng:
-            LatLng(double.parse(store.latitude), double.parse(store.longitude)),
+        latLng: LatLng(
+          double.parse(store.latitude),
+          double.parse(store.longitude),
+        ),
         content: content,
       );
       customOverlays.add(customOverlay);
@@ -92,7 +94,6 @@ class _MapScreenState extends State<MapScreen> {
 
   void _determinePosition(Timer timer) async {
     position = await DevicePostionService.getNowPosition();
-    // 나의 현위치를 초기화해서 마커 찍기
     nowPos = LatLng(position.latitude, position.longitude);
     markers.removeWhere((marker) => marker.markerId == 'nowPos');
     markers.add(Marker(
@@ -103,17 +104,16 @@ class _MapScreenState extends State<MapScreen> {
       markerImageSrc:
           'https://cdn-icons-png.flaticon.com/128/10542/10542406.png',
     ));
+
     setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    // 내 주변 가게 마커 찍기
     getNearStores();
-    // 1초마다 위치 초기화하기
     setState(() {
-      timer = Timer.periodic(const Duration(seconds: 2), _determinePosition);
+      timer = Timer.periodic(const Duration(seconds: 1), _determinePosition);
     });
   }
 

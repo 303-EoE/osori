@@ -4,11 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:osori/error/osori_provider_observer.dart';
-import 'package:osori/screens/chat_screen.dart';
 import 'package:osori/screens/review_screen.dart';
 import 'package:osori/screens/login_screen.dart';
 import 'package:osori/screens/map_screen.dart';
 import 'package:osori/screens/profile_screen.dart';
+import 'package:osori/screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,8 +33,8 @@ class Osori extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       routes: {
+        "/review": (context) => const ReviewScreen(),
         "/map": (context) => const MapScreen(),
-        "/chat": (context) => const ChatScreen(),
         "/profile": (context) => const ProfileScreen(null),
         "/login": (context) => const LoginScreen(),
       },
@@ -44,7 +44,7 @@ class Osori extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         useMaterial3: true,
       ),
-      home: const ReviewScreen(),
+      home: const SplashScreen(),
     );
   }
 }

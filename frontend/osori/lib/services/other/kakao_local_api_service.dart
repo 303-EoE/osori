@@ -28,27 +28,6 @@ class KakaoLocalApiService {
     throw Error();
   }
 
-  static Future<KakaoStoreModel?> getStoreDesciptionByKeyword(
-      String keyword, String x, String y, String id) async {
-    KakaoStoreModel? storeInstance;
-    final url = Uri.parse(
-        '$baseUrl/search/keyword.json?query=$keyword&x=$x&y=$y&radius=10000');
-    final response = await http.get(url, headers: headers);
-
-    if (response.statusCode == 200) {
-      final stores = jsonDecode(response.body)['documents'];
-      for (var store in stores) {
-        if (store['id'] == id) {
-          // id가 일치하는 가게 리턴
-          storeInstance = KakaoStoreModel.fromJson(store);
-        }
-      }
-      return storeInstance;
-    }
-
-    throw Error();
-  }
-
   static Future<Map<String, String>?> getDepthByPosition(
       String x, String y) async {
     final url = Uri.parse('$baseUrl/geo/coord2address.json?x=$x&y=$y');

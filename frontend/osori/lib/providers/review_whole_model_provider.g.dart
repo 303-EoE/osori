@@ -7,7 +7,7 @@ part of 'review_whole_model_provider.dart';
 // **************************************************************************
 
 String _$reviewWholeLocalModelHash() =>
-    r'4b587e2db80f3b9e3cd3448994b1da7b879c797a';
+    r'152852ee6fe59a4c196a26d200f581ab8da2a02e';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -178,24 +178,6 @@ class _ReviewWholeLocalModelProviderElement
   String get depth2 => (origin as ReviewWholeLocalModelProvider).depth2;
 }
 
-String _$reviewWholeMyModelHash() =>
-    r'e8a289585725bcdc70ce45d46ab4522bf1d3f30d';
-
-/// See also [reviewWholeMyModel].
-@ProviderFor(reviewWholeMyModel)
-final reviewWholeMyModelProvider =
-    AutoDisposeFutureProvider<List<ReviewWholeModel>>.internal(
-  reviewWholeMyModel,
-  name: r'reviewWholeMyModelProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$reviewWholeMyModelHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-typedef ReviewWholeMyModelRef
-    = AutoDisposeFutureProviderRef<List<ReviewWholeModel>>;
 String _$reviewWholeMemberModelHash() =>
     r'b8fc5f50912aa1406fe3cdbd9891312ef4e7fc78';
 
@@ -333,22 +315,137 @@ class _ReviewWholeMemberModelProviderElement
 }
 
 String _$reviewWholeLikedModelHash() =>
-    r'8125eb73fb00bc2ed1c19526e961c69ee1ac7a59';
+    r'9b7bbe46ee38b3066d920d9a8665d7bcd7bc48c9';
 
 /// See also [reviewWholeLikedModel].
 @ProviderFor(reviewWholeLikedModel)
-final reviewWholeLikedModelProvider =
-    AutoDisposeFutureProvider<List<ReviewWholeModel>>.internal(
-  reviewWholeLikedModel,
-  name: r'reviewWholeLikedModelProvider',
-  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
-      ? null
-      : _$reviewWholeLikedModelHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+const reviewWholeLikedModelProvider = ReviewWholeLikedModelFamily();
 
-typedef ReviewWholeLikedModelRef
-    = AutoDisposeFutureProviderRef<List<ReviewWholeModel>>;
+/// See also [reviewWholeLikedModel].
+class ReviewWholeLikedModelFamily
+    extends Family<AsyncValue<List<ReviewWholeModel>>> {
+  /// See also [reviewWholeLikedModel].
+  const ReviewWholeLikedModelFamily();
+
+  /// See also [reviewWholeLikedModel].
+  ReviewWholeLikedModelProvider call(
+    String memberId,
+  ) {
+    return ReviewWholeLikedModelProvider(
+      memberId,
+    );
+  }
+
+  @override
+  ReviewWholeLikedModelProvider getProviderOverride(
+    covariant ReviewWholeLikedModelProvider provider,
+  ) {
+    return call(
+      provider.memberId,
+    );
+  }
+
+  static const Iterable<ProviderOrFamily>? _dependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
+
+  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
+
+  @override
+  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
+      _allTransitiveDependencies;
+
+  @override
+  String? get name => r'reviewWholeLikedModelProvider';
+}
+
+/// See also [reviewWholeLikedModel].
+class ReviewWholeLikedModelProvider
+    extends AutoDisposeFutureProvider<List<ReviewWholeModel>> {
+  /// See also [reviewWholeLikedModel].
+  ReviewWholeLikedModelProvider(
+    String memberId,
+  ) : this._internal(
+          (ref) => reviewWholeLikedModel(
+            ref as ReviewWholeLikedModelRef,
+            memberId,
+          ),
+          from: reviewWholeLikedModelProvider,
+          name: r'reviewWholeLikedModelProvider',
+          debugGetCreateSourceHash:
+              const bool.fromEnvironment('dart.vm.product')
+                  ? null
+                  : _$reviewWholeLikedModelHash,
+          dependencies: ReviewWholeLikedModelFamily._dependencies,
+          allTransitiveDependencies:
+              ReviewWholeLikedModelFamily._allTransitiveDependencies,
+          memberId: memberId,
+        );
+
+  ReviewWholeLikedModelProvider._internal(
+    super._createNotifier, {
+    required super.name,
+    required super.dependencies,
+    required super.allTransitiveDependencies,
+    required super.debugGetCreateSourceHash,
+    required super.from,
+    required this.memberId,
+  }) : super.internal();
+
+  final String memberId;
+
+  @override
+  Override overrideWith(
+    FutureOr<List<ReviewWholeModel>> Function(ReviewWholeLikedModelRef provider)
+        create,
+  ) {
+    return ProviderOverride(
+      origin: this,
+      override: ReviewWholeLikedModelProvider._internal(
+        (ref) => create(ref as ReviewWholeLikedModelRef),
+        from: from,
+        name: null,
+        dependencies: null,
+        allTransitiveDependencies: null,
+        debugGetCreateSourceHash: null,
+        memberId: memberId,
+      ),
+    );
+  }
+
+  @override
+  AutoDisposeFutureProviderElement<List<ReviewWholeModel>> createElement() {
+    return _ReviewWholeLikedModelProviderElement(this);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ReviewWholeLikedModelProvider && other.memberId == memberId;
+  }
+
+  @override
+  int get hashCode {
+    var hash = _SystemHash.combine(0, runtimeType.hashCode);
+    hash = _SystemHash.combine(hash, memberId.hashCode);
+
+    return _SystemHash.finish(hash);
+  }
+}
+
+mixin ReviewWholeLikedModelRef
+    on AutoDisposeFutureProviderRef<List<ReviewWholeModel>> {
+  /// The parameter `memberId` of this provider.
+  String get memberId;
+}
+
+class _ReviewWholeLikedModelProviderElement
+    extends AutoDisposeFutureProviderElement<List<ReviewWholeModel>>
+    with ReviewWholeLikedModelRef {
+  _ReviewWholeLikedModelProviderElement(super.provider);
+
+  @override
+  String get memberId => (origin as ReviewWholeLikedModelProvider).memberId;
+}
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

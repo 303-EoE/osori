@@ -10,22 +10,19 @@ class BottomNavigation extends StatefulWidget {
 }
 
 class _BottomNavigationState extends State<BottomNavigation> {
-  late int selectedIndex;
+  int selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     switch (ModalRoute.of(context)?.settings.name) {
-      case '/':
+      case '/review':
         selectedIndex = 0;
         break;
       case '/map':
         selectedIndex = 1;
         break;
-      case '/chat':
-        selectedIndex = 2;
-        break;
       case '/profile':
-        selectedIndex = 3;
+        selectedIndex = 2;
         break;
       default:
     }
@@ -38,17 +35,13 @@ class _BottomNavigationState extends State<BottomNavigation> {
         switch (value) {
           case 0:
             Navigator.of(context)
-                .pushNamedAndRemoveUntil('/', (route) => false);
+                .pushNamedAndRemoveUntil('/review', (route) => false);
             break;
           case 1:
             Navigator.of(context)
                 .pushNamedAndRemoveUntil('/map', (route) => false);
             break;
           case 2:
-            Navigator.of(context)
-                .pushNamedAndRemoveUntil('/chat', (route) => false);
-            break;
-          case 3:
             Navigator.of(context)
                 .pushNamedAndRemoveUntil('/profile', (route) => false);
             break;
@@ -65,11 +58,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
           icon: Icon(Icons.map_outlined),
           selectedIcon: Icon(Icons.map),
           label: 'map',
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.message_outlined),
-          selectedIcon: Icon(Icons.message_rounded),
-          label: 'chat',
         ),
         NavigationDestination(
           icon: Icon(Icons.person_4_outlined),

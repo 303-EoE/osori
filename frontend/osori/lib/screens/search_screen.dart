@@ -19,6 +19,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   late List<KakaoStoreModel> stores;
+  bool isSearching = false;
   bool isComplete = false;
   final TextEditingController _textController = TextEditingController();
 
@@ -42,9 +43,10 @@ class _SearchScreenState extends State<SearchScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(
+                    Container(
+                      alignment: Alignment.center,
                       width: size.width / 3 * 2,
-                      height: 60,
+                      height: 40,
                       child: TextField(
                         controller: _textController,
                         keyboardType: TextInputType.text,
@@ -56,19 +58,24 @@ class _SearchScreenState extends State<SearchScreen> {
                           ),
                           hoverColor: Color(0xFFE8E8E8),
                           hintText: "현재 지도를 중심으로 검색합니다.",
+                          contentPadding: EdgeInsets.zero,
                         ),
                         textAlign: TextAlign.center,
+                        textAlignVertical: TextAlignVertical.center,
                         // onSubmitted: KakaoLocalApiService.getStoresByKeyword,
                       ),
                     ),
                     OutlinedButton(
                       onPressed: () async {
                         if (isComplete) stores.clear();
+                        isSearching = true;
+                        setState(() {});
                         stores = await KakaoLocalApiService.getStoresByKeyword(
                           _textController.text,
                           widget.nowPos.longitude.toString(),
                           widget.nowPos.latitude.toString(),
                         );
+                        isSearching = false;
                         isComplete = true;
                         setState(() {});
                       },
@@ -84,57 +91,76 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
               ),
             ),
+            if (isSearching)
+              const Column(children: [
+                SizedBox(
+                  height: 20,
+                ),
+                CircularProgressIndicator()
+              ]),
             if (isComplete)
-              for (var store in stores)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        store.placeName,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Row(
-                        children: [
-                          OutlinedButton(
-                            onPressed: () async {
-                              await launchUrlString(store.placeUrl);
-                            },
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.all(0),
-                            ),
-                            child: const Text(
-                              "가게 상세",
-                              style: TextStyle(fontSize: 12),
-                            ),
+              if (stores.isEmpty)
+                const Text('검색 결과가 없습니다.')
+              else
+                for (var store in stores)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          flex: 5,
+                          child: Text(
+                            store.placeName,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          OutlinedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ReceiptScanningScreen(
-                                      storeId: int.parse(store.id)),
+                        ),
+                        Flexible(
+                          flex: 3,
+                          child: Row(
+                            children: [
+                              OutlinedButton(
+                                onPressed: () async {
+                                  await launchUrlString(store.placeUrl);
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.all(0),
                                 ),
-                              );
-                            },
-                            style: OutlinedButton.styleFrom(
-                              padding: const EdgeInsets.all(0),
-                            ),
-                            child: const Text(
-                              '리뷰 쓰기',
-                              style: TextStyle(fontSize: 12),
-                            ),
+                                child: const Text(
+                                  "가게 상세",
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              OutlinedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          ReceiptScanningScreen(
+                                        store: store,
+                                        storeId: null,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                style: OutlinedButton.styleFrom(
+                                  padding: const EdgeInsets.all(0),
+                                ),
+                                child: const Text(
+                                  '리뷰 쓰기',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ],
-                  ),
-                )
+                        ),
+                      ],
+                    ),
+                  )
           ],
         ),
       ),

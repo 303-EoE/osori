@@ -3,19 +3,24 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:osori/models/kakao_store_model.dart';
 import 'package:osori/services/osori/review_service.dart';
+import 'package:osori/services/osori/store_service.dart';
 import 'package:osori/widgets/common/snack_bar_manager.dart';
 
 class WriteReviewFormScreen extends StatefulWidget {
-  final int storeId;
+  final KakaoStoreModel? store;
+  final int? storeId;
   final String paidAt;
   final int totalPrice;
   const WriteReviewFormScreen({
     super.key,
     required this.paidAt,
     required this.totalPrice,
-    required this.storeId,
+    required this.store,
+    this.storeId,
   });
 
   @override
@@ -220,9 +225,23 @@ class _WriteReviewFormScreenState extends State<WriteReviewFormScreen> {
                       final imagePicker = ImagePicker();
                       final pickedImages =
                           await imagePicker.pickMultiImage(imageQuality: 50);
-                      // print(pickedImages);
                       for (var image in pickedImages) {
-                        _selectedImages.add(File(image.path));
+                        final croppedFile = await ImageCropper().cropImage(
+                            sourcePath: image.path,
+                            compressFormat: ImageCompressFormat.jpg,
+                            compressQuality: 100,
+                            uiSettings: [
+                              AndroidUiSettings(
+                                toolbarTitle: '이미지 자르기',
+                                toolbarColor: Colors.deepOrange,
+                                toolbarWidgetColor: Colors.white,
+                                initAspectRatio: CropAspectRatioPreset.square,
+                                lockAspectRatio: true,
+                              )
+                            ]);
+                        if (croppedFile != null) {
+                          _selectedImages.add(File(croppedFile.path));
+                        }
                       }
                       setState(() {});
                     },
@@ -259,25 +278,32 @@ class _WriteReviewFormScreenState extends State<WriteReviewFormScreen> {
                             _formKey.currentState?.instantValue.toString());
                         var formValues = _formKey.currentState;
                         // 가게 등록 요청 보내기
-                        var storeId = widget.storeId;
-                        if (storeId == -1) {
-                          if (mounted) {
-                            SnackBarManager.alertSnackBar(
-                                context, '가게 id를 불러오는데 실패하였습니다.');
+                        int dbStoreId = -1;
+                        if (widget.store != null && widget.storeId == null) {
+                          dbStoreId =
+                              await StoreService.registerStore(widget.store!);
+                        } else if (widget.store == null &&
+                            widget.storeId != null) {
+                          dbStoreId = widget.storeId!;
+                        }
+                        if (mounted) {
+                          if (dbStoreId == -1) {
+                            SnackBarManager.alertSnackBar(context, '가게 등록 실패!');
                             return;
                           }
                         }
                         // 리뷰 등록 요청 보내기
                         int result = await ReviewService.createReview(
-                            storeId,
-                            formValues?.value['date'],
-                            formValues?.value['price'],
-                            formValues?.value['headCount'],
-                            formValues?.value['rate'],
-                            formValues?.value['billType'],
-                            formValues?.value['factor'],
-                            formValues?.value['content'],
-                            _selectedImages);
+                          dbStoreId,
+                          formValues?.value['date'],
+                          formValues?.value['price'],
+                          formValues?.value['headCount'],
+                          formValues?.value['rate'],
+                          formValues?.value['billType'],
+                          formValues?.value['factor'],
+                          formValues?.value['content'],
+                          _selectedImages,
+                        );
                         if (mounted) {
                           if (result == 200) {
                             SnackBarManager.completeSnackBar(context, '리뷰 등록');

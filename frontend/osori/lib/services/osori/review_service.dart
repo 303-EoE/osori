@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:osori/models/review/review_whole_model.dart';
+import 'package:osori/services/osori/auth_service.dart';
 import 'package:osori/widgets/common/token_manager.dart';
 
 class ReviewService {
@@ -28,23 +29,23 @@ class ReviewService {
     return null;
   }
 
-  // 내 리뷰 전체 조회
-  static Future<List<Map<String, dynamic>>?> getAllMyReview() async {
-    try {
-      final token = await TokenManager.readAccessToken();
-      const url = '$baseUrl/my-review';
-      var dio = Dio();
-      dio.options.headers = {'Authorization': token};
-      final response = await dio.get(url);
-      if (response.statusCode == 200) {
-        return response.data['data']['reviews'];
-      }
-    } catch (error) {
-      debugPrint('$error');
-      return null;
-    }
-    return null;
-  }
+  // // 내 리뷰 전체 조회
+  // static Future<List<Map<String, dynamic>>?> getAllMyReview() async {
+  //   try {
+  //     final token = await TokenManager.readAccessToken();
+  //     const url = '$baseUrl/my-review';
+  //     var dio = Dio();
+  //     dio.options.headers = {'Authorization': token};
+  //     final response = await dio.get(url);
+  //     if (response.statusCode == 200) {
+  //       return response.data['data']['reviews'];
+  //     }
+  //   } catch (error) {
+  //     debugPrint('$error');
+  //     return null;
+  //   }
+  //   return null;
+  // }
 
   // 영수증 스캔
   static Future<Map<String, dynamic>?> scanImage(File image) async {
@@ -77,11 +78,17 @@ class ReviewService {
       String content,
       List<File> reviewImages) async {
     try {
-      final token = await TokenManager.readAccessToken();
+      await TokenManager.verifyToken();
+
+      String userId = await TokenManager.readUserId();
+      String userNickname = await TokenManager.readUserId();
+      String userProfileImageUrl = await TokenManager.readUserId();
+
       var dio = Dio();
-      dio.options.headers = {'Authorization': token};
       const url = baseUrl;
+
       List<MultipartFile> images = [];
+
       for (var file in reviewImages) {
         images.add(MultipartFile.fromFileSync(file.path));
       }
@@ -98,6 +105,9 @@ class ReviewService {
                 'billType': billType,
                 'factor': factor,
                 'content': content,
+                "memberId": userId,
+                "memberNickname": userNickname,
+                "memberProfileImageUrl": userProfileImageUrl,
               }),
               contentType: MediaType.parse('application/json')),
         },
@@ -114,7 +124,8 @@ class ReviewService {
   static Future<ReviewWholeModel?> getDetailedReview(int reviewId) async {
     try {
       final token = await TokenManager.readAccessToken();
-      final url = '$baseUrl/detail?review_id=$reviewId';
+      final memberId = await TokenManager.readUserId();
+      final url = '$baseUrl/detail?review_id=$reviewId&member_id=$memberId';
       var dio = Dio();
       dio.options.headers = {'Authorization': token};
       final response = await dio.get(url);
@@ -132,7 +143,8 @@ class ReviewService {
   static Future<int> deleteReview(int reviewId) async {
     try {
       final token = await TokenManager.readAccessToken();
-      final url = '$baseUrl?review_id=$reviewId';
+      final memberId = await TokenManager.readUserId();
+      final url = '$baseUrl?review_id=$reviewId&member_id=$memberId';
       var dio = Dio();
       dio.options.headers = {'Authorization': token};
       final response = await dio.delete(url);

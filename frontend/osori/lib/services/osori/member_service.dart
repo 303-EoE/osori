@@ -4,36 +4,30 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:osori/widgets/common/token_manager.dart';
-import 'package:http/http.dart' as http;
 
 class MemberService {
   static const String baseUrl = 'https://test.osori.co.kr/members';
-
-  static Future<Map<String, dynamic>?> getMyProfile() async {
-    try {
-      final token = await TokenManager.readAccessToken();
-      final Map<String, String> headers = {
-        'content-type': "application/json;charset=UTF-8",
-        "Authorization": token.toString(),
-      };
-      final url = Uri.parse('$baseUrl/my-page');
-      final response = await http.get(url, headers: headers);
-      return jsonDecode(response.body);
-    } catch (error) {
-      return null;
-    }
-  }
 
   static Future<Map<String, dynamic>?> getMemberProfile(String memberId) async {
     try {
       final token = await TokenManager.readAccessToken();
       var dio = Dio();
-      dio.options.headers = {"Authorization": token};
+      dio.options.headers = {"Authorization": 'Bearer $token'};
       final url = '$baseUrl/member_id=$memberId';
       final response = await dio.get(url);
+      debugPrint(response.data['data']);
       return response.data['data'];
-    } catch (error) {
-      debugPrint('$error');
+    } catch (e) {
+      if (e is DioException) {
+        // DioError에서 발생한 예외
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        // DioError가 아닌 다른 예외
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
+      }
       return null;
     }
   }

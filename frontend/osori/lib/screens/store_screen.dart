@@ -24,7 +24,6 @@ class _StoreScreenState extends State<StoreScreen> {
   // name, latitude, longitude, id 필요
   // address_name, phone을 받아오기
   late Future<StoreDescriptionModel> storeModel;
-  late String userId;
 
   @override
   void initState() {
@@ -150,6 +149,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                       MaterialPageRoute(
                                         builder: (context) =>
                                             ReceiptScanningScreen(
+                                          store: null,
                                           storeId: model.id,
                                         ),
                                       ),
