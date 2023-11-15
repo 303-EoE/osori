@@ -2,12 +2,8 @@ package com.eoe.osori.domain.review.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.eoe.osori.domain.review.domain.Review;
-import com.eoe.osori.domain.review.domain.ReviewImage;
-import com.eoe.osori.global.common.api.member.dto.GetMemberResponseDto;
-import com.eoe.osori.global.common.api.store.dto.GetStoreDetailResponseDto;
+import com.eoe.osori.domain.review.domain.ReviewFeed;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,26 +33,22 @@ public class GetReviewDetailResponseDto {
 	private Boolean liked;
 	private Boolean isMine;
 
-	public static GetReviewDetailResponseDto of(Review review, List<ReviewImage> reviewImages,
-		GetStoreDetailResponseDto getStoreResponseDto, GetMemberResponseDto getMemberResponseDto,
-		Boolean liked, Boolean isMine) {
+	public static GetReviewDetailResponseDto of(ReviewFeed reviewFeed, Boolean liked, Boolean isMine) {
 		return GetReviewDetailResponseDto.builder()
-			.id(review.getId())
-			.createdAt(review.getCreatedAt())
-			.averageCost(review.getAverageCost())
-			.content(review.getContent())
-			.rate(review.getRate())
-			.billType(review.getBillType().getName())
-			.images(reviewImages.stream()
-				.map(reviewImage -> reviewImage.getUrl())
-				.collect(Collectors.toList()))
-			.storeId(getStoreResponseDto.getId())
-			.storeName(getStoreResponseDto.getName())
-			.storeDepth1(getStoreResponseDto.getDepth1())
-			.storeDepth2(getStoreResponseDto.getDepth2())
-			.memberId(getMemberResponseDto.getId())
-			.memberNickname(getMemberResponseDto.getNickname())
-			.memberProfileImageUrl(getMemberResponseDto.getProfileImageUrl())
+			.id(Long.parseLong(reviewFeed.getId()))
+			.createdAt(reviewFeed.getCreatedAt())
+			.averageCost(reviewFeed.getAverageCost())
+			.content(reviewFeed.getContent())
+			.rate(reviewFeed.getRate())
+			.billType(reviewFeed.getBillType())
+			.images(reviewFeed.getImages())
+			.storeId(reviewFeed.getStoreId())
+			.storeName(reviewFeed.getStoreName())
+			.storeDepth1(reviewFeed.getStoreDepth1())
+			.storeDepth2(reviewFeed.getStoreDepth2())
+			.memberId(reviewFeed.getMemberId())
+			.memberNickname(reviewFeed.getMemberNickname())
+			.memberProfileImageUrl(reviewFeed.getMemberProfileImageUrl())
 			.liked(liked)
 			.isMine(isMine)
 			.build();

@@ -81,7 +81,7 @@ public class Review extends BaseTimeEntity {
 	@Convert(converter = BillTypeConverter.class)
 	private BillType billType;
 
-	public static Review of(PostReviewRequestDto postReviewRequestDto, Long memberId) {
+	public static Review from(PostReviewRequestDto postReviewRequestDto) {
 		return Review.builder()
 			.paidAt(postReviewRequestDto.getPaidAt())
 			.totalPrice(postReviewRequestDto.getTotalPrice())
@@ -89,7 +89,7 @@ public class Review extends BaseTimeEntity {
 			.factor(postReviewRequestDto.getFactor())
 			.content(postReviewRequestDto.getContent())
 			.rate(postReviewRequestDto.getRate())
-			.memberId(memberId)
+			.memberId(postReviewRequestDto.getMemberId())
 			.storeId(postReviewRequestDto.getStoreId())
 			.billType(BillType.ofName(postReviewRequestDto.getBillType()))
 			.build();

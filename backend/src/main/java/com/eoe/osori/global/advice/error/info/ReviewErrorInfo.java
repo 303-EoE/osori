@@ -13,8 +13,7 @@ public enum ReviewErrorInfo {
 	INVALID_REVIEW_IMAGES_DATA_ERROR(HttpStatus.BAD_REQUEST, 1204, "리뷰 이미지가 등록되지 않았습니다."),
 	FAIL_TO_STORE_FEIGN_CLIENT_REQUEST(HttpStatus.BAD_REQUEST, 1205, "Store Feign Client 통신에 실패했습니다."),
 	NOT_FOUND_REVIEWFEED_BY_ID(HttpStatus.BAD_REQUEST, 1206, "해당 리뷰피드가 존재하지 않습니다."),
-	FAIL_TO_IMAGE_FEIGN_CLIENT_REQUEST(HttpStatus.BAD_REQUEST, 1207, "Image Feign Client 통신에 실패했습니다."),
-	FAIL_TO_MEMBER_FEIGN_CLIENT_REQUEST(HttpStatus.BAD_REQUEST, 1208, "Member Feign Client 통신에 실패했습니다.");
+	FAIL_TO_IMAGE_FEIGN_CLIENT_REQUEST(HttpStatus.BAD_REQUEST, 1207, "Image Feign Client 통신에 실패했습니다.");
 
 	private final HttpStatus status;
 	private final Integer code;

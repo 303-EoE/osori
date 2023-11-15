@@ -19,6 +19,9 @@ public class PostReviewRequestDto {
 	private Double rate;
 	private Long storeId;
 	private String billType;
+	private Long memberId;
+	private String memberNickname;
+	private String memberProfileImageUrl;
 
 	/**
 	 * null값 체크
