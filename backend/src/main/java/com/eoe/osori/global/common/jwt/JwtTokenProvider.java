@@ -73,7 +73,7 @@ public class JwtTokenProvider {
 	}
 
 	public String generateRefreshToken(Long id) {
-		return createToken(id, JwtExpirationEnum.REISSUE_EXPIRATION_TIME.getValue());
+		return createToken(id, JwtExpirationEnum.REFRESH_TOKEN_EXPIRATION_TIME.getValue());
 	}
 
 	/**
