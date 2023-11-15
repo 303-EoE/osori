@@ -7,14 +7,12 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
-@RedisHash("storeInfo")
+@RedisHash(value = "storeInfo", timeToLive = 900)
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class StoreInfo {
 	@Id
 	private Long storeId;
