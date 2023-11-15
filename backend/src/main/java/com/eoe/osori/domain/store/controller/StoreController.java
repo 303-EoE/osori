@@ -82,4 +82,8 @@ public class StoreController {
 				.data(storeService.getStoreDetail(storeId))
 				.build());
 	}
+
+	// 가게 리스트로 조회
+	// 데이터 중에 하나라도 0이면 store에서 처리
+	// 프론트로 넘겨줄 리스트에서 제거하기
 }

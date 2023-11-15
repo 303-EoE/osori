@@ -14,7 +14,12 @@ import com.eoe.osori.global.advice.error.exception.StoreException;
 import com.eoe.osori.global.advice.error.info.StoreErrorInfo;
 import com.eoe.osori.global.common.api.kakao.KakaoApi;
 import com.eoe.osori.global.common.api.kakao.dto.GetDistrictRequestDto;
+import com.eoe.osori.global.common.api.review.ReviewApi;
+import com.eoe.osori.global.common.api.review.dto.GetStoreReviewCacheDataResponseDto;
+import com.eoe.osori.global.common.redis.domain.StoreInfo;
+import com.eoe.osori.global.common.redis.repository.StoreInfoRedisRepository;
 import com.eoe.osori.global.common.response.CommonIdResponseDto;
+import com.eoe.osori.global.common.response.EnvelopeResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class StoreServiceImpl implements StoreService {
 	private final StoreRepository storeRepository;
+	private final StoreInfoRedisRepository storeInfoRedisRepository;
 	private final KakaoApi kakaoApi;
+	private final ReviewApi reviewApi;
 
 	/**
 	 *  가게 정보를 저장하는 메서드
@@ -80,14 +87,34 @@ public class StoreServiceImpl implements StoreService {
 	 * @param id Long
 	 * @return GetStoreDetailResponseDto
 	 * @see StoreRepository
+	 * @see StoreInfoRedisRepository
 	 */
 	@Override
 	public GetStoreDetailResponseDto getStoreDetail(Long id) {
 		Store store = storeRepository.findById(id)
 			.orElseThrow(() -> new StoreException(StoreErrorInfo.CANNOT_FIND_STORE_BY_ID));
 
-		// Feign + redis 로직 추가
+		// redis cache에 있으면 cacahe에서 가져오기
+		Optional<StoreInfo> optionalStoreInfo = storeInfoRedisRepository.findById(id);
 
-		return GetStoreDetailResponseDto.from(store);
+		if (optionalStoreInfo.isPresent()) {
+			return GetStoreDetailResponseDto.of(store, optionalStoreInfo.get());
+		}
+
+		// cache에 없으면 Feign으로 review에서 가져오고 redis에 저장하기
+		EnvelopeResponse<GetStoreReviewCacheDataResponseDto> getStoreReviewCacheDataResponseDtoEnvelopeResponse;
+
+		try {
+			getStoreReviewCacheDataResponseDtoEnvelopeResponse = reviewApi.getReviewCacheDataByStore(id,
+				store.getCategory().getDefaultBillType().getName());
+		} catch (Exception e) {
+			throw new StoreException(StoreErrorInfo.FAIL_TO_REVIEW_FEIGN_CLIENT_REQUEST);
+		}
+
+		StoreInfo storeInfo = StoreInfo.from(getStoreReviewCacheDataResponseDtoEnvelopeResponse.getData());
+
+		storeInfoRedisRepository.save(storeInfo);
+
+		return GetStoreDetailResponseDto.of(store, storeInfo);
 	}
 }
