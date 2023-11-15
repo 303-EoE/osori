@@ -1,5 +1,6 @@
 package com.eoe.osori.domain.store.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -7,8 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.eoe.osori.domain.store.domain.Store;
 import com.eoe.osori.domain.store.dto.GetStoreDetailResponseDto;
+import com.eoe.osori.domain.store.dto.GetStoreListResponseDto;
 import com.eoe.osori.domain.store.dto.GetStoreRegisterResponseDto;
 import com.eoe.osori.domain.store.dto.PostStoreRequestDto;
+import com.eoe.osori.domain.store.dto.StoreElement;
 import com.eoe.osori.domain.store.repository.StoreRepository;
 import com.eoe.osori.global.advice.error.exception.StoreException;
 import com.eoe.osori.global.advice.error.info.StoreErrorInfo;
@@ -21,6 +24,7 @@ import com.eoe.osori.global.common.redis.repository.StoreInfoRedisRepository;
 import com.eoe.osori.global.common.response.CommonIdResponseDto;
 import com.eoe.osori.global.common.response.EnvelopeResponse;
 
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -108,7 +112,7 @@ public class StoreServiceImpl implements StoreService {
 		try {
 			getStoreReviewCacheDataResponseDtoEnvelopeResponse = reviewApi.getReviewCacheDataByStore(id,
 				store.getCategory().getDefaultBillType().getName());
-		} catch (Exception e) {
+		} catch (FeignException e) {
 			throw new StoreException(StoreErrorInfo.FAIL_TO_REVIEW_FEIGN_CLIENT_REQUEST);
 		}
 
@@ -117,5 +121,49 @@ public class StoreServiceImpl implements StoreService {
 		storeInfoRedisRepository.save(storeInfo);
 
 		return GetStoreDetailResponseDto.of(store, storeInfo);
+	}
+
+	/**
+	 *  지역으로 가게 목록 조회
+	 *
+	 * @param depth1 String
+	 * @param depth2 String
+	 * @return GetStoreListResponseDto
+	 * @see StoreRepository
+	 * @see ReviewApi
+	 */
+	@Override
+	public GetStoreListResponseDto getStoreListByRegion(String depth1, String depth2) {
+		List<Store> storeList = storeRepository.findAllByDepth1AndDepth2(depth1, depth2);
+
+		GetStoreListResponseDto getStoreListResponseDto = new GetStoreListResponseDto();
+		Integer averagePrice = 0;
+
+		for (Store store : storeList) {
+			EnvelopeResponse<GetStoreReviewCacheDataResponseDto> getStoreReviewCacheDataResponseDtoEnvelopeResponse;
+
+			try {
+				getStoreReviewCacheDataResponseDtoEnvelopeResponse = reviewApi.getReviewCacheDataByStore(
+					store.getId(), store.getCategory().getDefaultBillType().getName());
+			} catch (FeignException e) {
+				throw new StoreException(StoreErrorInfo.FAIL_TO_REVIEW_FEIGN_CLIENT_REQUEST);
+			}
+
+			GetStoreReviewCacheDataResponseDto getStoreReviewCacheDataResponseDto
+				= getStoreReviewCacheDataResponseDtoEnvelopeResponse.getData();
+
+			if (getStoreReviewCacheDataResponseDto.getBillTypeTotalReviewCount().equals(0)) {
+				continue;
+			}
+
+			getStoreListResponseDto.getStores().add(StoreElement.of(store, getStoreReviewCacheDataResponseDto));
+			averagePrice += getStoreReviewCacheDataResponseDto.getAveragePrice();
+		}
+
+		if (getStoreListResponseDto.getStores().size() != 0) {
+			getStoreListResponseDto.updateAveragePrice(averagePrice / getStoreListResponseDto.getStores().size());
+		}
+
+		return getStoreListResponseDto;
 	}
 }
