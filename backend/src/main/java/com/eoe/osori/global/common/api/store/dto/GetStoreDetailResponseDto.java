@@ -15,4 +15,5 @@ public class GetStoreDetailResponseDto {
 	private String name;
 	private String depth1;
 	private String depth2;
+	private String defaultBillType;
 }

@@ -64,6 +64,9 @@ dependencies {
 
     // Feign Client
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+    // Redis dependency
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {
