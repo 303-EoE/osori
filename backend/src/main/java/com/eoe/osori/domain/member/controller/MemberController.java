@@ -1,18 +1,17 @@
 package com.eoe.osori.domain.member.controller;
 
-import java.net.Authenticator;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
-import com.eoe.osori.domain.member.dto.GetMemberMyPageResponseDto;
 import com.eoe.osori.domain.member.dto.GetMemberResponseDto;
+import com.eoe.osori.domain.member.dto.PatchMemberRequestDto;
 import com.eoe.osori.domain.member.service.MemberService;
 import com.eoe.osori.global.common.response.EnvelopeResponse;
 
@@ -27,26 +26,26 @@ public class MemberController {
 
 	private final MemberService memberService;
 
-	@GetMapping("/my-page")
-	ResponseEntity<EnvelopeResponse<GetMemberMyPageResponseDto>> getMyProfile(
-		@RequestHeader("Authorization") String accessToken
-	){
-		return ResponseEntity.status(HttpStatus.OK)
-			.body(EnvelopeResponse.<GetMemberMyPageResponseDto>builder()
-				.code(HttpStatus.OK.value())
-				.data(memberService.getMyInfo(accessToken))
-				.build());
-	}
-
 	@GetMapping
 	ResponseEntity<EnvelopeResponse<GetMemberResponseDto>> getMemberProfile(
-		@RequestHeader("Authorization") String accessToken,
 		@RequestParam("member_id") Long memberId
 	){
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<GetMemberResponseDto>builder()
 				.code(HttpStatus.OK.value())
-				.data(memberService.getMemberInfo(accessToken, memberId))
+				.data(memberService.getMemberInfo(memberId))
+				.build());
+	}
+
+	@PatchMapping
+	ResponseEntity<EnvelopeResponse<Void>> updateMyProfile(
+		@RequestPart(value = "patchMemberRequestDto") PatchMemberRequestDto patchMemberRequestDto,
+		@RequestPart(value = "profileImage", required =false) MultipartFile profileImage){
+		System.out.println("patchMemberRequestDto.getNickname() = " + patchMemberRequestDto.getNickname());
+		memberService.updateProfile(patchMemberRequestDto, profileImage);
+		return ResponseEntity.status(HttpStatus.OK)
+			.body(EnvelopeResponse.<Void>builder()
+				.code(HttpStatus.OK.value())
 				.build());
 	}
 }

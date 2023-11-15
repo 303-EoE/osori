@@ -1,9 +1,12 @@
 package com.eoe.osori.domain.member.service;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.eoe.osori.domain.member.dto.GetMemberMyPageResponseDto;
 import com.eoe.osori.domain.member.dto.GetMemberResponseDto;
+import com.eoe.osori.domain.member.dto.PatchMemberRequestDto;
 
 public interface MemberService {
-	GetMemberMyPageResponseDto getMyInfo(String accessToken);
-	GetMemberResponseDto getMemberInfo(String accessToken, Long memberId);
+	GetMemberResponseDto getMemberInfo(Long memberId);
+	void updateProfile(PatchMemberRequestDto patchMemberRequestDto, MultipartFile profileImage);
 }

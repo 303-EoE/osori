@@ -4,23 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.tomcat.util.modeler.FeatureInfo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.eoe.osori.domain.member.domain.Member;
-import com.eoe.osori.domain.member.dto.GetMemberMyPageResponseDto;
 import com.eoe.osori.domain.member.dto.GetMemberResponseDto;
+import com.eoe.osori.domain.member.dto.PatchMemberRequestDto;
 import com.eoe.osori.domain.member.repository.MemberRepository;
 import com.eoe.osori.global.advice.error.exception.MemberException;
 import com.eoe.osori.global.advice.error.info.MemberErrorInfo;
-import com.eoe.osori.global.common.api.auth.AuthApi;
-import com.eoe.osori.global.common.api.auth.dto.PostAuthInfoResponseDto;
+import com.eoe.osori.global.common.api.image.ImageApi;
+import com.eoe.osori.global.common.api.image.dto.PostImageResponseDto;
 import com.eoe.osori.global.common.response.EnvelopeResponse;
 
 import feign.FeignException;
-import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,37 +28,20 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberServiceImpl implements MemberService{
 
 	private final MemberRepository memberRepository;
-	private final AuthApi authApi;
+	private final ImageApi imageApi;
+
+	/**
+	 * 다른 회원 정보 조회
+	 * @param memberId Long
+	 * @return GetMemberResponseDto
+	 * @see MemberRepository
+	 */
 	@Override
-	public GetMemberMyPageResponseDto getMyInfo(String accessToken) {
-		EnvelopeResponse<PostAuthInfoResponseDto> postAuthInfoResponseDtoEnvelopeResponse;
-
-		try{
-			postAuthInfoResponseDtoEnvelopeResponse = authApi.getMyInfo(accessToken);
-		} catch (FeignException e){
-			System.out.println(e.getMessage());
-			throw new MemberException(MemberErrorInfo.FAIL_TO_AUTH_FEIGN_CLIENT_REQUEST);
-		}
-
-		PostAuthInfoResponseDto postAuthInfoResponseDto = postAuthInfoResponseDtoEnvelopeResponse.getData();
-		return GetMemberMyPageResponseDto.of(postAuthInfoResponseDto.getId(), postAuthInfoResponseDto.getNickname(),
-			postAuthInfoResponseDto.getProfileImageUrl());
-	}
-
-	@Override
-	public GetMemberResponseDto getMemberInfo(String accessToken, Long memberId) {
+	@Transactional
+	public GetMemberResponseDto getMemberInfo(Long memberId) {
 		// 입력값 검증
-		if(StringUtils.isBlank(accessToken) || memberId == null){
+		if(memberId == null){
 			throw new MemberException(MemberErrorInfo.INVALID_MEMBER_REQUEST_DATA_ERROR);
-		}
-
-		// 토큰 유효성 검증
-		EnvelopeResponse<PostAuthInfoResponseDto> postAuthInfoResponseDtoEnvelopeResponse;
-		try{
-			postAuthInfoResponseDtoEnvelopeResponse = authApi.getMyInfo(accessToken);
-		} catch (FeignException e){
-			System.out.println(e.getMessage());
-			throw new MemberException(MemberErrorInfo.FAIL_TO_AUTH_FEIGN_CLIENT_REQUEST);
 		}
 		
 		// 멤버 정보
@@ -70,54 +51,54 @@ public class MemberServiceImpl implements MemberService{
 	}
 
 	/**
-	 * 회원 가입시 회원 정보 등록
-	 * @param accessToken String
-	 * @param postAuthProfileRequestDto PostAuthProfileRequestDto
+	 * 회원 정보 수정
+	 * @param patchMemberRequestDto PatchMemberRequestDto
 	 * @param profileImage MultipartFile
 	 * @see ImageApi
-	 * @see JwtTokenProvider
 	 * @see MemberRepository
 	 */
-	// @Override
-	// @Transactional
-	// public void saveProfile(String accessToken, PostAuthProfileRequestDto postAuthProfileRequestDto, MultipartFile profileImage) {
-	// 	accessToken = parsingAccessToken(accessToken);
-	// 	// 토큰 id로 멤버 찾기
-	// 	Long id = jwtTokenProvider.getLoginId(accessToken);
-	// 	Member member = memberRepository.findById(id)
-	// 		.orElseThrow(() -> new AuthException(AuthErrorInfo.MEMBER_NOT_FOUND));
-	//
-	// 	// 닉네임 유효성 검사
-	// 	String nickname = postAuthProfileRequestDto.getNickname();
-	// 	if(StringUtils.isBlank(nickname)){
-	// 		throw new AuthException(AuthErrorInfo.INVALID_AUTH_REQUEST_DATA_ERROR);
-	// 	}
-	// 	// 닉네임 중복 검사
-	// 	Optional<Member> exist = memberRepository.findByNickname(nickname);
-	// 	if(exist.isPresent() && member.getId() != exist.get().getId()){
-	// 		throw new AuthException(AuthErrorInfo.EXIST_MEMBER_NICKNAME);
-	// 	}
-	//
-	// 	String profileImageUrl = null;
-	//
-	// 	// 이미지 업데이트 할 때 null이 아니면 새로 들어온 이미지 저장
-	// 	if(profileImage != null){
-	// 		EnvelopeResponse<PostImageResponseDto> postImageResponseDtoEnvelopeResponse;
-	// 		List<MultipartFile> profileImages = new ArrayList<>();
-	// 		profileImages.add(profileImage);
-	//
-	// 		try{
-	// 			postImageResponseDtoEnvelopeResponse = imageApi.getProfileImages(profileImages);
-	// 		} catch (FeignException e) {
-	// 			System.out.println(e.getMessage());
-	// 			throw new AuthException(AuthErrorInfo.FAIL_TO_IMAGE_FEIGN_CLIENT_REQUEST);
-	// 		}
-	//
-	// 		PostImageResponseDto postImageResponseDto = postImageResponseDtoEnvelopeResponse.getData();
-	//
-	// 		profileImageUrl = postImageResponseDto.getPath().get(0).getUploadFilePath();
-	//
-	// 	}
-	// 	member.updateMember(nickname, profileImageUrl);
-	// }
+	@Override
+	@Transactional
+	public void updateProfile(PatchMemberRequestDto patchMemberRequestDto, MultipartFile profileImage) {
+
+		Member member = memberRepository.findById(patchMemberRequestDto.getMemberId()).orElseThrow(() -> new MemberException(MemberErrorInfo.MEMBER_NOT_FOUND));
+
+		// 원래 닉네임
+		String nickname = member.getNickname();
+		// 받은 닉네임이 null이 아니라면
+		if(patchMemberRequestDto.getNickname() != null){
+			// 닉네임 중복 검사
+			Optional<Member> exist = memberRepository.findByNickname(patchMemberRequestDto.getNickname());
+			if(exist.isPresent() && member.getId() != exist.get().getId()){
+				throw new MemberException(MemberErrorInfo.EXIST_MEMBER_NICKNAME);
+			}
+			// 닉네임 업데이트
+			nickname = patchMemberRequestDto.getNickname();
+		}
+
+		// 기존 프로필 이미지
+		String profileImageUrl = member.getProfileImageUrl();
+		// 프로필 이미지 새로 들어왔을 때
+		if(profileImage.getSize() != 0){
+			List<MultipartFile> multipartFiles = new ArrayList<>();
+			multipartFiles.add(profileImage);
+
+			EnvelopeResponse<PostImageResponseDto> postImageResponseDtoEnvelopeResponse;
+			try{
+				postImageResponseDtoEnvelopeResponse = imageApi.saveImages(multipartFiles);
+			}catch(FeignException e){
+				System.out.println(e.getMessage());
+				throw new MemberException(MemberErrorInfo.FAIL_TO_IMAGE_FEIGN_CLIENT_REQUEST);
+			}
+			PostImageResponseDto postImageResponseDto = postImageResponseDtoEnvelopeResponse.getData();
+			profileImageUrl = postImageResponseDto.getPath().get(0).getUploadFilePath();
+		}
+
+		// 새로 들어온 이미지가 Null일 때
+		// 기존 이미지 삭제
+		if(patchMemberRequestDto.isDefaultImage()){
+			profileImageUrl = null;
+		}
+		member.updateMember(nickname, profileImageUrl);
+	}
 }
