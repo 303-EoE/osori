@@ -23,7 +23,7 @@ class _StoreScreenState extends State<StoreScreen> {
   // 키워드로 장소 검색하기 활용
   // name, latitude, longitude, id 필요
   // address_name, phone을 받아오기
-  late Future<StoreDescriptionModel> storeModel;
+  late Future<StoreDescriptionModel?> storeModel;
 
   @override
   void initState() {
@@ -150,7 +150,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                         builder: (context) =>
                                             ReceiptScanningScreen(
                                           store: null,
-                                          storeId: model.id,
+                                          storeId: model!.id,
                                         ),
                                       ),
                                     );

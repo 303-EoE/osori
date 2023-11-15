@@ -19,16 +19,14 @@ class MemberService {
       return response.data['data'];
     } catch (e) {
       if (e is DioException) {
-        // DioError에서 발생한 예외
         debugPrint('DioError 발생');
         debugPrint('Response data: ${e.response?.data}');
         debugPrint('Error: ${e.error}');
       } else {
-        // DioError가 아닌 다른 예외
         debugPrint('일반 예외 발생');
         debugPrint('$e');
       }
-      return null;
+      throw Error();
     }
   }
 
@@ -51,9 +49,16 @@ class MemberService {
       });
       final response = await dio.patch(url, data: formData);
       return response.statusCode ?? -1;
-    } catch (error) {
-      debugPrint(error.toString());
-      return -1;
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
+      }
+      throw Error();
     }
   }
 }

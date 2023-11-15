@@ -5,13 +5,12 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:osori/models/review/review_whole_model.dart';
-import 'package:osori/services/osori/auth_service.dart';
 import 'package:osori/widgets/common/token_manager.dart';
 
 class ReviewService {
   static const String baseUrl = "https://test.osori.co.kr/reviews";
   // 가게 리뷰 요약 조회
-  static Future<List<Map<String, dynamic>>?> getSumarrizedReviews(
+  static Future<List<Map<String, dynamic>>> getSumarrizedReviews(
       int storeId) async {
     try {
       final token = await TokenManager.readAccessToken();
@@ -19,33 +18,19 @@ class ReviewService {
       var dio = Dio();
       dio.options.headers = {'Authorization': token};
       final response = await dio.get(url);
-      if (response.statusCode == 200) {
-        return response.data['data']['reviews'];
+      return response.data['data']['reviews'];
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
       }
-    } catch (error) {
-      debugPrint('$error');
-      return null;
+      throw Error();
     }
-    return null;
   }
-
-  // // 내 리뷰 전체 조회
-  // static Future<List<Map<String, dynamic>>?> getAllMyReview() async {
-  //   try {
-  //     final token = await TokenManager.readAccessToken();
-  //     const url = '$baseUrl/my-review';
-  //     var dio = Dio();
-  //     dio.options.headers = {'Authorization': token};
-  //     final response = await dio.get(url);
-  //     if (response.statusCode == 200) {
-  //       return response.data['data']['reviews'];
-  //     }
-  //   } catch (error) {
-  //     debugPrint('$error');
-  //     return null;
-  //   }
-  //   return null;
-  // }
 
   // 영수증 스캔
   static Future<Map<String, dynamic>?> scanImage(File image) async {
@@ -60,10 +45,17 @@ class ReviewService {
       if (response.statusCode == 200) {
         return response.data;
       }
-    } catch (error) {
-      debugPrint('$error');
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
+      }
     }
-    return null;
+    throw Error();
   }
 
   // 리뷰 등록
@@ -114,14 +106,21 @@ class ReviewService {
       );
       final response = await dio.post(url, data: formData);
       return response.statusCode ?? -1;
-    } catch (error) {
-      debugPrint('$error');
-      return -1;
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
+      }
+      throw Error();
     }
   }
 
   // 리뷰 상세 조회
-  static Future<ReviewWholeModel?> getDetailedReview(int reviewId) async {
+  static Future<ReviewWholeModel> getDetailedReview(int reviewId) async {
     try {
       final token = await TokenManager.readAccessToken();
       final memberId = await TokenManager.readUserId();
@@ -129,14 +128,18 @@ class ReviewService {
       var dio = Dio();
       dio.options.headers = {'Authorization': token};
       final response = await dio.get(url);
-      if (response.statusCode == 200) {
-        return response.data['data'];
+      return response.data['data'];
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
       }
-    } catch (error) {
-      debugPrint('$error');
-      return null;
+      throw Error();
     }
-    return null;
   }
 
   // 리뷰 삭제
@@ -149,9 +152,16 @@ class ReviewService {
       dio.options.headers = {'Authorization': token};
       final response = await dio.delete(url);
       return response.statusCode ?? -1;
-    } catch (error) {
-      debugPrint('$error');
-      return -1;
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
+      }
+      throw Error();
     }
   }
 
@@ -164,9 +174,16 @@ class ReviewService {
       dio.options.headers = {'Authorization': token};
       final response = await dio.post(url);
       return response.statusCode ?? -1;
-    } catch (error) {
-      debugPrint('$error');
-      return -1;
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
+      }
+      throw Error();
     }
   }
 }

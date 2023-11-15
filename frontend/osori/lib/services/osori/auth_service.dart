@@ -34,8 +34,6 @@ class AuthService {
         'providerId': providerId,
       });
       final json = response.data['data'];
-      print(json);
-      print(json['nickname']);
       if (json['nickname'] == null) {
         return {
           'providerId': providerId,
@@ -52,42 +50,46 @@ class AuthService {
       }
     } catch (e) {
       if (e is DioException) {
-        // DioError에서 발생한 예외
-        print('DioError 발생');
-        print('Response data: ${e.response?.data}');
-        print('Error: ${e.error}');
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
       } else {
-        // DioError가 아닌 다른 예외
-        print('일반 예외 발생');
-        print(e);
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
       }
       return {'nickname': ""};
     }
   }
 
   // 토큰으로 회원 정보 조회
-  static Future<Map<String, dynamic>?> getUserInfo(String? token) async {
-    var dio = Dio();
-    token ??= await TokenManager.readAccessToken();
-    dio.options.headers = {"Authorization": 'Bearer $token'};
-    const url = '$baseUrl/info';
-    final response = await dio.get(url);
-    print('vvvvvvvvvvvvvvvvvvvv');
-    print(response.data);
-    print('^^^^^^^^^^^^^^^^^^^^');
-    if (response.statusCode == 200) {
+  static Future<Map<String, dynamic>> getUserInfo(String? token) async {
+    try {
+      var dio = Dio();
+      token ??= await TokenManager.readAccessToken();
+      dio.options.headers = {"Authorization": 'Bearer $token'};
+      const url = '$baseUrl/info';
+      final response = await dio.get(url);
       TokenManager.renewUserInfo(response.data['data']); // 회원정보 스토리지에 저장
       return {
         'id': response.data['data']['id'],
         'nickname': response.data['data']['nickname'],
         'profileImageUrl': response.data['data']['profileImageUrl'],
       };
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
+      }
+      throw Error();
     }
-    return null;
   }
 
   // 회원정보 신규 등록
-  static Future<String?> registerUserInfo(
+  static Future<String> registerUserInfo(
       String providerId, String nickname, File? profileImage) async {
     try {
       var dio = Dio();
@@ -108,32 +110,38 @@ class AuthService {
           response.data['data']['accessToken'],
           response.data['data']['refreshToken'],
         );
-        return nickname;
       }
+      return nickname;
     } catch (e) {
       if (e is DioException) {
-        // DioError에서 발생한 예외
-        print('DioError 발생');
-        print('Response data: ${e.response?.data}');
-        print('Error: ${e.error}');
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
       } else {
-        // DioError가 아닌 다른 예외
-        print('일반 예외 발생');
-        print(e);
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
       }
-      return null;
+      throw Error();
     }
-    return null;
   }
 
   static Future<String> renewAccessToken(String refreshToken) async {
-    var dio = Dio();
-    dio.options.headers = {"Authorization": refreshToken};
-    const url = '$baseUrl/token/refresh';
-    final response = await dio.get(url);
-    if (response.statusCode == 200) {
+    try {
+      var dio = Dio();
+      dio.options.headers = {"Authorization": refreshToken};
+      const url = '$baseUrl/token/refresh';
+      final response = await dio.get(url);
       return response.data['data']['accessToken'];
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
+      }
+      throw Error();
     }
-    return "";
   }
 }
