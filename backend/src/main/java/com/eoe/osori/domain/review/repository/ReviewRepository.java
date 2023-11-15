@@ -1,6 +1,7 @@
 package com.eoe.osori.domain.review.repository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,5 +13,5 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
 	Boolean existsByStoreIdAndPaidAt(Long storeId, LocalDateTime paidAt);
 
-
+	List<Review> findAllByStoreId(Long storeId);
 }
