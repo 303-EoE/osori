@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collation = "chatting")
+@Document(collation = "chat_message")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor

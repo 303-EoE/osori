@@ -8,13 +8,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicInsert;
 
 @Entity
 @Getter
 @Builder
-@Table(name="chat_room")
-@DynamicInsert
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatRoom extends BaseTimeEntity {
@@ -47,7 +44,7 @@ public class ChatRoom extends BaseTimeEntity {
     @Column
     private String joinMemberProfileImageUrl;
 
-    public static ChatRoom of(GetMemberDetailResponseDto createMember,GetMemberDetailResponseDto joinMember) {
+    public static ChatRoom of(GetMemberDetailResponseDto createMember, GetMemberDetailResponseDto joinMember) {
         return ChatRoom.builder()
                 .createMemberId(createMember.getId())
                 .createMemberNickname(createMember.getNickname())

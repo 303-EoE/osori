@@ -4,7 +4,6 @@ package com.eoe.osori.domain.chat.repository;
 import com.eoe.osori.domain.chat.domain.ChatRoom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;

@@ -5,7 +5,8 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public enum ChatErrorInfo {
-    FAIL_TO_MEMBER_FEIGN_CLIENT_REQUEST(HttpStatus.BAD_REQUEST, 1500, "Member Feign Client 통신에 실패했습니다.");
+    FAIL_TO_MEMBER_FEIGN_CLIENT_REQUEST(HttpStatus.BAD_REQUEST, 1500, "Member Feign Client 통신에 실패했습니다."),
+    FAIL_TO_SEND_MESSAGE(HttpStatus.INTERNAL_SERVER_ERROR,1501, "메세지 전송에 실패했습니다.");
 
     private final HttpStatus status;
     private final Integer code;

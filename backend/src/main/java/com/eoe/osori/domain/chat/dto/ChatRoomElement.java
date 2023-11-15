@@ -15,9 +15,9 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class ChatRoomElement {
 
-    private Long id;
+    private Long chatRoomId;
 
-    private Long memberId;
+    private Long joinedMemberId;
 
     private String nickname;
 
@@ -30,13 +30,14 @@ public class ChatRoomElement {
     private LocalDateTime sendAt;
     public static ChatRoomElement of(ChatRoom chatRoom, Long memberId, int unReadCount, ChatMessage chatMessage) {
         return ChatRoomElement.builder()
-                .id(chatRoom.getId())
-                .memberId(chatRoom.getJoinMemberId() == memberId ? chatRoom.getJoinMemberId() : chatRoom.getCreateMemberId())
-                .nickname(chatRoom.getJoinMemberId() == memberId ? chatRoom.getJoinMemberNickname() : chatRoom.getCreateMemberNickname())
-                .profileImageUrl(chatRoom.getJoinMemberId() == memberId ? chatRoom.getJoinMemberProfileImageUrl() : chatRoom.getCreateMemberProfileImageUrl())
+                .chatRoomId(chatRoom.getId())
+                .joinedMemberId(chatRoom.getJoinMemberId() == memberId ? chatRoom.getCreateMemberId() : chatRoom.getJoinMemberId())
+                .nickname(chatRoom.getJoinMemberId() == memberId ? chatRoom.getCreateMemberNickname() : chatRoom.getJoinMemberNickname())
+                .profileImageUrl(chatRoom.getJoinMemberId() == memberId ? chatRoom.getCreateMemberProfileImageUrl() : chatRoom.getJoinMemberProfileImageUrl())
                 .unReadCount(unReadCount)
                 .content(chatMessage.getContent())
-                .sendAt(chatMessage.getCreatedAt())
+//                .sendAt(chatMessage.getCreatedAt())
+                .sendAt(LocalDateTime.now())
                 .build();
     }
 }

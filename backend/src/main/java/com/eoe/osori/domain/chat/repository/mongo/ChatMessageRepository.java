@@ -11,7 +11,7 @@ public interface ChatMessageRepository extends MongoRepository<ChatMessage,Long>
     @Query("{ 'chatRoomId' : ?0, 'senderId' : ?1, 'readCount' : 1 }")
     int countByChatRoomIdAndSenderIdAndReadCount(Long chatRoomId, Long senderId);
 
-    ChatMessage findFirstByChatRoomNoOrderByCreatedAtDesc(Long chatRoomId);
+    ChatMessage findFirstByChatRoomIdOrderByCreatedAtDesc(Long chatRoomId);
 
     List<ChatMessage> findByChatRoomId(Long chatRoomId);
 }
