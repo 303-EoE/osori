@@ -50,7 +50,7 @@ public class TokenServiceImpl implements TokenService {
         accessToken = accessToken.substring(startIndex, endIndex);
 
         Token token = tokenRepository.findByAccessToken(accessToken)
-                .orElseThrow(() -> new AuthException(AuthErrorInfo.REFRESH_TOKEN_NOT_FOUND));
+                .orElseThrow(() -> new AuthException(AuthErrorInfo.TOKEN_NOT_FOUND));
 
         tokenRepository.delete(token);
     }
@@ -73,7 +73,7 @@ public class TokenServiceImpl implements TokenService {
 
         // 액세스 토큰으로 Refresh 토큰 객체를 조회
         Token token = tokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(()-> new AuthException(AuthErrorInfo.REFRESH_TOKEN_NOT_FOUND));
+                .orElseThrow(()-> new AuthException(AuthErrorInfo.TOKEN_NOT_FOUND));
 
         Long id = jwtTokenProvider.getLoginId(token.getRefreshToken());
 
@@ -92,5 +92,19 @@ public class TokenServiceImpl implements TokenService {
         }
 
         return PostAuthReissueTokenResponseDto.from(token);
+    }
+
+    /**
+     * AccessToken으로 토큰 조회
+     *
+     * @param accessToken String
+     * @return Token
+     * @see TokenRepository
+     */
+    @Override
+    public Token getTokenByAccessToken(String accessToken) {
+        Token token = tokenRepository.findByAccessToken(accessToken)
+                .orElseThrow(() -> new AuthException(AuthErrorInfo.TOKEN_NOT_FOUND));
+        return token;
     }
 }

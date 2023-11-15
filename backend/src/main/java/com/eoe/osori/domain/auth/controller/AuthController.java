@@ -44,7 +44,7 @@ public class AuthController {
      * @return ResponseEntity<EnvelopeResponse<PostAuthInfoResponseDto>>
      * @see AuthService
      */
-    @PostMapping("/info")
+    @GetMapping("/info")
     public ResponseEntity<EnvelopeResponse<PostAuthInfoResponseDto>> info(@RequestHeader("Authorization") String accessToken) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(EnvelopeResponse.<PostAuthInfoResponseDto>builder()
@@ -80,7 +80,7 @@ public class AuthController {
      * @return ResponseEntity<EnvelopeResponse<Void>>
      * @see TokenService
      */
-    @PostMapping("/token/logout")
+    @GetMapping("/token/logout")
     public ResponseEntity<EnvelopeResponse<Void>> logout(@RequestHeader("Authorization") String accessToken) {
 
         // 엑세스 토큰으로 현재 Redis 정보 삭제
@@ -98,7 +98,7 @@ public class AuthController {
      * @return ResponseEntity<EnvelopeResponse<PostAuthReissueTokenResponseDto>>
      * @see TokenService
      */
-    @PostMapping("/token/refresh")
+    @GetMapping("/token/refresh")
     public ResponseEntity<EnvelopeResponse<PostAuthReissueTokenResponseDto>> refresh(@RequestHeader("Authorization") String refreshToken) {
 
         return ResponseEntity.status(HttpStatus.OK)

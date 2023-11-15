@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.eoe.osori.domain.auth.domain.redis.Token;
 import com.eoe.osori.domain.auth.service.redis.TokenService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,6 +104,8 @@ public class AuthServiceImpl implements AuthService {
 		int startIndex = accessToken.indexOf("Bearer") + "Bearer".length() + 1;
 		int endIndex = accessToken.length();
 		String token = accessToken.substring(startIndex, endIndex);
+
+		token = tokenService.getTokenByAccessToken(token).getAccessToken();
 
 		// 토큰에서 id 가져오기
 		Long id = jwtTokenProvider.getLoginId(token);

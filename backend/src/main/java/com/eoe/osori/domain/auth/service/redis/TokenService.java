@@ -11,4 +11,6 @@ public interface TokenService {
 
     PostAuthReissueTokenResponseDto reissueAccessToken(String refreshToken);
 
+    Token getTokenByAccessToken(String accessToken);
+
 }
