@@ -43,6 +43,10 @@ public class ReceiptServiceImpl implements ReceiptService {
     @Override
     public PostReceiptResponseDto getReceiptInfo(MultipartFile multipartFile) {
 
+        if (multipartFile.getSize() == 0) {
+            throw new ReceiptException(ReceiptErrorInfo.RECEIPT_FILE_NOT_FOUND_ERROR)
+        }
+
         File sourceFile = convertMultipartFileToFile(multipartFile);
 
         Path filePath = sourceFile.toPath();
