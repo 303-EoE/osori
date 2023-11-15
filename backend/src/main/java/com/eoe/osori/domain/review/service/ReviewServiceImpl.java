@@ -2,6 +2,7 @@ package com.eoe.osori.domain.review.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import com.eoe.osori.domain.review.domain.ReviewFeed;
 import com.eoe.osori.domain.review.domain.ReviewImage;
 import com.eoe.osori.domain.review.dto.CommonReviewListResponseDto;
 import com.eoe.osori.domain.review.dto.GetReviewDetailResponseDto;
+import com.eoe.osori.domain.review.dto.GetStoreReviewCacheDataResponseDto;
 import com.eoe.osori.domain.review.dto.GetStoreReviewListResponseDto;
 import com.eoe.osori.domain.review.dto.PostReviewRequestDto;
 import com.eoe.osori.domain.review.repository.LikeReviewRepository;
@@ -26,6 +28,8 @@ import com.eoe.osori.global.common.api.images.ImageApi;
 import com.eoe.osori.global.common.api.images.dto.PostImageResponseDto;
 import com.eoe.osori.global.common.api.store.StoreApi;
 import com.eoe.osori.global.common.api.store.dto.GetStoreDetailResponseDto;
+import com.eoe.osori.global.common.redis.domain.StoreInfo;
+import com.eoe.osori.global.common.redis.repository.StoreInfoRedisRepository;
 import com.eoe.osori.global.common.response.CommonIdResponseDto;
 import com.eoe.osori.global.common.response.EnvelopeResponse;
 
@@ -42,6 +46,7 @@ public class ReviewServiceImpl implements ReviewService {
 	private final ReviewImageRepository reviewImageRepository;
 	private final LikeReviewRepository likeReviewRepository;
 	private final ReviewFeedRepository reviewFeedRepository;
+	private final StoreInfoRedisRepository storeInfoRedisRepository;
 	private final StoreApi storeApi;
 	private final ImageApi imageApi;
 
@@ -55,6 +60,7 @@ public class ReviewServiceImpl implements ReviewService {
 	 * @see ReviewRepository
 	 * @see ReviewImageRepository
 	 * @see ReviewFeedRepository
+	 * @see StoreInfoRedisRepository
 	 * @see StoreApi
 	 * @see ImageApi
 	 */
@@ -76,7 +82,6 @@ public class ReviewServiceImpl implements ReviewService {
 			postReviewRequestDto.getPaidAt())) {
 			throw new ReviewException(ReviewErrorInfo.DUPLICATE_RECEIPT_REQUEST_ERROR);
 		}
-
 
 		Review review = Review.from(postReviewRequestDto);
 		review.updateAverageCost(review.getTotalPrice(), review.getFactor(), review.getHeadcount());
@@ -118,6 +123,25 @@ public class ReviewServiceImpl implements ReviewService {
 
 		reviewFeedRepository.save(ReviewFeed.of(review, postReviewRequestDto, getStoreResponseDto, reviewImageUrlList));
 
+		// redis cache 확인 및 데이터 업데이트
+		Optional<StoreInfo> optionalStoreInfo = storeInfoRedisRepository.findById(review.getStoreId());
+
+		if (optionalStoreInfo.isPresent()) {
+			StoreInfo storeInfo = optionalStoreInfo.get();
+
+			storeInfo.addTotalRate(review.getRate());
+			storeInfo.plusTotalReviewCount();
+			storeInfo.calcAverageRate(storeInfo.getTotalRate(), storeInfo.getTotalReviewCount());
+
+			if (review.getBillType().getName().equals(getStoreResponseDto.getDefaultBillType())) {
+				storeInfo.addBillTypeTotalPrice(review.getAverageCost());
+				storeInfo.plusBillTypeTotalReviewCount();
+				storeInfo.calcAveragePrice(storeInfo.getBillTypeTotalPrice(), storeInfo.getBillTypeTotalReviewCount());
+			}
+
+			storeInfoRedisRepository.save(storeInfo);
+		}
+
 		return CommonIdResponseDto.from(review.getId());
 	}
 
@@ -138,7 +162,7 @@ public class ReviewServiceImpl implements ReviewService {
 		Review review = reviewRepository.findById(reviewId)
 			.orElseThrow(() -> new ReviewException(ReviewErrorInfo.NOT_FOUND_REVIEW_BY_ID));
 
-		if (review.getMemberId() != memberId) {
+		if (!review.getMemberId().equals(memberId)) {
 			throw new ReviewException(ReviewErrorInfo.NOT_MATCH_REVIEW_BY_MEMBERID);
 		}
 
@@ -170,7 +194,7 @@ public class ReviewServiceImpl implements ReviewService {
 
 		Boolean liked = likeReviewRepository.existsByReviewIdAndMemberId(reviewId, memberId);
 
-		Boolean isMine = (memberId == reviewFeed.getMemberId()) ? true : false;
+		Boolean isMine = memberId.equals(reviewFeed.getMemberId());
 
 		// 리뷰 상세 조회 정보 보내기
 		return GetReviewDetailResponseDto.of(reviewFeed, liked, isMine);
@@ -214,7 +238,6 @@ public class ReviewServiceImpl implements ReviewService {
 	 */
 	@Override
 	public CommonReviewListResponseDto getReviewListByRegion(String storeDepth1, String storeDepth2, Long memberId) {
-
 
 		List<ReviewFeed> reviewFeedList = reviewFeedRepository
 			.findAllByStoreDepth1AndStoreDepth2OrderByCreatedAtDesc(storeDepth1, storeDepth2);
@@ -261,9 +284,8 @@ public class ReviewServiceImpl implements ReviewService {
 			.map(likeReview -> likeReview.getReviewId())
 			.collect(Collectors.toList());
 
-		return CommonReviewListResponseDto
-			.ofReviewFeedListAndLikeReviewIdListAndMemberId
-				(reviewFeedList, likeReviewIdList, memberId);
+		return CommonReviewListResponseDto.ofReviewFeedListAndLikeReviewIdListAndMemberId(reviewFeedList,
+			likeReviewIdList, memberId);
 	}
 
 	/**
@@ -282,7 +304,6 @@ public class ReviewServiceImpl implements ReviewService {
 			.map(likeReview -> likeReview.getReviewId())
 			.collect(Collectors.toList());
 
-
 		List<ReviewFeed> reviewFeedList = new ArrayList<>();
 
 		for (Long likeReviewId : likeReviewIdList) {
@@ -293,6 +314,37 @@ public class ReviewServiceImpl implements ReviewService {
 		}
 
 		return CommonReviewListResponseDto.ofReviewFeedListAndAndMemberId(reviewFeedList, memberId);
+	}
+
+	/**
+	 *  가게 리뷰 캐시 데이터 조회
+	 *
+	 * @param storeId Long
+	 * @param defaultBillType String
+	 * @return GetStoreReviewCacheDataResponseDto
+	 * @see ReviewRepository
+	 */
+	@Override
+	public GetStoreReviewCacheDataResponseDto getReviewCacheDataByStore(Long storeId, String defaultBillType) {
+
+		StoreInfo storeInfo = StoreInfo.from(storeId);
+
+		List<Review> reviewList = reviewRepository.findAllByStoreId(storeId);
+
+		for (Review review : reviewList) {
+			storeInfo.addTotalRate(review.getRate());
+			storeInfo.plusTotalReviewCount();
+
+			if (review.getBillType().getName().equals(defaultBillType)) {
+				storeInfo.addBillTypeTotalPrice(review.getAverageCost());
+				storeInfo.plusBillTypeTotalReviewCount();
+			}
+		}
+
+		storeInfo.calcAveragePrice(storeInfo.getBillTypeTotalPrice(), storeInfo.getBillTypeTotalReviewCount());
+		storeInfo.calcAverageRate(storeInfo.getTotalRate(), storeInfo.getTotalReviewCount());
+
+		return GetStoreReviewCacheDataResponseDto.from(storeInfo);
 	}
 
 }

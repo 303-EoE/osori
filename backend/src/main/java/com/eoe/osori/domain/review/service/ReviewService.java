@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.eoe.osori.domain.review.dto.CommonReviewListResponseDto;
 import com.eoe.osori.domain.review.dto.GetReviewDetailResponseDto;
+import com.eoe.osori.domain.review.dto.GetStoreReviewCacheDataResponseDto;
 import com.eoe.osori.domain.review.dto.GetStoreReviewListResponseDto;
 import com.eoe.osori.domain.review.dto.PostReviewRequestDto;
 import com.eoe.osori.global.common.response.CommonIdResponseDto;
@@ -28,4 +29,5 @@ public interface ReviewService {
 
 	CommonReviewListResponseDto getLikeReviewList(Long memberId);
 
+	GetStoreReviewCacheDataResponseDto getReviewCacheDataByStore(Long storeId, String defaultBillType);
 }
