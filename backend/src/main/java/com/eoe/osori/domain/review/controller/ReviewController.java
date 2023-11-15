@@ -40,7 +40,7 @@ public class ReviewController {
 	 *
 	 * @param postReviewRequestDto PostReviewRequestDto
 	 * @param reviewImages List<MultipartFile>
-	 * @return ResponseEntity<EnvelopeResponse < CommonIdResponseDto>>
+	 * @return ResponseEntity<EnvelopeResponse<CommonIdResponseDto>>
 	 * @see ReviewService
 	 */
 	@PostMapping()
@@ -60,13 +60,15 @@ public class ReviewController {
 	 * 리뷰 삭제
 	 *
 	 * @param reviewId Long
-	 * @return ResponseEntity<EnvelopeResponse < Void>>
+	 * @param memberId Long
+	 * @return ResponseEntity<EnvelopeResponse<Void>>
 	 * @see ReviewService
 	 */
 	@DeleteMapping()
-	public ResponseEntity<EnvelopeResponse<Void>> deleteReview(@RequestParam("review_id") Long reviewId) {
+	public ResponseEntity<EnvelopeResponse<Void>> deleteReview(@RequestParam("review_id") Long reviewId,
+	@RequestParam("member_id") Long memberId) {
 		
-		reviewService.deleteReview(reviewId);
+		reviewService.deleteReview(reviewId, memberId);
 
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<Void>builder()
@@ -79,17 +81,18 @@ public class ReviewController {
 	 * 리뷰 상세조회
 	 *
 	 * @param reviewId Long
-	 * @return ResponseEntity<EnvelopeResponse < GetReviewDetailResponseDto>>
+	 * @param memberId Long
+	 * @return ResponseEntity<EnvelopeResponse<GetReviewDetailResponseDto>>
 	 * @see ReviewService
 	 */
 	@GetMapping("/detail")
 	public ResponseEntity<EnvelopeResponse<GetReviewDetailResponseDto>> getReviewDetail(
-		@RequestParam("review_id") Long reviewId) {
+		@RequestParam("review_id") Long reviewId, @RequestParam("member_id") Long memberId) {
 
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<GetReviewDetailResponseDto>builder()
 				.code(HttpStatus.OK.value())
-				.data(reviewService.getReviewDetail(reviewId))
+				.data(reviewService.getReviewDetail(reviewId, memberId))
 				.build());
 	}
 
@@ -98,13 +101,15 @@ public class ReviewController {
 	 * 리뷰 좋아요 / 취소
 	 *
 	 * @param reviewId
-	 * @return ResponseEntity<EnvelopeResponse < Void>>
+	 * @param memberId
+	 * @return ResponseEntity<EnvelopeResponse<Void>>
 	 * @see ReviewService
 	 */
 	@PostMapping("/like")
-	public ResponseEntity<EnvelopeResponse<Void>> likeOrDislikeReview(@RequestParam("review_id") Long reviewId) {
+	public ResponseEntity<EnvelopeResponse<Void>> likeOrDislikeReview(@RequestParam("review_id") Long reviewId,
+		@RequestParam("member_id") Long memberId) {
 
-		reviewService.likeOrDisLikeReivew(reviewId);
+		reviewService.likeOrDisLikeReivew(reviewId, memberId);
 
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<Void>builder()
@@ -118,17 +123,19 @@ public class ReviewController {
 	 *
 	 * @param storeDepth1 String
 	 * @param storeDepth2 String
+	 * @param memberId Long
 	 * @return ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>>
 	 * @see ReviewService
 	 */
 	@GetMapping("/region")
 	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getReviewListByRegion
-	(@RequestParam("depth1") String storeDepth1, @RequestParam("depth2") String storeDepth2) {
+	(@RequestParam("depth1") String storeDepth1, @RequestParam("depth2") String storeDepth2,
+		@RequestParam("member_id") Long memberId) {
 
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
 				.code(HttpStatus.OK.value())
-				.data(reviewService.getReviewListByRegion(storeDepth1, storeDepth2))
+				.data(reviewService.getReviewListByRegion(storeDepth1, storeDepth2, memberId))
 				.build());
 	}
 
@@ -153,37 +160,20 @@ public class ReviewController {
 
 	/**
 	 *
-	 * 내 리뷰 전체 조회
-	 *
-	 * @return ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>>
-	 * @see ReviewService
-	 */
-	@GetMapping("/my-review")
-	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getMyReviewList() {
-
-		return ResponseEntity.status(HttpStatus.OK)
-			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
-				.code(HttpStatus.OK.value())
-				.data(reviewService.getMyReviewList())
-				.build());
-	}
-
-	/**
-	 *
-	 * 다른 사람 리뷰 전체 조회
+	 * 멤버 리뷰 전체 조회
 	 *
 	 * @param memberId Long
 	 * @return ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>>
 	 * @see ReviewService
 	 */
 	@GetMapping("/member")
-	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getOtherReviewList
+	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getMemberReviewList
 		(@RequestParam("member_id") Long memberId) {
 
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
 				.code(HttpStatus.OK.value())
-				.data(reviewService.getOtherReviewList(memberId))
+				.data(reviewService.getMemberReviewList(memberId))
 				.build());
 	}
 
@@ -191,16 +181,18 @@ public class ReviewController {
 	 *
 	 * 좋아요한 리뷰 전체 조회
 	 *
+	 * @param memberId Long
 	 * @return ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>>
 	 * @see ReviewService
 	 */
 	@GetMapping("/like")
-	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getLikeReviewList() {
+	public ResponseEntity<EnvelopeResponse<CommonReviewListResponseDto>> getLikeReviewList
+		(@RequestParam("member_id") Long memberId) {
 		
 		return ResponseEntity.status(HttpStatus.OK)
 			.body(EnvelopeResponse.<CommonReviewListResponseDto>builder()
 				.code(HttpStatus.OK.value())
-				.data(reviewService.getLikeReviewList())
+				.data(reviewService.getLikeReviewList(memberId))
 				.build());
 	}
 
