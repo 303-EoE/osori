@@ -152,6 +152,8 @@ public class StoreServiceImpl implements StoreService {
 			GetStoreReviewCacheDataResponseDto getStoreReviewCacheDataResponseDto
 				= getStoreReviewCacheDataResponseDtoEnvelopeResponse.getData();
 
+			storeInfoRedisRepository.save(StoreInfo.from(getStoreReviewCacheDataResponseDto));
+
 			if (getStoreReviewCacheDataResponseDto.getBillTypeTotalReviewCount().equals(0)) {
 				continue;
 			}
