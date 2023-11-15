@@ -4,6 +4,7 @@ import com.eoe.osori.global.advice.error.info.AuthErrorInfo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.stereotype.Component;
 
 @Getter
 @AllArgsConstructor

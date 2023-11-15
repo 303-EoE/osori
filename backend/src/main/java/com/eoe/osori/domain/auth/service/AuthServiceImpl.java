@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.eoe.osori.domain.auth.service.redis.TokenService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -36,6 +37,7 @@ public class AuthServiceImpl implements AuthService {
 	private final MemberRepository memberRepository;
 	private final JwtTokenProvider jwtTokenProvider;
 	private final ImageApi imageApi;
+	private final TokenService tokenService;
 
 
 	/**
@@ -75,6 +77,8 @@ public class AuthServiceImpl implements AuthService {
 		if(nickname != null){
 			accessToken = jwtTokenProvider.generateAccessToken(member.getId());
 			refreshToken = jwtTokenProvider.generateRefreshToken(member.getId());
+			// 토큰 Redis에 저장
+			tokenService.saveTokenInfo(refreshToken, accessToken);
 		}
 
 		return PostAuthLoginResponseDto.of(nickname, accessToken, refreshToken);
@@ -82,6 +86,7 @@ public class AuthServiceImpl implements AuthService {
 
 	/**
 	 * 토큰에서 로그인 유저 정보 조회
+	 *
 	 * @param accessToken String
 	 * @return PostAuthInfoResponseDto
 	 */
@@ -111,6 +116,7 @@ public class AuthServiceImpl implements AuthService {
 
 	/**
 	 * 회원 가입시 회원 정보 등록
+	 *
 	 * @param postAuthProfileRequestDto PostAuthProfileRequestDto
 	 * @param profileImage MultipartFile
 	 * @return PostAuthProfileResponseDto
@@ -168,11 +174,15 @@ public class AuthServiceImpl implements AuthService {
 		String accessToken = jwtTokenProvider.generateAccessToken(member.getId());
 		String refreshToken = jwtTokenProvider.generateRefreshToken(member.getId());
 
+		// 토큰 Redis에 저장
+		tokenService.saveTokenInfo(refreshToken, accessToken);
+
 		return PostAuthProfileResponseDto.of(nickname, accessToken, refreshToken);
 	}
 
 	/**
 	 * Bearer 떼고 액세스 토큰 가져옴
+	 *
 	 * @return 액세스 토큰
 	 */
 	private String parsingAccessToken(String accessToken) {
