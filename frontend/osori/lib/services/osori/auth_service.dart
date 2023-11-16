@@ -28,7 +28,7 @@ class AuthService {
           providerId = await SocialLoginService.loginWithKakao();
       }
       var dio = Dio();
-      const url = baseUrl;
+      const url = '$baseUrl/login';
       final response = await dio.post(url, data: {
         'provider': provider,
         'providerId': providerId,
@@ -40,43 +40,64 @@ class AuthService {
           'nickname': 'null',
         };
       } else {
+        // 재로그인 완료!
         await TokenManager.renewAllToken(
             json['accessToken'], json['refreshToken']);
-        await getUserInfo(); // 저장소에 회원정보 저장하기
+        await getUserInfo(json['accessToken']); // 저장소에 회원정보 저장하기
         return {
-          'providerId': providerId,
           'nickname': json['nickname'],
         };
       }
-    } catch (error) {
-      debugPrint('$error');
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
+      }
       return {'nickname': ""};
     }
   }
 
   // 토큰으로 회원 정보 조회
-  static Future<void> getUserInfo() async {
-    final token = await TokenManager.readAccessToken();
-    var dio = Dio();
-    const url = '$baseUrl/info';
-    final response = await dio.post(url, data: {
-      'accessToken': token,
-    });
-    if (response.statusCode == 200) {
-      TokenManager.renewUserInfo(response.data); // 회원정보 스토리지에 저장
+  static Future<Map<String, dynamic>?> getUserInfo(String? token) async {
+    try {
+      var dio = Dio();
+      token ??= await TokenManager.readAccessToken();
+      dio.options.headers = {"Authorization": 'Bearer $token'};
+      const url = '$baseUrl/info';
+      final response = await dio.get(url);
+      TokenManager.renewUserInfo(response.data['data']); // 회원정보 스토리지에 저장
+      return {
+        'id': response.data['data']['id'],
+        'nickname': response.data['data']['nickname'],
+        'profileImageUrl': response.data['data']['profileImageUrl'],
+      };
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
+      }
+      return null;
     }
   }
 
   // 회원정보 신규 등록
-  static Future<int> registerUserInfo(
+  static Future<String> registerUserInfo(
       String providerId, String nickname, File? profileImage) async {
     try {
       var dio = Dio();
       const url = '$baseUrl/profile';
       var formData = FormData.fromMap({
         if (profileImage != null)
-          'profileImageUrl': MultipartFile.fromFileSync(profileImage.path),
-        'nickname': MultipartFile.fromString(
+          'profileImage': MultipartFile.fromFileSync(profileImage.path),
+        'postAuthProfileRequestDto': MultipartFile.fromString(
             jsonEncode({
               'providerId': providerId,
               'nickname': nickname,
@@ -84,10 +105,43 @@ class AuthService {
             contentType: MediaType.parse('application/json')),
       });
       final response = await dio.post(url, data: formData);
-      return response.statusCode ?? -1;
-    } catch (error) {
-      debugPrint('$error');
-      return -1;
+      if (response.statusCode == 200) {
+        await TokenManager.renewAllToken(
+          response.data['data']['accessToken'],
+          response.data['data']['refreshToken'],
+        );
+      }
+      return nickname;
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
+      }
+      throw Error();
+    }
+  }
+
+  static Future<String> renewAccessToken(String refreshToken) async {
+    try {
+      var dio = Dio();
+      dio.options.headers = {"Authorization": 'Bearer $refreshToken'};
+      const url = '$baseUrl/token/refresh';
+      final response = await dio.get(url);
+      return response.data['data']['accessToken'];
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
+      }
+      return "";
     }
   }
 }

@@ -1,7 +1,9 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:osori/services/osori/auth_service.dart';
 import 'package:osori/widgets/common/snack_bar_manager.dart';
@@ -21,77 +23,124 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   static const String kakao = "Kakao";
   int providerId = 0;
   void goToProfile() {
-    Navigator.of(context).pushNamedAndRemoveUntil('/profile', (route) => false);
+    Navigator.of(context).pushNamedAndRemoveUntil('/review', (route) => false);
   }
 
-  void loginWithService(String serviceName) async {
+  void loginWithService(String serviceName, Size size) async {
     final loginResult = await AuthService.loginWithSocialService(serviceName);
 
     if (!mounted) return;
 
     if (loginResult['nickname'] == '') {
-      SnackBarManager.alertSnackBar(context, '로그인 실패!!');
+      SnackBarManager.alertSnackBar(context, '로그인 실패!!!!!!!!!!!!!!');
     } else if (loginResult['nickname'] == "null") {
-      SnackBarManager.alertSnackBar(context, '닉네임을 설정하는 모달 띄우기'); // 회원가입
+      debugPrint('로그인 하기!');
+      // 회원가입
       showDialog(
         context: context,
         builder: (context) {
-          TextEditingController controller = TextEditingController();
+          final formKey = GlobalKey<FormBuilderState>();
           String? selectedImage;
-          bool isNicknameChecked = false;
           return Dialog(
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    const Text('닉네임'),
-                    TextField(
-                      controller: controller,
+            surfaceTintColor: Colors.white,
+            child: SizedBox(
+              width: size.width / 2,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    '회원가입',
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w600,
                     ),
-                    OutlinedButton(
-                        onPressed: () {
-                          if (isNicknameChecked) {
-                            // 닉네임 중복을 체크하는 요청
-                            isNicknameChecked = true;
-                          } else {
-                            isNicknameChecked = false;
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('닉네임*'),
+                      SizedBox(
+                        width: 150,
+                        child: FormBuilder(
+                          key: formKey,
+                          child: FormBuilderTextField(
+                            name: 'nickname',
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20),
+                                ),
+                              ),
+                              labelText: '닉네임',
+                            ),
+                            validator: FormBuilderValidators.compose([
+                              FormBuilderValidators.required(),
+                            ]),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('프로필 이미지'),
+                      IconButton(
+                        onPressed: () async {
+                          final imagePicker = ImagePicker();
+                          final pickedImage = await imagePicker.pickImage(
+                            source: ImageSource.gallery,
+                            imageQuality: 50,
+                          );
+                          if (pickedImage != null) {
+                            selectedImage = pickedImage.path;
                           }
                         },
-                        child: const Text('중복 체크'))
-                  ],
-                ),
-                IconButton(
-                  onPressed: () async {
-                    final imagePicker = ImagePicker();
-                    final pickedImage = await imagePicker.pickImage(
-                      source: ImageSource.gallery,
-                      imageQuality: 50,
-                    );
-                    if (pickedImage != null) {
-                      selectedImage = pickedImage.path;
-                    }
-                  },
-                  icon: const Icon(Icons.image_outlined),
-                ),
-                OutlinedButton(
-                  onPressed: () async {
-                    // 프로바이더ID,닉네임, 이미지(String)으로 회원가입을 요청하는 API
-                    final result = await AuthService.registerUserInfo(
-                        loginResult['providerId'],
-                        loginResult['nickname'],
-                        selectedImage!.isNotEmpty
-                            ? File(selectedImage!)
-                            : null);
-                    if (result == 200) {
+                        icon: const Icon(
+                          Icons.image_outlined,
+                          size: 32,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  OutlinedButton(
+                    onPressed: () async {
+                      // Validate and save the form values
+                      formKey.currentState?.saveAndValidate();
+                      debugPrint(formKey.currentState?.value.toString());
+                      formKey.currentState?.validate();
+                      debugPrint(formKey.currentState?.instantValue.toString());
+                      var formValues = formKey.currentState;
+                      // 프로바이더ID,닉네임, 이미지(String)으로 회원가입을 요청하는 API
+                      final result = await AuthService.registerUserInfo(
+                          loginResult['providerId'],
+                          formValues?.value['nickname'],
+                          selectedImage!.isNotEmpty
+                              ? File(selectedImage!)
+                              : null);
                       if (mounted) {
-                        SnackBarManager.welcomeSnackBar(
-                            context, loginResult['nickname']);
+                        if (result != "") {
+                          SnackBarManager.welcomeSnackBar(context, result);
+
+                          goToProfile();
+                        } else {
+                          SnackBarManager.alertSnackBar(context, '회원가입 실패!');
+                        }
                       }
-                    }
-                  },
-                  child: const Text('회원가입'),
-                )
-              ],
+                    },
+                    child: const Text('회원가입'),
+                  )
+                ],
+              ),
             ),
           );
         },
@@ -105,6 +154,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: const Text('로그인'),
@@ -120,7 +170,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
             GestureDetector(
               onTapUp: (details) {
-                loginWithService(google);
+                loginWithService(google, size);
               },
               child: Image.asset(
                 'assets/images/continue_with_google.png',
@@ -132,7 +182,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
             GestureDetector(
               onTapUp: (details) async {
-                loginWithService(kakao);
+                loginWithService(kakao, size);
               },
               child: Image.asset('assets/images/continue_with_kakao.png'),
             ),
@@ -142,7 +192,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             OutlinedButton(
                 onPressed: () {
                   Navigator.of(context)
-                      .pushNamedAndRemoveUntil('/', (route) => false);
+                      .pushNamedAndRemoveUntil('/review', (route) => false);
                 },
                 child: const Text('메인으로'))
           ],

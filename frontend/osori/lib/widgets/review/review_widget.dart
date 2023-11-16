@@ -21,6 +21,8 @@ class Review extends StatefulWidget {
 class _ReviewState extends State<Review> {
   int activeIndex = 0;
   var numberFormat = NumberFormat('###,###,###,###');
+  bool isTouched = false;
+  late bool isLiked;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -49,14 +51,15 @@ class _ReviewState extends State<Review> {
               },
               child: Row(
                 children: [
-                  // Image.network(
-                  //   'https://osori-bucket.s3.ap-northeast-2.amazonaws.com/${widget.review.memberProfileImageUrl}',
-                  //   height: 32,
-                  // ),
-                  Image.asset(
-                    'assets/images/288X288.png',
-                    height: 32,
-                  ),
+                  widget.review.memberProfileImageUrl == ""
+                      ? Image.asset(
+                          'assets/images/logo.png',
+                          height: 32,
+                        )
+                      : Image.network(
+                          'https://osori-bucket.s3.ap-northeast-2.amazonaws.com/${widget.review.memberProfileImageUrl}',
+                          height: 32,
+                        ),
                   const SizedBox(
                     width: 16,
                   ),
@@ -73,57 +76,62 @@ class _ReviewState extends State<Review> {
             // if (review.id == userId)
             if (widget.review.isMine)
               PopupMenuButton(
+                surfaceTintColor: Colors.white,
                 onSelected: (value) {
                   showDialog(
                     context: context,
                     builder: (context) {
                       return Dialog(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text(
-                                '리뷰를 삭제하시겠습니까?',
-                                style: TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w500,
+                        surfaceTintColor: Colors.white,
+                        child: SizedBox(
+                          width: 200,
+                          height: 150,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                const Text(
+                                  '리뷰를 삭제하시겠습니까?',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  OutlinedButton(
-                                    onPressed: () async {
-                                      final response =
-                                          await ReviewService.deleteReview(
-                                              widget.review.id);
-                                      if (context.mounted) {
-                                        Navigator.pop(context);
-                                        if (response == 200) {
-                                          SnackBarManager.completeSnackBar(
-                                              context, '리뷰 삭제');
-                                        } else {
-                                          SnackBarManager.alertSnackBar(
-                                              context, '리뷰 삭제 실패!!');
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    OutlinedButton(
+                                      onPressed: () async {
+                                        final response =
+                                            await ReviewService.deleteReview(
+                                                widget.review.id);
+                                        if (context.mounted) {
+                                          Navigator.pop(context);
+                                          if (response == 200) {
+                                            SnackBarManager.completeSnackBar(
+                                                context, '리뷰 삭제');
+                                          } else {
+                                            SnackBarManager.alertSnackBar(
+                                                context, '리뷰 삭제 실패!!');
+                                          }
                                         }
-                                      }
-                                    },
-                                    child: const Text('삭제하기'),
-                                  ),
-                                  OutlinedButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text('취소하기'),
-                                  ),
-                                ],
-                              )
-                            ],
+                                      },
+                                      child: const Text('삭제하기'),
+                                    ),
+                                    OutlinedButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('취소하기'),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
                           ),
                         ),
                       );
@@ -194,64 +202,63 @@ class _ReviewState extends State<Review> {
                 ),
                 IconButton(
                   onPressed: () async {
-                    final result =
-                        await ReviewService.likeReview(widget.review.id);
-                    print(result);
+                    if (!isTouched) {
+                      isTouched = true;
+                      isLiked = widget.review.liked;
+                    }
+                    await ReviewService.likeReview(widget.review.id);
+                    setState(() {
+                      isLiked = !isLiked;
+                    });
                   },
                   icon: Icon(
-                    widget.review.liked
-                        ? Icons.favorite
-                        : Icons.favorite_outline,
+                    isTouched
+                        ? isLiked
+                            ? Icons.favorite
+                            : Icons.favorite_outline
+                        : widget.review.liked
+                            ? Icons.favorite
+                            : Icons.favorite_outline,
                     size: 32,
                   ),
                 )
               ],
             ),
-            const SizedBox(
-              height: 10,
-            ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  '${numberFormat.format(widget.review.averageCost)}원',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
+                Flexible(
+                  flex: 1,
+                  child: Row(
+                    children: [
+                      Text(
+                        '${numberFormat.format(widget.review.averageCost)}원',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(
-                  width: 20,
-                ),
-                const Row(
-                  children: [
-                    Icon(
-                      Icons.star_rounded,
-                      color: Color.fromARGB(255, 255, 230, 0),
-                    ),
-                    Icon(
-                      Icons.star_rounded,
-                      color: Colors.yellow,
-                    ),
-                    Icon(
-                      Icons.star_rounded,
-                      color: Colors.yellow,
-                    ),
-                    Icon(
-                      Icons.star_half_rounded,
-                      color: Colors.yellow,
-                    ),
-                    Icon(
-                      Icons.star_outline_rounded,
-                      color: Colors.yellow,
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  '${widget.review.rate}',
-                  style: const TextStyle(fontWeight: FontWeight.w600),
+                Flexible(
+                  flex: 1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      const Icon(
+                        Icons.star_rounded,
+                        color: Color.fromARGB(255, 255, 230, 0),
+                      ),
+                      Text(
+                        '${widget.review.rate}',
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(
+                        width: 15,
+                      )
+                    ],
+                  ),
                 ),
               ],
             ),

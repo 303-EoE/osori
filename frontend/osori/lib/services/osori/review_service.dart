@@ -10,7 +10,7 @@ import 'package:osori/widgets/common/token_manager.dart';
 class ReviewService {
   static const String baseUrl = "https://test.osori.co.kr/reviews";
   // 가게 리뷰 요약 조회
-  static Future<List<Map<String, dynamic>>?> getSumarrizedReviews(
+  static Future<List<Map<String, dynamic>>> getSumarrizedReviews(
       int storeId) async {
     try {
       final token = await TokenManager.readAccessToken();
@@ -18,32 +18,18 @@ class ReviewService {
       var dio = Dio();
       dio.options.headers = {'Authorization': token};
       final response = await dio.get(url);
-      if (response.statusCode == 200) {
-        return response.data['data']['reviews'];
+      return response.data['data']['reviews'];
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
       }
-    } catch (error) {
-      debugPrint('$error');
-      return null;
+      throw Error();
     }
-    return null;
-  }
-
-  // 내 리뷰 전체 조회
-  static Future<List<Map<String, dynamic>>?> getAllMyReview() async {
-    try {
-      final token = await TokenManager.readAccessToken();
-      const url = '$baseUrl/my-review';
-      var dio = Dio();
-      dio.options.headers = {'Authorization': token};
-      final response = await dio.get(url);
-      if (response.statusCode == 200) {
-        return response.data['data']['reviews'];
-      }
-    } catch (error) {
-      debugPrint('$error');
-      return null;
-    }
-    return null;
   }
 
   // 영수증 스캔
@@ -59,10 +45,17 @@ class ReviewService {
       if (response.statusCode == 200) {
         return response.data;
       }
-    } catch (error) {
-      debugPrint('$error');
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
+      }
     }
-    return null;
+    throw Error();
   }
 
   // 리뷰 등록
@@ -77,11 +70,19 @@ class ReviewService {
       String content,
       List<File> reviewImages) async {
     try {
-      final token = await TokenManager.readAccessToken();
+      final result = await TokenManager.verifyToken();
+      if (result == 'login need') {
+        return -1;
+      }
+      String userId = await TokenManager.readUserId();
+      String userNickname = await TokenManager.readUserNickname();
+      String userProfileImageUrl = await TokenManager.readUserProfile();
+
       var dio = Dio();
-      dio.options.headers = {'Authorization': token};
       const url = baseUrl;
+
       List<MultipartFile> images = [];
+
       for (var file in reviewImages) {
         images.add(MultipartFile.fromFileSync(file.path));
       }
@@ -98,62 +99,91 @@ class ReviewService {
                 'billType': billType,
                 'factor': factor,
                 'content': content,
+                "memberId": userId,
+                "memberNickname": userNickname,
+                "memberProfileImageUrl": userProfileImageUrl,
               }),
               contentType: MediaType.parse('application/json')),
         },
       );
       final response = await dio.post(url, data: formData);
-      return response.statusCode ?? -1;
-    } catch (error) {
-      debugPrint('$error');
-      return -1;
+      return response.statusCode ?? 0;
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
+      }
+      return 0;
     }
   }
 
   // 리뷰 상세 조회
-  static Future<ReviewWholeModel?> getDetailedReview(int reviewId) async {
+  static Future<ReviewWholeModel> getDetailedReview(int reviewId) async {
     try {
       final token = await TokenManager.readAccessToken();
-      final url = '$baseUrl/detail?review_id=$reviewId';
+      final memberId = await TokenManager.readUserId();
+      final url = '$baseUrl/detail?review_id=$reviewId&member_id=$memberId';
       var dio = Dio();
       dio.options.headers = {'Authorization': token};
       final response = await dio.get(url);
-      if (response.statusCode == 200) {
-        return response.data['data'];
+      return response.data['data'];
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
       }
-    } catch (error) {
-      debugPrint('$error');
-      return null;
+      throw Error();
     }
-    return null;
   }
 
   // 리뷰 삭제
   static Future<int> deleteReview(int reviewId) async {
     try {
       final token = await TokenManager.readAccessToken();
-      final url = '$baseUrl?review_id=$reviewId';
+      final memberId = await TokenManager.readUserId();
+      final url = '$baseUrl?review_id=$reviewId&member_id=$memberId';
       var dio = Dio();
       dio.options.headers = {'Authorization': token};
       final response = await dio.delete(url);
       return response.statusCode ?? -1;
-    } catch (error) {
-      debugPrint('$error');
-      return -1;
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
+      }
+      throw Error();
     }
   }
 
   // 리뷰 좋아요/취소
   static Future<int> likeReview(int reviewId) async {
     try {
-      final token = await TokenManager.readAccessToken();
-      final url = '$baseUrl/like?review_id=$reviewId';
+      final memberId = await TokenManager.readUserId();
+      final url = '$baseUrl/like?review_id=$reviewId&member_id=$memberId';
       var dio = Dio();
-      dio.options.headers = {'Authorization': token};
       final response = await dio.post(url);
-      return response.statusCode ?? -1;
-    } catch (error) {
-      debugPrint('$error');
+      return response.statusCode ?? 0;
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
+      }
       return -1;
     }
   }
