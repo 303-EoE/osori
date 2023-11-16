@@ -172,6 +172,35 @@ public class ReviewServiceImpl implements ReviewService {
 		likeReviewRepository.deleteAllByReviewId(reviewId);
 		reviewRepository.delete(review);
 		reviewFeedRepository.delete(reviewFeed);
+
+		EnvelopeResponse<GetStoreDetailResponseDto> getStoreDetailResponseDtoEnvelopeResponse;
+
+		try {
+			getStoreDetailResponseDtoEnvelopeResponse = storeApi.getStoreDetail(review.getStoreId());
+		} catch (FeignException e) {
+			throw new ReviewException(ReviewErrorInfo.FAIL_TO_STORE_FEIGN_CLIENT_REQUEST);
+		}
+
+		GetStoreDetailResponseDto getStoreResponseDto = getStoreDetailResponseDtoEnvelopeResponse.getData();
+
+		// redis cache 확인 및 데이터 업데이트
+		Optional<StoreInfo> optionalStoreInfo = storeInfoRedisRepository.findById(review.getStoreId());
+
+		if (optionalStoreInfo.isPresent()) {
+			StoreInfo storeInfo = optionalStoreInfo.get();
+
+			storeInfo.subTotalRate(review.getRate());
+			storeInfo.minusTotalReviewCount();
+			storeInfo.calcAverageRate(storeInfo.getTotalRate(), storeInfo.getTotalReviewCount());
+
+			if (review.getBillType().getName().equals(getStoreResponseDto.getDefaultBillType())) {
+				storeInfo.subBillTypeTotalPrice(review.getAverageCost());
+				storeInfo.minusBillTypeTotalReviewCount();
+				storeInfo.calcAveragePrice(storeInfo.getBillTypeTotalPrice(), storeInfo.getBillTypeTotalReviewCount());
+			}
+
+			storeInfoRedisRepository.save(storeInfo);
+		}
 	}
 
 	/**
