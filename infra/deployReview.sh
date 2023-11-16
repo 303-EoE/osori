@@ -1,6 +1,6 @@
 #1
 
-EXIST_BLUE=$(docker-compose -p osori-review-blue -f docker-compose.review.blue.yaml ps | grep Up)
+EXIST_BLUE=$(sudo docker-compose -p osori-review-blue -f docker-compose.review.blue.yaml ps | grep Up)
 
 if [ -z "$EXIST_BLUE" ]; then
         docker-compose -p osori-review-blue -f /home/ubuntu/workspace/docker-compose.review.blue.yaml up -d
