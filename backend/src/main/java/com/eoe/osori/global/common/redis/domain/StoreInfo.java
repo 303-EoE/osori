@@ -33,8 +33,16 @@ public class StoreInfo {
 		this.billTypeTotalPrice += amount;
 	}
 
+	public void subBillTypeTotalPrice(Integer amount) {
+		this.billTypeTotalPrice -= amount;
+	}
+
 	public void plusBillTypeTotalReviewCount() {
 		this.billTypeTotalReviewCount++;
+	}
+
+	public void minusBillTypeTotalReviewCount() {
+		this.billTypeTotalReviewCount--;
 	}
 
 	public void calcAveragePrice(Integer billTypeTotalPrice, Integer billTypeTotalReviewCount) {
@@ -50,8 +58,16 @@ public class StoreInfo {
 		this.totalRate += amount;
 	}
 
+	public void subTotalRate(Double amount) {
+		this.totalRate -= amount;
+	}
+
 	public void plusTotalReviewCount() {
 		this.totalReviewCount++;
+	}
+
+	public void minusTotalReviewCount() {
+		this.totalReviewCount--;
 	}
 
 	public void calcAverageRate(Double totalRate, Integer totalReviewCount) {
