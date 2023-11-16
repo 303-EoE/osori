@@ -79,6 +79,7 @@ Azure AI Document Intelligence Studio
 <br><br>
 
 # ⚙️ 시스템 아키텍처 System Architecture
+![A303 System Architecture.png](./img/A303 System Architecture.png)
 
 <br><br>
 
