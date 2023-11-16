@@ -1,7 +1,7 @@
 package com.eoe.osori.domain.store.dto;
 
 import com.eoe.osori.domain.store.domain.Store;
-import com.eoe.osori.global.common.api.review.dto.GetStoreReviewCacheDataResponseDto;
+import com.eoe.osori.global.common.redis.domain.StoreInfo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +24,7 @@ public class StoreElement {
 	private Integer averagePrice;
 	private String defaultBillType;
 
-	public static StoreElement of(Store store, GetStoreReviewCacheDataResponseDto getStoreReviewCacheDataResponseDto) {
+	public static StoreElement of(Store store, StoreInfo storeInfo) {
 		return StoreElement.builder()
 			.id(store.getId())
 			.name(store.getName())
@@ -33,8 +33,8 @@ public class StoreElement {
 			.latitude(store.getLatitude())
 			.depth1(store.getDepth1())
 			.depth2(store.getDepth2())
-			.averageRate(getStoreReviewCacheDataResponseDto.getAverageRate())
-			.averagePrice(getStoreReviewCacheDataResponseDto.getAveragePrice())
+			.averageRate(storeInfo.getAverageRate())
+			.averagePrice(storeInfo.getAveragePrice())
 			.defaultBillType(store.getCategory().getDefaultBillType().getName())
 			.build();
 	}

@@ -12,14 +12,26 @@ import lombok.Getter;
 @AllArgsConstructor
 public class GetStoreListResponseDto {
 	List<StoreElement> stores;
-	Integer averagePrice;
+	Integer restaurantAveragePrice;
+	Integer fitnessCenterAveragePrice;
+	Integer nailShopAveragePrice;
 
-	public void updateAveragePrice(Integer averagePrice) {
-		this.averagePrice = averagePrice;
+	public void updateRestaurantAveragePrice(Integer restaurantAveragePrice) {
+		this.restaurantAveragePrice = restaurantAveragePrice;
+	}
+
+	public void updateFitnessCenterAveragePrice(Integer fitnessCenterAveragePrice) {
+		this.fitnessCenterAveragePrice = fitnessCenterAveragePrice;
+	}
+
+	public void updateNailShopAveragePrice(Integer nailShopAveragePrice) {
+		this.nailShopAveragePrice = nailShopAveragePrice;
 	}
 
 	public GetStoreListResponseDto() {
 		this.stores = new ArrayList<>();
-		this.averagePrice = 0;
+		this.restaurantAveragePrice = 0;
+		this.fitnessCenterAveragePrice = 0;
+		this.nailShopAveragePrice = 0;
 	}
 }
