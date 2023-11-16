@@ -1,19 +1,16 @@
 package com.eoe.osori.global.common.jwt;
 
-import java.nio.charset.StandardCharsets;
-import java.security.Key;
-import java.time.LocalDateTime;
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
+import java.util.Date;
 
 /**
  * JWT Token 방식을 사용할 때 필요한 기능을 정리해놓은 클래스
@@ -86,10 +83,10 @@ public class JwtTokenProvider {
 		return expiredDate.before(new Date());
 	}
 
-	public Boolean validateToken(String token, UserDetails userDetails) {
-		Long id = getLoginId(token);
-		return id.toString().equals(userDetails.getUsername()) && !isTokenExpired(token);
-	}
+//	public Boolean validateToken(String token, UserDetails userDetails) {
+//		Long id = getLoginId(token);
+//		return id.toString().equals(userDetails.getUsername()) && !isTokenExpired(token);
+//	}
 
 	public Long getLoginId(String token) {
 		return extractClaims(token).get("id", Long.class);
