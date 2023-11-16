@@ -8,6 +8,8 @@ import com.eoe.osori.global.advice.error.exception.AuthException;
 import com.eoe.osori.global.advice.error.info.AuthErrorInfo;
 import com.eoe.osori.global.common.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +19,7 @@ public class TokenServiceImpl implements TokenService {
 
     private final TokenRepository tokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
-//    private final UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
 
     /**
      * Redis에 토큰 저장
@@ -75,19 +77,19 @@ public class TokenServiceImpl implements TokenService {
 
         Long id = jwtTokenProvider.getLoginId(token.getRefreshToken());
 
-//        UserDetails userDetails = userDetailsService.loadUserByUsername(id.toString());
-//
-//        // RefreshToken이 존재하고 유효하다면 실행
-//        if (jwtTokenProvider.validateToken(token.getRefreshToken(), userDetails)) {
-//
-//            // 권한과 아이디를 추출해 새로운 액세스토큰을 만든다.
-//            String newAccessToken = jwtTokenProvider.generateAccessToken(id);
-//            // 액세스 토큰의 값을 수정해준다.
-//            token.updateAccessToken(newAccessToken);
-//            tokenRepository.save(token);
-//        } else {
-//            throw new AuthException(AuthErrorInfo.EXPIRED_REFRESH_TOKEN);
-//        }
+        UserDetails userDetails = userDetailsService.loadUserByUsername(id.toString());
+
+        // RefreshToken이 존재하고 유효하다면 실행
+        if (jwtTokenProvider.validateToken(token.getRefreshToken(), userDetails)) {
+
+            // 권한과 아이디를 추출해 새로운 액세스토큰을 만든다.
+            String newAccessToken = jwtTokenProvider.generateAccessToken(id);
+            // 액세스 토큰의 값을 수정해준다.
+            token.updateAccessToken(newAccessToken);
+            tokenRepository.save(token);
+        } else {
+            throw new AuthException(AuthErrorInfo.EXPIRED_REFRESH_TOKEN);
+        }
 
         return PostAuthReissueTokenResponseDto.from(token);
     }

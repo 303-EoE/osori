@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -83,10 +84,10 @@ public class JwtTokenProvider {
 		return expiredDate.before(new Date());
 	}
 
-//	public Boolean validateToken(String token, UserDetails userDetails) {
-//		Long id = getLoginId(token);
-//		return id.toString().equals(userDetails.getUsername()) && !isTokenExpired(token);
-//	}
+	public Boolean validateToken(String token, UserDetails userDetails) {
+		Long id = getLoginId(token);
+		return id.toString().equals(userDetails.getUsername()) && !isTokenExpired(token);
+	}
 
 	public Long getLoginId(String token) {
 		return extractClaims(token).get("id", Long.class);
