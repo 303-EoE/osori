@@ -11,29 +11,10 @@ const String baseUrl = "https://test.osori.co.kr/reviews";
 Future<List<ReviewWholeModel>> reviewWholeLocalModel(
     ReviewWholeLocalModelRef ref, String depth1, String depth2) async {
   List<ReviewWholeModel> reviewInstances = [];
-  final token = TokenManager.readAccessToken();
+  final memberId = await TokenManager.readUserId();
   var dio = Dio();
-  dio.options.headers = {"Authorization": token};
-  final url = '$baseUrl/region?depth1=$depth1&depth2=$depth2';
-  final response = await dio.get(url);
-  if (response.statusCode == 200) {
-    final reviews = response.data['data']['reviews'];
-    for (var review in reviews) {
-      reviewInstances.add(ReviewWholeModel.fromJson(review));
-    }
-    return reviewInstances;
-  }
-  throw Error();
-}
-
-@riverpod
-Future<List<ReviewWholeModel>> reviewWholeMyModel(
-    ReviewWholeMyModelRef ref) async {
-  List<ReviewWholeModel> reviewInstances = [];
-  final token = TokenManager.readAccessToken();
-  var dio = Dio();
-  dio.options.headers = {"Authorization": token};
-  const url = '$baseUrl/my-review';
+  final url =
+      '$baseUrl/region?depth1=$depth1&depth2=$depth2&member_id=$memberId';
   final response = await dio.get(url);
   if (response.statusCode == 200) {
     final reviews = response.data['data']['reviews'];
@@ -47,7 +28,7 @@ Future<List<ReviewWholeModel>> reviewWholeMyModel(
 
 @riverpod
 Future<List<ReviewWholeModel>> reviewWholeMemberModel(
-    ReviewWholeMemberModelRef ref, String memberId) async {
+    ReviewWholeMemberModelRef ref, int memberId) async {
   List<ReviewWholeModel> reviewInstances = [];
   final token = TokenManager.readAccessToken();
   var dio = Dio();
@@ -66,12 +47,12 @@ Future<List<ReviewWholeModel>> reviewWholeMemberModel(
 
 @riverpod
 Future<List<ReviewWholeModel>> reviewWholeLikedModel(
-    ReviewWholeLikedModelRef ref) async {
+    ReviewWholeLikedModelRef ref, int memberId) async {
   List<ReviewWholeModel> reviewInstances = [];
   final token = TokenManager.readAccessToken();
   var dio = Dio();
   dio.options.headers = {"Authorization": token};
-  const url = '$baseUrl/like';
+  final url = '$baseUrl/like?member_id=$memberId';
   final response = await dio.get(url);
   if (response.statusCode == 200) {
     final reviews = response.data['data']['reviews'];

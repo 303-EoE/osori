@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:intl/intl.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:osori/models/store/store_model.dart';
 import 'package:osori/screens/search_screen.dart';
@@ -26,26 +27,16 @@ class _MapScreenState extends State<MapScreen> {
   late Marker marker;
   Set<Marker> markers = {};
   List<StoreModel> stores = [];
+  List<CustomOverlay> customOverlays = [];
+  var numberFormat = NumberFormat('###,###,###,###');
+
   void getNearStores() async {
     position = await DevicePostionService.getNowPosition();
-    // 나의 현위치를 초기화해서 마커 찍기
     nowPos = LatLng(position.latitude, position.longitude);
     Map<String, String>? depths = await KakaoLocalApiService.getDepthByPosition(
         '${nowPos.longitude}', '${nowPos.latitude}');
-    await StoreService.getNearStores(depths!['depth1']!, depths['depth2']!);
-    // stores = await StoreService.getNearStores('서울', '강남구');
-    // stores.add(StoreModel.fromJson({
-    //   "id": 26841712, // long
-    //   "name": "등촌샤브칼국수 역삼점", // String
-    //   "category": "음식점", // String
-    //   "longitude": "127.02477328278", // String
-    //   "latitude": "37.5064537970402", // String
-    //   "depth1": "강남구", // String
-    //   "depth2": "역삼동", // String
-    //   "averageRate": 5, // double
-    //   "averagePrice": 20000, // int
-    //   "defaultBillType": "횟수권", // String
-    // }));
+    stores =
+        await StoreService.getNearStores(depths['depth1']!, depths['depth2']!);
     Set<Marker> aroundStores = {};
     for (var store in stores) {
       aroundStores.add(Marker(
@@ -54,10 +45,37 @@ class _MapScreenState extends State<MapScreen> {
             LatLng(double.parse(store.latitude), double.parse(store.longitude)),
         width: 40,
         height: 40,
-        markerImageSrc:
-            'https://cdn-icons-png.flaticon.com/512/10042/10042921.png',
+        markerImageSrc: store.category == '음식점'
+            ? 'https://cdn-icons-png.flaticon.com/128/3170/3170733.png'
+            : store.category == '헬스장'
+                ? "https://cdn-icons-png.flaticon.com/128/2936/2936886.png"
+                : store.category == '네일샵'
+                    ? "https://cdn-icons-png.flaticon.com/128/5085/5085468.png"
+                    : 'https://cdn-icons-png.flaticon.com/512/10042/10042921.png',
       ));
+      var content =
+          '<div style="display:flex; flex-direction:column; gap:10px; background-color: #333333; border-radius: 12px; padding: 8px; color: white;">'
+          '<div>${store.name}</div>'
+          '<div style="display:flex; justify-content:space-between;">'
+          '<div>${numberFormat.format(store.averagePrice)}원</div>'
+          '<div style="display:flex;">'
+          '<img src="https://cdn-icons-png.flaticon.com/128/2107/2107957.png" width=16 height=16/>'
+          '<div>${store.averageRate}</div>'
+          '</div>'
+          '</div>'
+          '</div>'
+          '</div>';
+      final customOverlay = CustomOverlay(
+        customOverlayId: store.id.toString(),
+        latLng: LatLng(
+          double.parse(store.latitude),
+          double.parse(store.longitude),
+        ),
+        content: content,
+      );
+      customOverlays.add(customOverlay);
     }
+
     // 지도 마커에 추가하기
     markers.addAll(aroundStores);
     setState(() {});
@@ -65,7 +83,6 @@ class _MapScreenState extends State<MapScreen> {
 
   void _determinePosition(Timer timer) async {
     position = await DevicePostionService.getNowPosition();
-    // 나의 현위치를 초기화해서 마커 찍기
     nowPos = LatLng(position.latitude, position.longitude);
     markers.removeWhere((marker) => marker.markerId == 'nowPos');
     markers.add(Marker(
@@ -76,17 +93,16 @@ class _MapScreenState extends State<MapScreen> {
       markerImageSrc:
           'https://cdn-icons-png.flaticon.com/128/10542/10542406.png',
     ));
+
     setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    // 내 주변 가게 마커 찍기
     getNearStores();
-    // 1초마다 위치 초기화하기
     setState(() {
-      timer = Timer.periodic(const Duration(seconds: 2), _determinePosition);
+      timer = Timer.periodic(const Duration(seconds: 1), _determinePosition);
     });
   }
 
@@ -107,6 +123,20 @@ class _MapScreenState extends State<MapScreen> {
               mapController.setLevel(4);
               setState(() {});
             }),
+            customOverlays: customOverlays,
+            onCustomOverlayTap: (customOverlayId, latLng) {
+              timer.cancel();
+              StoreModel tappedStore = stores.firstWhere(
+                  (store) => store.id.toString() == customOverlayId);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => StoreScreen(
+                    storeId: tappedStore.id,
+                  ),
+                ),
+              );
+            },
             markers: markers.toList(),
             center: LatLng(
               37.501263, // 멀티캠퍼스

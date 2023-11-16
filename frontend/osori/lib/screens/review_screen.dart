@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:osori/models/review/review_whole_model.dart';
 import 'package:osori/providers/review_whole_model_provider.dart';
-import 'package:osori/services/other/device_position_service.dart';
-import 'package:osori/services/other/kakao_local_api_service.dart';
 import 'package:osori/widgets/common/bottom_navigation_widget.dart';
 import 'package:osori/widgets/common/token_manager.dart';
 import 'package:osori/widgets/common/top_header_widget.dart';
@@ -23,16 +20,13 @@ class _FeedScreenState extends ConsumerState<ReviewScreen> {
   final ScrollController _scrollBottomBarController = ScrollController();
   bool isScrollingDown = false;
   double bottomBarHeight = 75;
-  late Map<String, String>? depths;
+  late Map<String, String?>? depths;
   bool isReady = false;
   late String userId;
 
   void getReviews() async {
-    Position nowPos = await DevicePostionService.getNowPosition();
-    depths = await KakaoLocalApiService.getDepthByPosition(
-        '${nowPos.longitude}', '${nowPos.latitude}');
+    depths = await TokenManager.readDeviceDepths();
     isReady = true;
-    userId = await TokenManager.readUserId();
     setState(() {});
   }
 
@@ -72,8 +66,8 @@ class _FeedScreenState extends ConsumerState<ReviewScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _showAppbar
-          ? topHeader()
+      appBar: (_showAppbar && isReady)
+          ? topHeader(depths)
           : PreferredSize(
               preferredSize: const Size(0.0, 0.0),
               child: Container(),
@@ -99,7 +93,7 @@ class _FeedScreenState extends ConsumerState<ReviewScreen> {
                     };
                   },
                 )
-              : const Icon(Icons.animation_sharp),
+              : const CircularProgressIndicator(),
         ),
       ),
       bottomNavigationBar: const BottomNavigation(),

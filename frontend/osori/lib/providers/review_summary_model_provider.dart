@@ -14,13 +14,13 @@ Future<List<ReviewSummaryModel>> reviewSummaryModel(
   List<ReviewSummaryModel> reviewInstances = [];
   final token = TokenManager.readAccessToken();
   final Map<String, String> headers = {
-    'content-type': "application/json;charset=UTF-8",
-    "Authorization": token.toString(),
+    "Authorization": "Bearer $token",
   };
   final url = Uri.parse('$baseUrl?store_id=$storeId');
   final response = await http.get(url, headers: headers);
   if (response.statusCode == 200) {
-    final reviews = jsonDecode(response.body)['data']['reviews'];
+    final reviews =
+        jsonDecode(utf8.decode(response.bodyBytes))['data']['reviews'];
     for (var review in reviews) {
       reviewInstances.add(ReviewSummaryModel.fromJson(review));
     }

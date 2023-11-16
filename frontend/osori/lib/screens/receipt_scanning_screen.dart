@@ -2,14 +2,18 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_gif/flutter_gif.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:osori/models/kakao_store_model.dart';
 import 'package:osori/screens/write_review_form_screen.dart';
 import 'package:osori/services/osori/review_service.dart';
+import 'package:osori/widgets/common/snack_bar_manager.dart';
 
 class ReceiptScanningScreen extends StatefulWidget {
-  final int storeId;
+  final KakaoStoreModel? store;
+  final int? storeId;
   const ReceiptScanningScreen({
     super.key,
-    required this.storeId,
+    required this.store,
+    this.storeId,
   });
 
   @override
@@ -31,16 +35,24 @@ class _ReceiptScanningScreenState extends State<ReceiptScanningScreen>
     if (pickedImage == null) {
       return;
     }
+
     Map<String, dynamic>? result =
         await ReviewService.scanImage(File(pickedImage.path));
     if (mounted) {
+      if (result == null) {
+        SnackBarManager.alertSnackBar(context, '영수증 스캔에 실패하였습니다. 다시 시도해주세요.');
+        isScanning = false;
+        setState(() {});
+        return;
+      }
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => WriteReviewFormScreen(
+                store: widget.store,
                 storeId: widget.storeId,
-                paidAt: result?['data']['paidAt'],
-                totalPrice: result?['data']['totalPrice']),
+                paidAt: result['data']['paidAt'],
+                totalPrice: result['data']['totalPrice']),
           ));
     }
   }
