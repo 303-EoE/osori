@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:osori/models/review/review_whole_model.dart';
 import 'package:osori/providers/review_whole_model_provider.dart';
@@ -25,9 +26,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Future<void> validateMember() async {
     if (widget.memberId != null) {
-      print('내 프로필');
       // memberId로 유저 정보 받아오기
-      info = await MemberService.getMemberProfile(widget.memberId!);
+      info = await MemberService.getMemberProfile(int.parse(widget.memberId!));
       if (mounted) {
         if (info == null) {
           SnackBarManager.alertSnackBar(context, '존재하지 않는 사용자입니다!');
@@ -45,10 +45,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           return;
         }
       }
-      print('memberId : $myId');
-      info = await MemberService.getMemberProfile(myId);
+      info = await MemberService.getMemberProfile(int.parse(myId));
       if (info != null) {
         isLoaded = true;
+        setState(() {});
       } else {
         if (mounted) {
           SnackBarManager.alertSnackBar(context, '내 정보가 없음!');
@@ -79,33 +79,48 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                   child: Stack(children: [
                     Column(
                       children: [
-                        GestureDetector(
-                          onTapUp: (details) {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return Dialog(
-                                  backgroundColor:
-                                      const Color.fromRGBO(0, 0, 0, 0),
-                                  surfaceTintColor: Colors.transparent,
-                                  child:
-                                      Image.network(info!['profileImageUrl']),
-                                );
-                              },
-                            );
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                border: Border.all(),
-                                borderRadius: BorderRadius.circular(1000),
-                                color: Colors.blueGrey),
-                            padding: const EdgeInsets.all(20),
-                            child: Image.network(
-                              info!['profileImageUrl'],
-                              width: size.width / 4,
+                        if (info!['profileImageUrl'] != null)
+                          GestureDetector(
+                            onTapUp: (details) {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return Dialog(
+                                    backgroundColor:
+                                        const Color.fromRGBO(0, 0, 0, 0),
+                                    surfaceTintColor: Colors.transparent,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(1000)),
+                                      clipBehavior: Clip.hardEdge,
+                                      child: Image.network(
+                                        'https://osori-bucket.s3.ap-northeast-2.amazonaws.com/${info!['profileImageUrl']}',
+                                        width: size.width,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(20),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(1000)),
+                                clipBehavior: Clip.hardEdge,
+                                child: (info!['profileImageUrl'] != null)
+                                    ? Image.network(
+                                        'https://osori-bucket.s3.ap-northeast-2.amazonaws.com/${info!['profileImageUrl']}',
+                                        width: size.width / 4,
+                                      )
+                                    : Image.asset(
+                                        'asssets/images/288X288.png',
+                                        width: size.width / 4,
+                                      ),
+                              ),
                             ),
                           ),
-                        ),
                         const SizedBox(
                           height: 20,
                         ),
@@ -124,7 +139,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                         showDialog(
                           context: context,
                           builder: (context) {
-                            String? selectedImage;
+                            bool isDefaultImage = false;
+                            String selectedImage = "";
                             TextEditingController tec = TextEditingController();
                             return StatefulBuilder(
                                 builder: (context, setState) {
@@ -146,31 +162,55 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                       const SizedBox(
                                         height: 20,
                                       ),
+                                      const Text('프로필 이미지 변경'),
                                       Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceAround,
                                         children: [
                                           IconButton(
                                             onPressed: () async {
+                                              if (isDefaultImage) return;
                                               final imagePicker = ImagePicker();
                                               final pickedImage =
                                                   await imagePicker.pickImage(
                                                 source: ImageSource.gallery,
                                               );
                                               if (pickedImage != null) {
-                                                setState(() {
+                                                final croppedFile =
+                                                    await ImageCropper().cropImage(
+                                                        sourcePath:
+                                                            pickedImage.path,
+                                                        compressFormat:
+                                                            ImageCompressFormat
+                                                                .jpg,
+                                                        compressQuality: 100,
+                                                        uiSettings: [
+                                                      AndroidUiSettings(
+                                                        toolbarTitle: '이미지 자르기',
+                                                        toolbarColor:
+                                                            Colors.deepOrange,
+                                                        toolbarWidgetColor:
+                                                            Colors.white,
+                                                        initAspectRatio:
+                                                            CropAspectRatioPreset
+                                                                .square,
+                                                        lockAspectRatio: true,
+                                                      )
+                                                    ]);
+                                                if (croppedFile != null) {
                                                   selectedImage =
-                                                      pickedImage.path;
-                                                });
+                                                      croppedFile.path;
+                                                }
+                                                setState(() {});
                                               }
                                             },
                                             icon: const Icon(
                                                 Icons.image_search_outlined),
                                             iconSize: 64,
                                           ),
-                                          if (selectedImage != null)
+                                          if (selectedImage != '')
                                             Image.file(
-                                              File(selectedImage!),
+                                              File(selectedImage),
                                               width: 64,
                                               height: 64,
                                               fit: BoxFit.cover,
@@ -180,6 +220,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                       const SizedBox(
                                         height: 20,
                                       ),
+                                      const Text('닉네임 변경'),
                                       TextField(
                                         controller: tec,
                                         textAlign: TextAlign.center,
@@ -187,6 +228,21 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                           labelText: '닉네임을 입력하세요',
                                           border: OutlineInputBorder(),
                                         ),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          const Text('기본 이미지 사용 여부'),
+                                          Checkbox(
+                                            value: isDefaultImage,
+                                            onChanged: (value) {
+                                              setState(() {
+                                                isDefaultImage = value!;
+                                              });
+                                            },
+                                          ),
+                                        ],
                                       ),
                                       const SizedBox(
                                         height: 20,
@@ -196,15 +252,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                           // 프로필 수정 api 쏴주기
                                           final response =
                                               await MemberService.updateProfile(
-                                                  tec.text,
-                                                  selectedImage!.isNotEmpty
-                                                      ? File(selectedImage!)
+                                                  tec.text == ""
+                                                      ? null
+                                                      : tec.text,
+                                                  selectedImage != ""
+                                                      ? File(selectedImage)
                                                       : null,
-                                                  true);
+                                                  isDefaultImage);
                                           if (mounted) {
                                             if (response == 200) {
                                               SnackBarManager.completeSnackBar(
                                                   context, '프로필 수정');
+                                              Navigator.pop(context);
+                                              info = await MemberService
+                                                  .getMemberProfile(int.parse(
+                                                      await TokenManager
+                                                          .readUserId()));
+                                              setState(() {});
                                             } else {
                                               SnackBarManager.alertSnackBar(
                                                   context, '수정이 실패!!');
@@ -247,27 +311,35 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 children: [
                   Consumer(
                     builder: (context, ref, child) {
-                      final AsyncValue<List<ReviewWholeModel>> reviews =
-                          ref.watch(
-                              reviewWholeMemberModelProvider(widget.memberId!));
+                      final AsyncValue<List<ReviewWholeModel>> reviews = ref
+                          .watch(reviewWholeMemberModelProvider(info!['id']));
                       return switch (reviews) {
                         AsyncData(:final value) =>
                           ReviewOnlyImage(reviews: value),
                         AsyncError() => const Text('리뷰를 찾지 못했습니다.'),
-                        _ => const CircularProgressIndicator(),
+                        _ => const Center(
+                            child: SizedBox(
+                              width: 50,
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
                       };
                     },
                   ),
                   Consumer(
                     builder: (context, ref, child) {
                       final AsyncValue<List<ReviewWholeModel>> reviews =
-                          ref.watch(
-                              reviewWholeLikedModelProvider(widget.memberId!));
+                          ref.watch(reviewWholeLikedModelProvider(info!['id']));
                       return switch (reviews) {
                         AsyncData(:final value) =>
                           ReviewOnlyImage(reviews: value),
                         AsyncError() => const Text('리뷰를 찾지 못했습니다.'),
-                        _ => const CircularProgressIndicator(),
+                        _ => const Center(
+                            child: SizedBox(
+                              width: 50,
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
                       };
                     },
                   ),

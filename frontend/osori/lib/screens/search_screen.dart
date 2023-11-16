@@ -3,6 +3,8 @@ import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:osori/models/kakao_store_model.dart';
 import 'package:osori/screens/receipt_scanning_screen.dart';
 import 'package:osori/services/other/kakao_local_api_service.dart';
+import 'package:osori/widgets/common/snack_bar_manager.dart';
+import 'package:osori/widgets/common/token_manager.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -135,17 +137,30 @@ class _SearchScreenState extends State<SearchScreen> {
                                 width: 10,
                               ),
                               OutlinedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          ReceiptScanningScreen(
-                                        store: store,
-                                        storeId: null,
-                                      ),
-                                    ),
-                                  );
+                                onPressed: () async {
+                                  // 토큰 유효한지 검증
+                                  final result =
+                                      await TokenManager.verifyToken();
+                                  if (mounted) {
+                                    if (result == 'login need') {
+                                      SnackBarManager.alertSnackBar(
+                                          context, '로그인이 필요합니다!');
+                                      Navigator.of(context)
+                                          .pushNamedAndRemoveUntil(
+                                              '/profile', (route) => false);
+                                    } else {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              ReceiptScanningScreen(
+                                            store: store,
+                                            storeId: null,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  }
                                 },
                                 style: OutlinedButton.styleFrom(
                                   padding: const EdgeInsets.all(0),

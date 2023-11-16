@@ -21,6 +21,8 @@ class Review extends StatefulWidget {
 class _ReviewState extends State<Review> {
   int activeIndex = 0;
   var numberFormat = NumberFormat('###,###,###,###');
+  bool isTouched = false;
+  late bool isLiked;
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -49,14 +51,15 @@ class _ReviewState extends State<Review> {
               },
               child: Row(
                 children: [
-                  // Image.network(
-                  //   'https://osori-bucket.s3.ap-northeast-2.amazonaws.com/${widget.review.memberProfileImageUrl}',
-                  //   height: 32,
-                  // ),
-                  Image.asset(
-                    'assets/images/288X288.png',
-                    height: 32,
-                  ),
+                  widget.review.memberProfileImageUrl == ""
+                      ? Image.asset(
+                          'assets/images/288X288.png',
+                          height: 32,
+                        )
+                      : Image.network(
+                          'https://osori-bucket.s3.ap-northeast-2.amazonaws.com/${widget.review.memberProfileImageUrl}',
+                          height: 32,
+                        ),
                   const SizedBox(
                     width: 16,
                   ),
@@ -199,13 +202,23 @@ class _ReviewState extends State<Review> {
                 ),
                 IconButton(
                   onPressed: () async {
+                    if (!isTouched) {
+                      isTouched = true;
+                      isLiked = widget.review.liked;
+                    }
                     await ReviewService.likeReview(widget.review.id);
-                    setState(() {});
+                    setState(() {
+                      isLiked = !isLiked;
+                    });
                   },
                   icon: Icon(
-                    widget.review.liked
-                        ? Icons.favorite
-                        : Icons.favorite_outline,
+                    isTouched
+                        ? isLiked
+                            ? Icons.favorite
+                            : Icons.favorite_outline
+                        : widget.review.liked
+                            ? Icons.favorite
+                            : Icons.favorite_outline,
                     size: 32,
                   ),
                 )

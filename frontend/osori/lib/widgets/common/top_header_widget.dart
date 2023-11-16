@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-AppBar topHeader() {
+AppBar topHeader(Map<String, String?>? depths) {
   return AppBar(
     surfaceTintColor: const Color(0xFFf9f8f8),
     elevation: 0.2,
@@ -17,7 +17,7 @@ AppBar topHeader() {
               width: 10,
             ),
             const Text(
-              'OSORI',
+              '오소리',
               style: TextStyle(
                   color: Colors.black,
                   fontSize: 24,
@@ -25,15 +25,13 @@ AppBar topHeader() {
             ),
           ],
         ),
-        // IconButton(
-        //   onPressed: () {},
-        //   icon: const Icon(
-        //     Icons.notifications_none_outlined,
-        //     // Icons.notifications,
-        //     color: Colors.black,
-        //     size: 28,
-        //   ),
-        // ),
+        Text(
+          '${depths?['depth1']} ${depths?['depth2']}',
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+          ),
+        )
       ],
     ),
   );

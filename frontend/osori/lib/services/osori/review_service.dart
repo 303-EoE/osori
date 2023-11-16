@@ -70,11 +70,13 @@ class ReviewService {
       String content,
       List<File> reviewImages) async {
     try {
-      await TokenManager.verifyToken();
-
+      final result = await TokenManager.verifyToken();
+      if (result == 'login need') {
+        return -1;
+      }
       String userId = await TokenManager.readUserId();
-      String userNickname = await TokenManager.readUserId();
-      String userProfileImageUrl = await TokenManager.readUserId();
+      String userNickname = await TokenManager.readUserNickname();
+      String userProfileImageUrl = await TokenManager.readUserProfile();
 
       var dio = Dio();
       const url = baseUrl;
@@ -105,7 +107,7 @@ class ReviewService {
         },
       );
       final response = await dio.post(url, data: formData);
-      return response.statusCode ?? -1;
+      return response.statusCode ?? 0;
     } catch (e) {
       if (e is DioException) {
         debugPrint('DioError 발생');
@@ -115,7 +117,7 @@ class ReviewService {
         debugPrint('일반 예외 발생');
         debugPrint('$e');
       }
-      throw Error();
+      return 0;
     }
   }
 
@@ -168,12 +170,11 @@ class ReviewService {
   // 리뷰 좋아요/취소
   static Future<int> likeReview(int reviewId) async {
     try {
-      final token = await TokenManager.readAccessToken();
-      final url = '$baseUrl/like?review_id=$reviewId';
+      final memberId = await TokenManager.readUserId();
+      final url = '$baseUrl/like?review_id=$reviewId&member_id=$memberId';
       var dio = Dio();
-      dio.options.headers = {'Authorization': token};
       final response = await dio.post(url);
-      return response.statusCode ?? -1;
+      return response.statusCode ?? 0;
     } catch (e) {
       if (e is DioException) {
         debugPrint('DioError 발생');
@@ -183,7 +184,7 @@ class ReviewService {
         debugPrint('일반 예외 발생');
         debugPrint('$e');
       }
-      throw Error();
+      return -1;
     }
   }
 }

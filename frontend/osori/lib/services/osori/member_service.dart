@@ -8,14 +8,17 @@ import 'package:osori/widgets/common/token_manager.dart';
 class MemberService {
   static const String baseUrl = 'https://test.osori.co.kr/members';
 
-  static Future<Map<String, dynamic>?> getMemberProfile(String memberId) async {
+  static Future<Map<String, dynamic>?> getMemberProfile(int memberId) async {
     try {
-      final token = await TokenManager.readAccessToken();
       var dio = Dio();
-      dio.options.headers = {"Authorization": 'Bearer $token'};
-      final url = '$baseUrl/member_id=$memberId';
+      final url = '$baseUrl?member_id=$memberId';
       final response = await dio.get(url);
-      debugPrint(response.data['data']);
+      debugPrint('response : ${response.data['data']}');
+      await TokenManager.renewUserInfo({
+        'id': response.data['data']['id'],
+        'nickname': response.data['data']['nickname'],
+        'profileImageUrl': response.data['data']['profileImageUrl'],
+      });
       return response.data['data'];
     } catch (e) {
       if (e is DioException) {
@@ -26,29 +29,38 @@ class MemberService {
         debugPrint('일반 예외 발생');
         debugPrint('$e');
       }
-      throw Error();
+      return null;
     }
   }
 
   static Future<int> updateProfile(
-      String nickname, File? image, bool useDefault) async {
+      String? nickname, File? image, bool useDefault) async {
     try {
-      final token = await TokenManager.readAccessToken();
+      final result = await TokenManager.verifyToken();
+      if (result == 'login need') {
+        debugPrint('문제가 있어');
+        return -1;
+      }
+      final memberId = await TokenManager.readUserId();
       const url = baseUrl;
       var dio = Dio();
-      dio.options.headers = {'Authorization': token};
+      debugPrint(memberId);
+      debugPrint(nickname);
+      debugPrint(image?.path);
+      debugPrint('$useDefault');
       var formData = FormData.fromMap({
-        if (image != null)
+        if (image != null && !useDefault)
           'profileImage': MultipartFile.fromFileSync(image.path),
-        'dto': MultipartFile.fromString(
+        'patchMemberRequestDto': MultipartFile.fromString(
             jsonEncode({
-              'nickname': nickname,
+              'memberId': memberId,
               'isDefaultImage': useDefault,
+              if (nickname != null) 'nickname': nickname,
             }),
             contentType: MediaType.parse('application/json'))
       });
       final response = await dio.patch(url, data: formData);
-      return response.statusCode ?? -1;
+      return response.statusCode!;
     } catch (e) {
       if (e is DioException) {
         debugPrint('DioError 발생');
@@ -58,7 +70,7 @@ class MemberService {
         debugPrint('일반 예외 발생');
         debugPrint('$e');
       }
-      throw Error();
+      return -1;
     }
   }
 }

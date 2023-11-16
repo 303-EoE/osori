@@ -11,10 +11,8 @@ const String baseUrl = "https://test.osori.co.kr/reviews";
 Future<List<ReviewWholeModel>> reviewWholeLocalModel(
     ReviewWholeLocalModelRef ref, String depth1, String depth2) async {
   List<ReviewWholeModel> reviewInstances = [];
-  final token = TokenManager.readAccessToken();
   final memberId = await TokenManager.readUserId();
   var dio = Dio();
-  dio.options.headers = {"Authorization": token};
   final url =
       '$baseUrl/region?depth1=$depth1&depth2=$depth2&member_id=$memberId';
   final response = await dio.get(url);
@@ -30,7 +28,7 @@ Future<List<ReviewWholeModel>> reviewWholeLocalModel(
 
 @riverpod
 Future<List<ReviewWholeModel>> reviewWholeMemberModel(
-    ReviewWholeMemberModelRef ref, String memberId) async {
+    ReviewWholeMemberModelRef ref, int memberId) async {
   List<ReviewWholeModel> reviewInstances = [];
   final token = TokenManager.readAccessToken();
   var dio = Dio();
@@ -49,7 +47,7 @@ Future<List<ReviewWholeModel>> reviewWholeMemberModel(
 
 @riverpod
 Future<List<ReviewWholeModel>> reviewWholeLikedModel(
-    ReviewWholeLikedModelRef ref, String memberId) async {
+    ReviewWholeLikedModelRef ref, int memberId) async {
   List<ReviewWholeModel> reviewInstances = [];
   final token = TokenManager.readAccessToken();
   var dio = Dio();

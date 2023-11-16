@@ -7,7 +7,7 @@ part of 'review_whole_model_provider.dart';
 // **************************************************************************
 
 String _$reviewWholeLocalModelHash() =>
-    r'152852ee6fe59a4c196a26d200f581ab8da2a02e';
+    r'f0dc02adb63453b205e7fc4361e63d7387b4e045';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -179,7 +179,7 @@ class _ReviewWholeLocalModelProviderElement
 }
 
 String _$reviewWholeMemberModelHash() =>
-    r'b8fc5f50912aa1406fe3cdbd9891312ef4e7fc78';
+    r'f34438949214f4f28574b6d2babe3b79b7b56da3';
 
 /// See also [reviewWholeMemberModel].
 @ProviderFor(reviewWholeMemberModel)
@@ -193,7 +193,7 @@ class ReviewWholeMemberModelFamily
 
   /// See also [reviewWholeMemberModel].
   ReviewWholeMemberModelProvider call(
-    String memberId,
+    int memberId,
   ) {
     return ReviewWholeMemberModelProvider(
       memberId,
@@ -229,7 +229,7 @@ class ReviewWholeMemberModelProvider
     extends AutoDisposeFutureProvider<List<ReviewWholeModel>> {
   /// See also [reviewWholeMemberModel].
   ReviewWholeMemberModelProvider(
-    String memberId,
+    int memberId,
   ) : this._internal(
           (ref) => reviewWholeMemberModel(
             ref as ReviewWholeMemberModelRef,
@@ -257,7 +257,7 @@ class ReviewWholeMemberModelProvider
     required this.memberId,
   }) : super.internal();
 
-  final String memberId;
+  final int memberId;
 
   @override
   Override overrideWith(
@@ -302,7 +302,7 @@ class ReviewWholeMemberModelProvider
 mixin ReviewWholeMemberModelRef
     on AutoDisposeFutureProviderRef<List<ReviewWholeModel>> {
   /// The parameter `memberId` of this provider.
-  String get memberId;
+  int get memberId;
 }
 
 class _ReviewWholeMemberModelProviderElement
@@ -311,11 +311,11 @@ class _ReviewWholeMemberModelProviderElement
   _ReviewWholeMemberModelProviderElement(super.provider);
 
   @override
-  String get memberId => (origin as ReviewWholeMemberModelProvider).memberId;
+  int get memberId => (origin as ReviewWholeMemberModelProvider).memberId;
 }
 
 String _$reviewWholeLikedModelHash() =>
-    r'9b7bbe46ee38b3066d920d9a8665d7bcd7bc48c9';
+    r'9e0c6f2179d14d4e0e07835ff5efffe4439770c8';
 
 /// See also [reviewWholeLikedModel].
 @ProviderFor(reviewWholeLikedModel)
@@ -329,7 +329,7 @@ class ReviewWholeLikedModelFamily
 
   /// See also [reviewWholeLikedModel].
   ReviewWholeLikedModelProvider call(
-    String memberId,
+    int memberId,
   ) {
     return ReviewWholeLikedModelProvider(
       memberId,
@@ -365,7 +365,7 @@ class ReviewWholeLikedModelProvider
     extends AutoDisposeFutureProvider<List<ReviewWholeModel>> {
   /// See also [reviewWholeLikedModel].
   ReviewWholeLikedModelProvider(
-    String memberId,
+    int memberId,
   ) : this._internal(
           (ref) => reviewWholeLikedModel(
             ref as ReviewWholeLikedModelRef,
@@ -393,7 +393,7 @@ class ReviewWholeLikedModelProvider
     required this.memberId,
   }) : super.internal();
 
-  final String memberId;
+  final int memberId;
 
   @override
   Override overrideWith(
@@ -436,7 +436,7 @@ class ReviewWholeLikedModelProvider
 mixin ReviewWholeLikedModelRef
     on AutoDisposeFutureProviderRef<List<ReviewWholeModel>> {
   /// The parameter `memberId` of this provider.
-  String get memberId;
+  int get memberId;
 }
 
 class _ReviewWholeLikedModelProviderElement
@@ -445,7 +445,7 @@ class _ReviewWholeLikedModelProviderElement
   _ReviewWholeLikedModelProviderElement(super.provider);
 
   @override
-  String get memberId => (origin as ReviewWholeLikedModelProvider).memberId;
+  int get memberId => (origin as ReviewWholeLikedModelProvider).memberId;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

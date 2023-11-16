@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:osori/models/review/review_summary_model.dart';
-import 'package:osori/models/store/store_description_model.dart';
 import 'package:osori/providers/review_summary_model_provider.dart';
 import 'package:osori/screens/receipt_scanning_screen.dart';
 import 'package:osori/services/osori/review_service.dart';
@@ -23,16 +23,18 @@ class _StoreScreenState extends State<StoreScreen> {
   // 키워드로 장소 검색하기 활용
   // name, latitude, longitude, id 필요
   // address_name, phone을 받아오기
-  late Future<StoreDescriptionModel?> storeModel;
+  late Future<Map<String, dynamic>?> storeModel;
+  var numberFormat = NumberFormat('###,###,###,###');
 
   @override
   void initState() {
     super.initState();
-    storeModel = StoreService.getStoreDescription(widget.storeId);
+    storeModel = StoreService.getStoreDescription(widget.storeId.toString());
   }
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
         title: const Text("가게 상세"),
@@ -54,7 +56,7 @@ class _StoreScreenState extends State<StoreScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          snapshot.data!.name,
+                          snapshot.data!['name'],
                           style: const TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.w600,
@@ -63,8 +65,11 @@ class _StoreScreenState extends State<StoreScreen> {
                         Row(
                           children: [
                             const Icon(Icons.savings_outlined),
+                            const SizedBox(
+                              width: 10,
+                            ),
                             Text(
-                              ' ${snapshot.data!.averagePrice.toString()}원',
+                              '${numberFormat.format(snapshot.data!['averagePrice'])}원',
                               style: const TextStyle(
                                 fontSize: 20,
                               ),
@@ -74,10 +79,14 @@ class _StoreScreenState extends State<StoreScreen> {
                         Row(
                           children: [
                             const Icon(
-                              Icons.star_outline,
+                              Icons.star_rounded,
+                              color: Colors.yellow,
+                            ),
+                            const SizedBox(
+                              width: 10,
                             ),
                             Text(
-                              ' ${snapshot.data!.averageRate.toString()} / 5',
+                              snapshot.data!['averageRate'].toString(),
                               style: const TextStyle(
                                 fontSize: 20,
                               ),
@@ -89,7 +98,10 @@ class _StoreScreenState extends State<StoreScreen> {
                             const Icon(
                               Icons.location_on_outlined,
                             ),
-                            Text(snapshot.data!.addressName),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(snapshot.data!['addressName']),
                           ],
                         ),
                         Row(
@@ -97,7 +109,12 @@ class _StoreScreenState extends State<StoreScreen> {
                             const Icon(
                               Icons.phone_outlined,
                             ),
-                            Text(snapshot.data!.phone),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(snapshot.data!['phone'] == ""
+                                ? '없음'
+                                : snapshot.data!['phone']),
                           ],
                         ),
                       ],
@@ -150,7 +167,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                         builder: (context) =>
                                             ReceiptScanningScreen(
                                           store: null,
-                                          storeId: model!.id,
+                                          storeId: model!['id'],
                                         ),
                                       ),
                                     );
@@ -216,14 +233,100 @@ class _StoreScreenState extends State<StoreScreen> {
                                                     ),
                                                     clipBehavior: Clip.hardEdge,
                                                     child: Review(
-                                                      review: wholeReview!,
+                                                      review: wholeReview,
                                                     )),
                                               ),
                                             );
                                           });
                                     }
                                   },
-                                  child: Text(review.content))
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        height: size.width / 3,
+                                        clipBehavior: Clip.hardEdge,
+                                        decoration: BoxDecoration(
+                                            border: Border.all(),
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(20))),
+                                        child: Row(
+                                          children: [
+                                            Image.network(
+                                              'https://osori-bucket.s3.ap-northeast-2.amazonaws.com/${review.image}',
+                                              width: size.width / 3,
+                                            ),
+                                            Flexible(
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: [
+                                                  Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 20),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      mainAxisSize:
+                                                          MainAxisSize.max,
+                                                      children: [
+                                                        Row(
+                                                          children: [
+                                                            Container(
+                                                              decoration: BoxDecoration(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              1000)),
+                                                              clipBehavior:
+                                                                  Clip.hardEdge,
+                                                              child:
+                                                                  Image.network(
+                                                                'https://osori-bucket.s3.ap-northeast-2.amazonaws.com/${review.memberProfileImageUrl}',
+                                                                width:
+                                                                    size.width /
+                                                                        7,
+                                                              ),
+                                                            ),
+                                                            Text(review
+                                                                .memberNickname),
+                                                          ],
+                                                        ),
+                                                        Column(
+                                                          children: [
+                                                            Text(
+                                                                '${numberFormat.format(review.averageCost)}원'),
+                                                            Row(
+                                                              children: [
+                                                                const Icon(
+                                                                  Icons
+                                                                      .star_rounded,
+                                                                  color: Colors
+                                                                      .yellow,
+                                                                ),
+                                                                Text(review.rate
+                                                                    .toString()),
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        )
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  Text(review.content),
+                                                  Text(
+                                                      '${review.createdAt.split('-')[0]}년 ${review.createdAt.split('-')[1]}월 ${review.createdAt.split('-')[2].split('T')[0]}일'),
+                                                ],
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ))
                         ],
                       ),
                     AsyncError() => const Text('Error happened'),

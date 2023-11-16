@@ -128,7 +128,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ? File(selectedImage!)
                               : null);
                       if (mounted) {
-                        if (result != null) {
+                        if (result != "") {
                           SnackBarManager.welcomeSnackBar(context, result);
 
                           goToProfile();

@@ -12,7 +12,8 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   Future<void> verify() async {
-    // await TokenManager.deleteAll();
+    await TokenManager.renewDevicePosition();
+    await TokenManager.renewDeviceDepths();
     final result = await TokenManager.verifyToken();
     if (mounted) {
       if (result == 'login need') {
@@ -23,8 +24,11 @@ class _SplashScreenState extends State<SplashScreen> {
       }
     }
     if (mounted) {
-      Navigator.of(context)
-          .pushNamedAndRemoveUntil('/review', (route) => false);
+      debugPrint('1초 뒤 이동');
+      Timer(const Duration(seconds: 1), () {
+        Navigator.of(context)
+            .pushNamedAndRemoveUntil('/review', (route) => false);
+      });
     }
   }
 

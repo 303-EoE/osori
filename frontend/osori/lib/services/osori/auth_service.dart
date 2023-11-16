@@ -62,7 +62,7 @@ class AuthService {
   }
 
   // 토큰으로 회원 정보 조회
-  static Future<Map<String, dynamic>> getUserInfo(String? token) async {
+  static Future<Map<String, dynamic>?> getUserInfo(String? token) async {
     try {
       var dio = Dio();
       token ??= await TokenManager.readAccessToken();
@@ -84,7 +84,7 @@ class AuthService {
         debugPrint('일반 예외 발생');
         debugPrint('$e');
       }
-      throw Error();
+      return null;
     }
   }
 
@@ -128,7 +128,7 @@ class AuthService {
   static Future<String> renewAccessToken(String refreshToken) async {
     try {
       var dio = Dio();
-      dio.options.headers = {"Authorization": refreshToken};
+      dio.options.headers = {"Authorization": 'Bearer $refreshToken'};
       const url = '$baseUrl/token/refresh';
       final response = await dio.get(url);
       return response.data['data']['accessToken'];
@@ -141,7 +141,7 @@ class AuthService {
         debugPrint('일반 예외 발생');
         debugPrint('$e');
       }
-      throw Error();
+      return "";
     }
   }
 }

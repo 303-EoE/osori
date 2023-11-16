@@ -29,25 +29,14 @@ class _MapScreenState extends State<MapScreen> {
   List<StoreModel> stores = [];
   List<CustomOverlay> customOverlays = [];
   var numberFormat = NumberFormat('###,###,###,###');
+
   void getNearStores() async {
     position = await DevicePostionService.getNowPosition();
     nowPos = LatLng(position.latitude, position.longitude);
-    // Map<String, String>? depths = await KakaoLocalApiService.getDepthByPosition(
-    //     '${nowPos.longitude}', '${nowPos.latitude}');
-    // stores =
-    //     await StoreService.getNearStores(depths!['depth1']!, depths['depth2']!);
-    stores.add(StoreModel.fromJson({
-      "id": 26841712, // long
-      "name": "등촌샤브칼국수 역삼점", // String
-      "category": "음식점", // String
-      "longitude": "127.02477328278", // String
-      "latitude": "37.5064537970402", // String
-      "depth1": "강남구", // String
-      "depth2": "역삼동", // String
-      "averageRate": 5, // double
-      "averagePrice": 20000, // int
-      "defaultBillType": "횟수권", // String
-    }));
+    Map<String, String>? depths = await KakaoLocalApiService.getDepthByPosition(
+        '${nowPos.longitude}', '${nowPos.latitude}');
+    stores =
+        await StoreService.getNearStores(depths['depth1']!, depths['depth2']!);
     Set<Marker> aroundStores = {};
     for (var store in stores) {
       aroundStores.add(Marker(
