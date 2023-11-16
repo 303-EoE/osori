@@ -79,7 +79,7 @@ public class MemberServiceImpl implements MemberService{
 		// 기존 프로필 이미지
 		String profileImageUrl = member.getProfileImageUrl();
 		// 프로필 이미지 새로 들어왔을 때
-		if(profileImage != null || !profileImage.isEmpty()){
+		if(!profileImage.isEmpty()){
 			List<MultipartFile> multipartFiles = new ArrayList<>();
 			multipartFiles.add(profileImage);
 
