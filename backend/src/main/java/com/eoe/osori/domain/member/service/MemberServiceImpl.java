@@ -79,7 +79,7 @@ public class MemberServiceImpl implements MemberService{
 		// 기존 프로필 이미지
 		String profileImageUrl = member.getProfileImageUrl();
 		// 프로필 이미지 새로 들어왔을 때
-		if(profileImage.getSize() != 0){
+		if(profileImage != null || !profileImage.isEmpty()){
 			List<MultipartFile> multipartFiles = new ArrayList<>();
 			multipartFiles.add(profileImage);
 
@@ -93,7 +93,6 @@ public class MemberServiceImpl implements MemberService{
 			PostImageResponseDto postImageResponseDto = postImageResponseDtoEnvelopeResponse.getData();
 			profileImageUrl = postImageResponseDto.getPath().get(0).getUploadFilePath();
 		}
-
 		// 새로 들어온 이미지가 Null일 때
 		// 기존 이미지 삭제
 		if(patchMemberRequestDto.isDefaultImage()){
