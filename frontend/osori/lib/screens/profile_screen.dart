@@ -115,7 +115,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                         width: size.width / 4,
                                       )
                                     : Image.asset(
-                                        'asssets/images/288X288.png',
+                                        'asssets/images/logo.png',
                                         width: size.width / 4,
                                       ),
                               ),

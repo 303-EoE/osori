@@ -53,7 +53,7 @@ class _ReviewState extends State<Review> {
                 children: [
                   widget.review.memberProfileImageUrl == ""
                       ? Image.asset(
-                          'assets/images/288X288.png',
+                          'assets/images/logo.png',
                           height: 32,
                         )
                       : Image.network(

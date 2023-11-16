@@ -47,30 +47,55 @@ class _SplashScreenState extends State<SplashScreen> {
           width: size.width,
           height: size.height,
           decoration: const BoxDecoration(
-            color: Color(0xFF3a393a),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: <Color>[
+                Color(0xfff9f8f8),
+                Color(0xfff7dad8),
+              ], // Gradient from https://learnui.design/tools/gradient-generator.html
+              tileMode: TileMode.mirror,
+            ),
           ),
           child: Center(
-            child: Column(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '오늘의',
+                      style: TextStyle(
+                          fontSize: 32,
+                          fontWeight: FontWeight.w800,
+                          color: Color(0xFF323232)),
+                    ),
+                    Text(
+                      '소비',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF323232),
+                      ),
+                    ),
+                    Text(
+                      '리스트',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF323232),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(
+                  width: 30,
+                ),
                 Image.asset(
-                  'assets/images/288X288.png',
+                  'assets/images/logo.png',
                   width: size.width / 3,
-                ),
-                const Text(
-                  '오소리',
-                  style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFFf9f8f8)),
-                ),
-                const Text(
-                  '현명한 소비 습관을 위한 선택',
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFFf9f8f8),
-                  ),
                 ),
               ],
             ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 AppBar topHeader(Map<String, String?>? depths) {
   return AppBar(
-    surfaceTintColor: const Color(0xFFf9f8f8),
+    surfaceTintColor: const Color(0xfff7dad8),
     elevation: 0.2,
     title: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -10,7 +10,7 @@ AppBar topHeader(Map<String, String?>? depths) {
         Row(
           children: [
             Image.asset(
-              'assets/images/288X288.png',
+              'assets/images/logo.png',
               width: 32,
             ),
             const SizedBox(
