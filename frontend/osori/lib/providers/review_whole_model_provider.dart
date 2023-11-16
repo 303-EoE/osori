@@ -11,7 +11,8 @@ const String baseUrl = "https://test.osori.co.kr/reviews";
 Future<List<ReviewWholeModel>> reviewWholeLocalModel(
     ReviewWholeLocalModelRef ref, String depth1, String depth2) async {
   List<ReviewWholeModel> reviewInstances = [];
-  final memberId = await TokenManager.readUserId();
+  var memberId = await TokenManager.readUserId();
+
   var dio = Dio();
   final url =
       '$baseUrl/region?depth1=$depth1&depth2=$depth2&member_id=$memberId';

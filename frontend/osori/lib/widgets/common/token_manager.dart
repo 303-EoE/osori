@@ -56,7 +56,7 @@ class TokenManager {
 
   static Future<String> readUserId() async {
     final value = await storage.read(key: 'id', aOptions: getAndroidOptions());
-    return value ?? "";
+    return value ?? "0";
   }
 
   static Future<String> readUserNickname() async {

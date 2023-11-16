@@ -37,7 +37,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     } else {
       // id가 있으면 내 정보 띄워주기
       final myId = await TokenManager.readUserId();
-      if (myId == "") {
+      if (myId == "0") {
         if (mounted) {
           // 마운트 된 상태여야 context 값을 확신할 수 있음.
           Navigator.pushNamedAndRemoveUntil(
