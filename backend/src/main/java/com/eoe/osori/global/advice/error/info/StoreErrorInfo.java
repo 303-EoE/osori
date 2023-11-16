@@ -11,7 +11,7 @@ public enum StoreErrorInfo {
 	ALREADY_REGISTERED_KAKAO_ID(HttpStatus.BAD_REQUEST, 1302, "이미 등록된 카카오 아이디입니다."),
 	CANNOT_FIND_STORE_BY_KAKAO_ID(HttpStatus.BAD_REQUEST, 1303, "입력된 카카오 아이디로 검색된 가게가 없습니다."),
 	CANNOT_FIND_STORE_BY_ID(HttpStatus.BAD_REQUEST, 1304, "입력된 아이디로 검색된 가게가 없습니다."),
-	FAIL_TO_REVIEW_FEIGN_CLIENT_REQUEST(HttpStatus.BAD_REQUEST, 1305, "Image Feign Client 통신에 실패했습니다.");
+	FAIL_TO_REVIEW_FEIGN_CLIENT_REQUEST(HttpStatus.BAD_REQUEST, 1305, "Review Feign Client 통신에 실패했습니다.");
 
 	private final HttpStatus status;
 	private final Integer code;
