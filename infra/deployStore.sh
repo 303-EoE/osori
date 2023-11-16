@@ -1,6 +1,6 @@
 #1
 
-EXIST_BLUE=$(sudo docker-compose -p osori-store-blue -f docker-compose.store.blue.yaml ps | grep Up)
+EXIST_BLUE=$(sudo docker-compose -p osori-store-blue -f /home/ubuntu/workspace/docker-compose.store.blue.yaml ps | grep Up)
 
 if [ -z "$EXIST_BLUE" ]; then
         docker-compose -p osori-store-blue -f /home/ubuntu/workspace/docker-compose.store.blue.yaml up -d
@@ -72,4 +72,4 @@ echo "Deploy Completed!!"
 # 4
 echo "$BEFORE_COLOR server down(port:${BEFORE_PORT_1})"
 echo "$BEFORE_COLOR server down(port:${BEFORE_PORT_2})"
-docker-compose -p osori-store-${BEFORE_COLOR} -f docker-compose.store.${BEFORE_COLOR}.yaml down
+docker-compose -p osori-store-${BEFORE_COLOR} -f /home/ubuntu/workspace/docker-compose.store.${BEFORE_COLOR}.yaml down
