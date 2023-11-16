@@ -23,6 +23,7 @@ import com.eoe.osori.global.common.redis.domain.StoreInfo;
 import com.eoe.osori.global.common.redis.repository.StoreInfoRedisRepository;
 import com.eoe.osori.global.common.response.CommonIdResponseDto;
 import com.eoe.osori.global.common.response.EnvelopeResponse;
+import com.eoe.osori.global.meta.domain.StoreCategory;
 
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
@@ -132,38 +133,70 @@ public class StoreServiceImpl implements StoreService {
 	 * @see StoreRepository
 	 * @see ReviewApi
 	 */
+	@Transactional
 	@Override
 	public GetStoreListResponseDto getStoreListByRegion(String depth1, String depth2) {
 		List<Store> storeList = storeRepository.findAllByDepth1AndDepth2(depth1, depth2);
 
 		GetStoreListResponseDto getStoreListResponseDto = new GetStoreListResponseDto();
-		Integer averagePrice = 0;
+		Integer restaurantTotalPrice = 0;
+		Integer restaurantCount = 0;
+		Integer fitnessCenterTotalPrice = 0;
+		Integer fitnessCenterCount = 0;
+		Integer nailShopTotalPrice = 0;
+		Integer nailShopCount = 0;
 
 		for (Store store : storeList) {
-			EnvelopeResponse<GetStoreReviewCacheDataResponseDto> getStoreReviewCacheDataResponseDtoEnvelopeResponse;
+			Optional<StoreInfo> optionalStoreInfo = storeInfoRedisRepository.findById(store.getId());
+			StoreInfo storeInfo = null;
 
-			try {
-				getStoreReviewCacheDataResponseDtoEnvelopeResponse = reviewApi.getReviewCacheDataByStore(
-					store.getId(), store.getCategory().getDefaultBillType().getName());
-			} catch (FeignException e) {
-				throw new StoreException(StoreErrorInfo.FAIL_TO_REVIEW_FEIGN_CLIENT_REQUEST);
+			if (optionalStoreInfo.isPresent()) {
+				storeInfo = optionalStoreInfo.get();
 			}
 
-			GetStoreReviewCacheDataResponseDto getStoreReviewCacheDataResponseDto
-				= getStoreReviewCacheDataResponseDtoEnvelopeResponse.getData();
+			if (storeInfo == null) {
+				EnvelopeResponse<GetStoreReviewCacheDataResponseDto> getStoreReviewCacheDataResponseDtoEnvelopeResponse;
 
-			storeInfoRedisRepository.save(StoreInfo.from(getStoreReviewCacheDataResponseDto));
+				try {
+					getStoreReviewCacheDataResponseDtoEnvelopeResponse = reviewApi.getReviewCacheDataByStore(
+						store.getId(), store.getCategory().getDefaultBillType().getName());
+				} catch (FeignException e) {
+					throw new StoreException(StoreErrorInfo.FAIL_TO_REVIEW_FEIGN_CLIENT_REQUEST);
+				}
 
-			if (getStoreReviewCacheDataResponseDto.getBillTypeTotalReviewCount().equals(0)) {
+				storeInfo = StoreInfo.from(getStoreReviewCacheDataResponseDtoEnvelopeResponse.getData());
+			}
+
+			storeInfoRedisRepository.save(storeInfo);
+
+			if (storeInfo.getBillTypeTotalReviewCount().equals(0)) {
 				continue;
 			}
 
-			getStoreListResponseDto.getStores().add(StoreElement.of(store, getStoreReviewCacheDataResponseDto));
-			averagePrice += getStoreReviewCacheDataResponseDto.getAveragePrice();
+			getStoreListResponseDto.getStores().add(StoreElement.of(store, storeInfo));
+
+			if (store.getCategory().equals(StoreCategory.RESTAURANT)) {
+				restaurantTotalPrice += storeInfo.getAveragePrice();
+				restaurantCount++;
+			}
+			if (store.getCategory().equals(StoreCategory.FITNESS_CENTER)) {
+				fitnessCenterTotalPrice += storeInfo.getAveragePrice();
+				fitnessCenterCount++;
+			}
+			if (store.getCategory().equals(StoreCategory.NAIL_SHOP)) {
+				nailShopTotalPrice += storeInfo.getAveragePrice();
+				nailShopCount++;
+			}
 		}
 
-		if (getStoreListResponseDto.getStores().size() != 0) {
-			getStoreListResponseDto.updateAveragePrice(averagePrice / getStoreListResponseDto.getStores().size());
+		if (restaurantCount != 0) {
+			getStoreListResponseDto.updateRestaurantAveragePrice(restaurantTotalPrice / restaurantCount);
+		}
+		if (fitnessCenterCount != 0) {
+			getStoreListResponseDto.updateFitnessCenterAveragePrice(fitnessCenterTotalPrice / fitnessCenterCount);
+		}
+		if (nailShopCount != 0) {
+			getStoreListResponseDto.updateNailShopAveragePrice(nailShopTotalPrice / nailShopCount);
 		}
 
 		return getStoreListResponseDto;
