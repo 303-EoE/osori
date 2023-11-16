@@ -60,6 +60,8 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(Arrays.asList("https://osori.co.kr")); // 허용할 오리진
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Content-Type", "Authorization"));
+        configuration.setAllowCredentials(true); // 인증 정보 허용
+        configuration.addAllowedHeader("*"); // 모든 헤더 허용
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
