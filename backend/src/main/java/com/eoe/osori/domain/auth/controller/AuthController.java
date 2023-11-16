@@ -30,6 +30,7 @@ public class AuthController {
      */
     @PostMapping("/login")
     public ResponseEntity<EnvelopeResponse<PostAuthLoginResponseDto>> login(@RequestBody PostAuthLoginRequestDto postAuthLoginRequestDto) {
+        log.info("login 컨트롤러");
         return ResponseEntity.status(HttpStatus.OK)
                 .body(EnvelopeResponse.<PostAuthLoginResponseDto>builder()
                         .code(HttpStatus.OK.value())
@@ -46,6 +47,7 @@ public class AuthController {
      */
     @GetMapping("/info")
     public ResponseEntity<EnvelopeResponse<PostAuthInfoResponseDto>> info(@RequestHeader("Authorization") String accessToken) {
+        log.info("info 컨트롤러");
         return ResponseEntity.status(HttpStatus.OK)
                 .body(EnvelopeResponse.<PostAuthInfoResponseDto>builder()
                         .code(HttpStatus.OK.value())
@@ -65,6 +67,7 @@ public class AuthController {
     public ResponseEntity<EnvelopeResponse<PostAuthProfileResponseDto>> profile(
             @RequestPart(value = "postAuthProfileRequestDto") PostAuthProfileRequestDto postAuthProfileRequestDto,
             @RequestPart(value = "profileImage", required = false) MultipartFile profileImage) {
+        log.info("profile 컨트롤러");
         authService.saveProfile(postAuthProfileRequestDto, profileImage);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(EnvelopeResponse.<PostAuthProfileResponseDto>builder()
@@ -82,7 +85,6 @@ public class AuthController {
      */
     @GetMapping("/token/logout")
     public ResponseEntity<EnvelopeResponse<Void>> logout(@RequestHeader("Authorization") String accessToken) {
-
         // 엑세스 토큰으로 현재 Redis 정보 삭제
         tokenService.removeRefreshToken(accessToken);
         return ResponseEntity.status(HttpStatus.OK)
@@ -100,7 +102,7 @@ public class AuthController {
      */
     @GetMapping("/token/refresh")
     public ResponseEntity<EnvelopeResponse<PostAuthReissueTokenResponseDto>> refresh(@RequestHeader("Authorization") String refreshToken) {
-
+        log.info("refresh 컨트롤러");
         return ResponseEntity.status(HttpStatus.OK)
                 .body(EnvelopeResponse.<PostAuthReissueTokenResponseDto>builder()
                         .code(HttpStatus.OK.value())
