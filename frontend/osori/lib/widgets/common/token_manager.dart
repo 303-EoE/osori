@@ -35,6 +35,10 @@ class TokenManager {
     await storage.delete(key: 'profileImageUrl');
   }
 
+  static Future<void> deleteAll() async {
+    await storage.deleteAll();
+  }
+
   static Future<void> renewAccessToken(String accessTokenValue) async {
     await storage.write(key: accessToken, value: accessTokenValue);
   }

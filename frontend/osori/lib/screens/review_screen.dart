@@ -82,13 +82,17 @@ class _FeedScreenState extends ConsumerState<ReviewScreen> {
                         ref.watch(reviewWholeLocalModelProvider(
                             depths!['depth1']!, depths!['depth2']!));
                     return switch (reviews) {
-                      AsyncData(:final value) => Column(children: [
-                          for (var v in value)
-                            Review(
-                              review: v,
+                      AsyncData(:final value) => value.isNotEmpty
+                          ? Column(
+                              children: [
+                                for (var v in value)
+                                  Review(
+                                    review: v,
+                                  )
+                              ],
                             )
-                        ]),
-                      AsyncError() => const Text("리뷰를 찾지 못했습니다."),
+                          : const Text('리뷰가 없어요!'),
+                      AsyncError() => const Text("서버가 아파요.."),
                       _ => const CircularProgressIndicator(),
                     };
                   },

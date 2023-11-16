@@ -32,7 +32,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!mounted) return;
 
     if (loginResult['nickname'] == '') {
-      SnackBarManager.alertSnackBar(context, '로그인 실패!!!!!!!!!!!!!!');
+      SnackBarManager.alertSnackBar(context, '로그인 실패!');
     } else if (loginResult['nickname'] == "null") {
       debugPrint('로그인 하기!');
       // 회원가입
@@ -164,7 +164,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('OSORI에 가입하고 다양한 기능을 누려보세요!'),
+            const Text(
+              'OSORI에 가입하고',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            const Text(
+              '다양한 기능을 누려보세요!',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
             const SizedBox(
               height: 50,
             ),
@@ -174,17 +190,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               },
               child: Image.asset(
                 'assets/images/continue_with_google.png',
-                width: 200,
+                width: 180,
               ),
             ),
             const SizedBox(
-              height: 50,
+              height: 20,
             ),
             GestureDetector(
               onTapUp: (details) async {
                 loginWithService(kakao, size);
               },
-              child: Image.asset('assets/images/continue_with_kakao.png'),
+              child: Image.asset(
+                'assets/images/kakao_login_medium_narrow.png',
+                width: 180,
+              ),
             ),
             const SizedBox(
               height: 50,

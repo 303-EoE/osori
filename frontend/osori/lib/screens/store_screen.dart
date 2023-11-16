@@ -20,9 +20,6 @@ class StoreScreen extends StatefulWidget {
 }
 
 class _StoreScreenState extends State<StoreScreen> {
-  // 키워드로 장소 검색하기 활용
-  // name, latitude, longitude, id 필요
-  // address_name, phone을 받아오기
   late Future<Map<String, dynamic>?> storeModel;
   var numberFormat = NumberFormat('###,###,###,###');
 
@@ -112,9 +109,11 @@ class _StoreScreenState extends State<StoreScreen> {
                             const SizedBox(
                               width: 10,
                             ),
-                            Text(snapshot.data!['phone'] == ""
-                                ? '없음'
-                                : snapshot.data!['phone']),
+                            Text(
+                              snapshot.data!['phone'] == ""
+                                  ? '없음'
+                                  : snapshot.data!['phone'],
+                            ),
                           ],
                         ),
                       ],
@@ -316,7 +315,11 @@ class _StoreScreenState extends State<StoreScreen> {
                                                       ],
                                                     ),
                                                   ),
-                                                  Text(review.content),
+                                                  Text(
+                                                    review.content,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
                                                   Text(
                                                       '${review.createdAt.split('-')[0]}년 ${review.createdAt.split('-')[1]}월 ${review.createdAt.split('-')[2].split('T')[0]}일'),
                                                 ],
