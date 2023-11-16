@@ -18,7 +18,6 @@ import java.io.IOException;
 /**
  * JwtTokenFilter @ExceptionHandler로 관리가 되지 않기 때문에 JwtTokenFilter 전에
  * Exception을 핸들링하는 filter를 만들어 주어야한다
- *
  */
 @Component
 @Slf4j

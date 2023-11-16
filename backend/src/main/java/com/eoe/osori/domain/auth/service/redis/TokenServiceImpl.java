@@ -73,7 +73,7 @@ public class TokenServiceImpl implements TokenService {
 
         // 액세스 토큰으로 Refresh 토큰 객체를 조회
         Token token = tokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(()-> new AuthException(AuthErrorInfo.TOKEN_NOT_FOUND));
+                .orElseThrow(() -> new AuthException(AuthErrorInfo.TOKEN_NOT_FOUND));
 
         Long id = jwtTokenProvider.getLoginId(token.getRefreshToken());
 

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ServerController {
 
     @GetMapping("/check")
-    public String checkServerStatus(){
+    public String checkServerStatus() {
         return "check";
     }
 }

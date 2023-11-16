@@ -42,7 +42,7 @@ public class AuthController {
      * 토큰으로 회원 정보 조회
      *
      * @param accessToken String
-     * @return ResponseEntity<EnvelopeResponse<PostAuthInfoResponseDto>>
+     * @return ResponseEntity<EnvelopeResponse < PostAuthInfoResponseDto>>
      * @see AuthService
      */
     @GetMapping("/info")
@@ -60,7 +60,7 @@ public class AuthController {
      *
      * @param postAuthProfileRequestDto PostAuthProfileRequestDto
      * @param profileImage              MultipartFile
-     * @return ResponseEntity<EnvelopeResponse<PostAuthProfileResponseDto>>
+     * @return ResponseEntity<EnvelopeResponse < PostAuthProfileResponseDto>>
      * @see AuthService
      */
     @PostMapping("/profile")
@@ -80,7 +80,7 @@ public class AuthController {
      * 로그아웃 시 리프레시 토큰 삭제
      *
      * @param accessToken String
-     * @return ResponseEntity<EnvelopeResponse<Void>>
+     * @return ResponseEntity<EnvelopeResponse < Void>>
      * @see TokenService
      */
     @GetMapping("/token/logout")
@@ -97,7 +97,7 @@ public class AuthController {
      * refresh 토큰으로 access 토큰 재발급
      *
      * @param refreshToken String
-     * @return ResponseEntity<EnvelopeResponse<PostAuthReissueTokenResponseDto>>
+     * @return ResponseEntity<EnvelopeResponse < PostAuthReissueTokenResponseDto>>
      * @see TokenService
      */
     @GetMapping("/token/refresh")

@@ -1,58 +1,58 @@
 package com.eoe.osori.global.common.security;
 
-import java.util.Collection;
-
+import lombok.Builder;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import lombok.Builder;
-import lombok.Getter;
+import java.util.Collection;
 
 @Getter
 public class UserDetailsImpl implements UserDetails {
 
-	private Long id;
-	@Builder
-	public UserDetailsImpl(Long id){
-		this.id = id;
-	}
+    private Long id;
 
-	public Long getUserId(){
-		return id;
-	}
+    @Builder
+    public UserDetailsImpl(Long id) {
+        this.id = id;
+    }
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return null;
-	}
+    public Long getUserId() {
+        return id;
+    }
 
-	@Override
-	public String getPassword() {
-		return null;
-	}
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return null;
+    }
 
-	@Override
-	public String getUsername() {
-		return id.toString();
-	}
+    @Override
+    public String getPassword() {
+        return null;
+    }
 
-	@Override
-	public boolean isAccountNonExpired() {
-		return false;
-	}
+    @Override
+    public String getUsername() {
+        return id.toString();
+    }
 
-	@Override
-	public boolean isAccountNonLocked() {
-		return false;
-	}
+    @Override
+    public boolean isAccountNonExpired() {
+        return false;
+    }
 
-	@Override
-	public boolean isCredentialsNonExpired() {
-		return false;
-	}
+    @Override
+    public boolean isAccountNonLocked() {
+        return false;
+    }
 
-	@Override
-	public boolean isEnabled() {
-		return false;
-	}
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return false;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
 }

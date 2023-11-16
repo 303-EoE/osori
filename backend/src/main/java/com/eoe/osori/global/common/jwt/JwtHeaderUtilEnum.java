@@ -7,9 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum JwtHeaderUtilEnum {
 
-	AUTHORIZATION("Authorization 헤더", "Authorization"),
-	GRANT_TYPE("JWT 타입 / Bearer ", "Bearer ");
+    AUTHORIZATION("Authorization 헤더", "Authorization"),
+    GRANT_TYPE("JWT 타입 / Bearer ", "Bearer ");
 
-	private String description;
-	private String value;
+    private String description;
+    private String value;
 }
