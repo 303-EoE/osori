@@ -5,7 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'review_whole_model_provider.g.dart';
 
-const String baseUrl = "https://test.osori.co.kr/reviews";
+const String baseUrl = "https://osori.co.kr/reviews";
 
 @riverpod
 Future<List<ReviewWholeModel>> reviewWholeLocalModel(

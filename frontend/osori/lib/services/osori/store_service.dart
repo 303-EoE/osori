@@ -4,7 +4,7 @@ import 'package:osori/models/kakao_store_model.dart';
 import 'package:osori/models/store/store_model.dart';
 
 class StoreService {
-  static const String baseUrl = "https://test.osori.co.kr/stores";
+  static const String baseUrl = "https://osori.co.kr/stores";
 
   static Future<List<StoreModel>> getNearStores(
       String depth1, String depth2) async {
@@ -15,9 +15,6 @@ class StoreService {
       final response = await dio.get(url);
       if (response.statusCode == 200) {
         final stores = response.data['data']['stores'];
-        print('vvvvvvvvvvvvvvvvvvvvvvvvvvvv');
-        print(stores);
-        print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
         for (var store in stores) {
           storeInstances.add(StoreModel.fromJson(store));
         }

@@ -5,7 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'store_model_provider.g.dart';
 
-const String baseUrl = "https://test.osori.co.kr/store";
+const String baseUrl = "https://osori.co.kr/store";
 
 @riverpod
 Future<List<StoreModel>> storeModel(

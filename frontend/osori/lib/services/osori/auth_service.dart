@@ -8,7 +8,7 @@ import 'package:osori/services/other/social_login_service.dart';
 import 'package:osori/widgets/common/token_manager.dart';
 
 class AuthService {
-  static const String baseUrl = "https://test.osori.co.kr/auth";
+  static const String baseUrl = "https://osori.co.kr/auth";
   static const String google = "Google";
   static const String kakao = "Kakao";
   // 로그인/회원가입

@@ -6,7 +6,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:osori/widgets/common/token_manager.dart';
 
 class MemberService {
-  static const String baseUrl = 'https://test.osori.co.kr/members';
+  static const String baseUrl = 'https://osori.co.kr/members';
 
   static Future<Map<String, dynamic>?> getMemberProfile(int memberId) async {
     try {
