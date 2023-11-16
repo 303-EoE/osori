@@ -72,5 +72,5 @@ echo "Deploy Completed!!"
 # 4
 echo "$BEFORE_COLOR server down(port:${BEFORE_PORT_1})"
 echo "$BEFORE_COLOR server down(port:${BEFORE_PORT_2})"
-docker-compose -p osori-review-${BEFORE_COLOR} -f /home/ubuntu/workspace/docker-compose.review.${BEFORE_COLOR}.yaml down
+sudo docker-compose -p osori-review-${BEFORE_COLOR} -f /home/ubuntu/workspace/docker-compose.review.${BEFORE_COLOR}.yaml down
 
