@@ -43,6 +43,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
      */
     @Override
     protected boolean shouldNotFilter(HttpServletRequest req) throws ServletException {
+        log.info("JwtTokenFilter shouldNotFilter");
         return req.getRequestURI().contains("/token");
     }
 
@@ -50,6 +51,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
         String accessToken = getAccessToken(request);
         if (accessToken != null && !accessToken.equals("undefined")) {
+            log.info("JwtTokenFilter doFilterInternal");
             Long id = null;
             try {
                 id = jwtTokenProvider.getLoginId(accessToken);

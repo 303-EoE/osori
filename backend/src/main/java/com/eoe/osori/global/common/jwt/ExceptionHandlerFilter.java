@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -20,6 +21,7 @@ import java.io.IOException;
  *
  */
 @Component
+@Slf4j
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(
@@ -27,7 +29,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-
+        log.info("ExceptionHandlerFilter");
         try {
             filterChain.doFilter(request, response);
         }
@@ -42,6 +44,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             AuthErrorInfo errorCode
     ) {
+        log.info("ExceptionHandlerFilter setErrorResponse");
         ObjectMapper objectMapper = new ObjectMapper();
         response.setStatus(errorCode.getStatus().value());
         // 한글이 깨지지 않게 하기 위해서 추가한다.
