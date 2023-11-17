@@ -59,7 +59,7 @@ public class MemberServiceImpl implements MemberService{
 	 */
 	@Override
 	@Transactional
-	public void updateProfile(PatchMemberRequestDto patchMemberRequestDto, MultipartFile profileImage) {
+	public void updateProfile(PatchMemberRequestDto patchMemberRequestDto, List<MultipartFile> profileImage) {
 
 		Member member = memberRepository.findById(patchMemberRequestDto.getMemberId()).orElseThrow(() -> new MemberException(MemberErrorInfo.MEMBER_NOT_FOUND));
 
@@ -79,13 +79,11 @@ public class MemberServiceImpl implements MemberService{
 		// 기존 프로필 이미지
 		String profileImageUrl = member.getProfileImageUrl();
 		// 프로필 이미지 새로 들어왔을 때
-		if(!profileImage.isEmpty()){
-			List<MultipartFile> multipartFiles = new ArrayList<>();
-			multipartFiles.add(profileImage);
+		if(profileImage != null || !profileImage.isEmpty()){
 
 			EnvelopeResponse<PostImageResponseDto> postImageResponseDtoEnvelopeResponse;
 			try{
-				postImageResponseDtoEnvelopeResponse = imageApi.saveImages(multipartFiles);
+				postImageResponseDtoEnvelopeResponse = imageApi.saveImages(profileImage);
 			}catch(FeignException e){
 				System.out.println(e.getMessage());
 				throw new MemberException(MemberErrorInfo.FAIL_TO_IMAGE_FEIGN_CLIENT_REQUEST);

@@ -1,5 +1,7 @@
 package com.eoe.osori.domain.member.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +42,7 @@ public class MemberController {
 	@PatchMapping
 	ResponseEntity<EnvelopeResponse<Void>> updateMyProfile(
 		@RequestPart(value = "patchMemberRequestDto") PatchMemberRequestDto patchMemberRequestDto,
-		@RequestPart(value = "profileImage", required =false) MultipartFile profileImage){
+		@RequestPart(value = "profileImage", required =false) List<MultipartFile> profileImage){
 		System.out.println("patchMemberRequestDto.getNickname() = " + patchMemberRequestDto.getNickname());
 		memberService.updateProfile(patchMemberRequestDto, profileImage);
 		return ResponseEntity.status(HttpStatus.OK)
