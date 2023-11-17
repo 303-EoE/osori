@@ -31,7 +31,8 @@ public class SecurityConfig {
     // 허용할 URL
     private static final String[] PERMIT_URL_ARRAY = {
             "/",
-            "/auth/**"
+            "/auth/**",
+            "/server/**"
     };
 
     @Bean

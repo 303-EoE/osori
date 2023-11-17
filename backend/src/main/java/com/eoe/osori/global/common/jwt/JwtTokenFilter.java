@@ -42,9 +42,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
      * refresh token을 이용한 access token 재발급시 필터를 거치지 않게 하기위해 설정
      */
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest req) throws ServletException {
+    protected boolean shouldNotFilter(HttpServletRequest req) {
         log.info("JwtTokenFilter shouldNotFilter");
-        return req.getRequestURI().contains("/token");
+        return req.getRequestURI().contains("/server") || req.getRequestURI().contains("/token");
     }
 
     @Override
