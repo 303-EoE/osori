@@ -3,6 +3,7 @@
 EXIST_BLUE=$(sudo docker-compose -p osori-store-blue -f /home/ubuntu/workspace/docker-compose.store.blue.yaml ps | grep Up)
 
 if [ -z "$EXIST_BLUE" ]; then
+        sudo docker-compose -p osori-store-blue -f /home/ubuntu/workspace/docker-compose.store.blue.yaml pull
         sudo docker-compose -p osori-store-blue -f /home/ubuntu/workspace/docker-compose.store.blue.yaml up -d
         BEFORE_COLOR="green"
         AFTER_COLOR="blue"
@@ -11,6 +12,7 @@ if [ -z "$EXIST_BLUE" ]; then
         BEFORE_PORT_2=8233
         AFTER_PORT_2=8231
 else
+        sudo docker-compose -p osori-store-green -f /home/ubuntu/workspace/docker-compose.store.green.yaml pull
         sudo docker-compose -p osori-store-green -f /home/ubuntu/workspace/docker-compose.store.green.yaml up -d
         BEFORE_COLOR="blue"
         AFTER_COLOR="green"
@@ -73,3 +75,6 @@ echo "Deploy Completed!!"
 echo "$BEFORE_COLOR server down(port:${BEFORE_PORT_1})"
 echo "$BEFORE_COLOR server down(port:${BEFORE_PORT_2})"
 sudo docker-compose -p osori-store-${BEFORE_COLOR} -f /home/ubuntu/workspace/docker-compose.store.${BEFORE_COLOR}.yaml down
+
+# 5
+sudo docker image prune -f
