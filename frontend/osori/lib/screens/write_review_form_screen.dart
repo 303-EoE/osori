@@ -275,6 +275,12 @@ class _WriteReviewFormScreenState extends State<WriteReviewFormScreen> {
                         onPressed: () async {
                           isSubmitted = true;
                           setState(() {});
+                          if (_selectedImages.isEmpty) {
+                            SnackBarManager.alertSnackBar(
+                                context, '이미지를 한장 이상 등록해주세요.');
+                            isSubmitted = false;
+                            return;
+                          }
                           // Validate and save the form values
                           _formKey.currentState?.saveAndValidate();
                           debugPrint(_formKey.currentState?.value.toString());

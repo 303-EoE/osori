@@ -12,6 +12,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   Future<void> verify() async {
+    // await TokenManager.deleteAll();
     await TokenManager.renewDevicePosition();
     await TokenManager.renewDeviceDepths();
     final result = await TokenManager.verifyToken();

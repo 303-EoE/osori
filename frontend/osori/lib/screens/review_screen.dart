@@ -80,7 +80,8 @@ class _FeedScreenState extends ConsumerState<ReviewScreen> {
                   builder: (context, ref, child) {
                     final AsyncValue<List<ReviewWholeModel>> reviews =
                         ref.watch(reviewWholeLocalModelProvider(
-                            depths!['depth1']!, depths!['depth2']!));
+                            depths!['depth1'] ?? "서울",
+                            depths!['depth2'] ?? "강남구"));
                     return switch (reviews) {
                       AsyncData(:final value) => value.isNotEmpty
                           ? Column(

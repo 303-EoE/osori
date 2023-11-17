@@ -8,7 +8,7 @@ import 'package:osori/models/review/review_whole_model.dart';
 import 'package:osori/widgets/common/token_manager.dart';
 
 class ReviewService {
-  static const String baseUrl = "https://osori.co.kr/reviews";
+  static const String baseUrl = "https://test.osori.co.kr/reviews";
   // 가게 리뷰 요약 조회
   static Future<List<Map<String, dynamic>>> getSumarrizedReviews(
       int storeId) async {
@@ -55,7 +55,7 @@ class ReviewService {
         debugPrint('$e');
       }
     }
-    throw Error();
+    return null;
   }
 
   // 리뷰 등록
@@ -122,15 +122,17 @@ class ReviewService {
   }
 
   // 리뷰 상세 조회
-  static Future<ReviewWholeModel> getDetailedReview(int reviewId) async {
+  static Future<ReviewWholeModel?> getDetailedReview(int reviewId) async {
     try {
       final token = await TokenManager.readAccessToken();
       final memberId = await TokenManager.readUserId();
+      print(reviewId);
       final url = '$baseUrl/detail?review_id=$reviewId&member_id=$memberId';
       var dio = Dio();
       dio.options.headers = {'Authorization': token};
       final response = await dio.get(url);
-      return response.data['data'];
+      print(response.data);
+      return ReviewWholeModel.fromJson(response.data['data']);
     } catch (e) {
       if (e is DioException) {
         debugPrint('DioError 발생');
@@ -140,7 +142,7 @@ class ReviewService {
         debugPrint('일반 예외 발생');
         debugPrint('$e');
       }
-      throw Error();
+      return null;
     }
   }
 

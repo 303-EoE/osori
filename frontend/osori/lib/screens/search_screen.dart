@@ -111,7 +111,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Flexible(
-                          flex: 5,
+                          flex: 4,
                           child: Text(
                             store.placeName,
                             overflow: TextOverflow.ellipsis,

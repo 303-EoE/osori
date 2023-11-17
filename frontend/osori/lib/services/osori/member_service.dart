@@ -6,7 +6,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:osori/widgets/common/token_manager.dart';
 
 class MemberService {
-  static const String baseUrl = 'https://osori.co.kr/members';
+  static const String baseUrl = 'https://test.osori.co.kr/members';
 
   static Future<Map<String, dynamic>?> getMemberProfile(int memberId) async {
     try {
@@ -44,20 +44,20 @@ class MemberService {
       final memberId = await TokenManager.readUserId();
       const url = baseUrl;
       var dio = Dio();
-      debugPrint(memberId);
-      debugPrint(nickname);
-      debugPrint(image?.path);
-      debugPrint('$useDefault');
+
+      List<MultipartFile> images = [];
+      if (image != null) images.add(MultipartFile.fromFileSync(image.path));
+
       var formData = FormData.fromMap({
-        if (image != null && !useDefault)
-          'profileImage': MultipartFile.fromFileSync(image.path),
+        'profileImage': images,
         'patchMemberRequestDto': MultipartFile.fromString(
-            jsonEncode({
-              'memberId': memberId,
-              'isDefaultImage': useDefault,
-              if (nickname != null) 'nickname': nickname,
-            }),
-            contentType: MediaType.parse('application/json'))
+          jsonEncode({
+            'memberId': memberId,
+            'isDefaultImage': useDefault,
+            if (nickname != null) 'nickname': nickname,
+          }),
+          contentType: MediaType.parse('application/json'),
+        )
       });
       final response = await dio.patch(url, data: formData);
       return response.statusCode!;

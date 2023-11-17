@@ -27,7 +27,7 @@ class _ReceiptScanningScreenState extends State<ReceiptScanningScreen>
 
   Future _takePicture() async {
     isScanning = true;
-
+    setState(() {});
     final imagePicker = ImagePicker();
     final pickedImage = await imagePicker.pickImage(
         source: ImageSource.camera, imageQuality: 50);
@@ -86,8 +86,7 @@ class _ReceiptScanningScreenState extends State<ReceiptScanningScreen>
       ),
       body: Stack(children: [
         Padding(
-          padding: EdgeInsets.symmetric(
-              vertical: size.height / 6, horizontal: size.width / 4),
+          padding: EdgeInsets.symmetric(horizontal: size.width / 4),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

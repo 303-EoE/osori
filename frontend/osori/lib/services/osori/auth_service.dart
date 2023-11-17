@@ -8,7 +8,7 @@ import 'package:osori/services/other/social_login_service.dart';
 import 'package:osori/widgets/common/token_manager.dart';
 
 class AuthService {
-  static const String baseUrl = "https://osori.co.kr/auth";
+  static const String baseUrl = "https://test.osori.co.kr/auth";
   static const String google = "Google";
   static const String kakao = "Kakao";
   // 로그인/회원가입
@@ -142,6 +142,32 @@ class AuthService {
         debugPrint('$e');
       }
       return "";
+    }
+  }
+
+  static Future<int> logout() async {
+    try {
+      var dio = Dio();
+      final accessToken = await TokenManager.readAccessToken();
+      dio.options.headers = {"Authorization": "Bearer $accessToken"};
+      const url = '$baseUrl/token/logout';
+      final response = await dio.get(url);
+      if (response.statusCode == 200) {
+        await TokenManager.deleteAll();
+        await TokenManager.renewDevicePosition();
+        await TokenManager.renewDeviceDepths();
+      }
+      return response.statusCode ?? -1;
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioError 발생');
+        debugPrint('Response data: ${e.response?.data}');
+        debugPrint('Error: ${e.error}');
+      } else {
+        debugPrint('일반 예외 발생');
+        debugPrint('$e');
+      }
+      return -1;
     }
   }
 }

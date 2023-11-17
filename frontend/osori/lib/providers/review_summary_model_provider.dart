@@ -6,7 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'review_summary_model_provider.g.dart';
 
-const String baseUrl = "https://osori.co.kr/reviews/store";
+const String baseUrl = "https://test.osori.co.kr/reviews/store";
 
 @riverpod
 Future<List<ReviewSummaryModel>> reviewSummaryModel(

@@ -135,12 +135,18 @@ class TokenManager {
   }
 
   static Future<void> renewDevicePosition() async {
-    Position pos = await DevicePostionService.getNowPosition();
+    // Position pos = await DevicePostionService.getNowPosition();
 
+    // await storage.write(
+    //     key: 'lat', value: '${pos.latitude}', aOptions: getAndroidOptions());
+    // await storage.write(
+    //     key: 'lon', value: '${pos.longitude}', aOptions: getAndroidOptions());
+
+    // 무조건 강남
     await storage.write(
-        key: 'lat', value: '${pos.latitude}', aOptions: getAndroidOptions());
+        key: 'lat', value: "37.501263", aOptions: getAndroidOptions());
     await storage.write(
-        key: 'lon', value: '${pos.longitude}', aOptions: getAndroidOptions());
+        key: 'lon', value: '127.039583', aOptions: getAndroidOptions());
   }
 
   static Future<Map<String, String?>> readDevicePosition() async {

@@ -6,6 +6,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:osori/models/review/review_whole_model.dart';
 import 'package:osori/providers/review_whole_model_provider.dart';
+import 'package:osori/services/osori/auth_service.dart';
 import 'package:osori/services/osori/member_service.dart';
 import 'package:osori/widgets/common/bottom_navigation_widget.dart';
 import 'package:osori/widgets/common/snack_bar_manager.dart';
@@ -69,12 +70,13 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    print(context.toString());
     return isLoaded
         ? DefaultTabController(
             length: 2,
             child: Scaffold(
               appBar: AppBar(
-                toolbarHeight: size.height / 4,
+                toolbarHeight: size.height / 3,
                 title: Center(
                   child: Stack(children: [
                     Column(
@@ -131,6 +133,73 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
+                        IconButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return Dialog(
+                                  surfaceTintColor: Colors.white,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        const Text(
+                                          '로그아웃 하시겠습니까?',
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceAround,
+                                          children: [
+                                            OutlinedButton(
+                                                onPressed: () async {
+                                                  final result =
+                                                      await AuthService
+                                                          .logout();
+                                                  if (mounted) {
+                                                    if (result == 200) {
+                                                      SnackBarManager
+                                                          .completeSnackBar(
+                                                              context, '로그아웃');
+                                                      Navigator.of(context)
+                                                          .pushNamedAndRemoveUntil(
+                                                              '/profile',
+                                                              (route) => false);
+                                                    } else if (result == -1) {
+                                                      SnackBarManager
+                                                          .alertSnackBar(
+                                                              context,
+                                                              '로그아웃에 실패하였습니다.');
+                                                      Navigator.pop(context);
+                                                    }
+                                                  }
+                                                },
+                                                child: const Text('확인')),
+                                            OutlinedButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text("취소"),
+                                            ),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          icon: const Icon(Icons.logout),
+                        )
                         // const Icon(Icons.edit)
                       ],
                     ),
@@ -153,7 +222,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       const Text(
-                                        "프로필 편집",
+                                        "프로필 수정",
                                         style: TextStyle(
                                           fontSize: 24,
                                           fontWeight: FontWeight.w600,
@@ -263,12 +332,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                                             if (response == 200) {
                                               SnackBarManager.completeSnackBar(
                                                   context, '프로필 수정');
-                                              Navigator.pop(context);
-                                              info = await MemberService
-                                                  .getMemberProfile(int.parse(
-                                                      await TokenManager
-                                                          .readUserId()));
-                                              setState(() {});
+                                              Navigator.of(context)
+                                                  .pushNamedAndRemoveUntil(
+                                                      '/profile',
+                                                      (route) => false);
                                             } else {
                                               SnackBarManager.alertSnackBar(
                                                   context, '수정이 실패!!');

@@ -4,7 +4,7 @@ import 'package:osori/models/kakao_store_model.dart';
 import 'package:osori/models/store/store_model.dart';
 
 class StoreService {
-  static const String baseUrl = "https://osori.co.kr/stores";
+  static const String baseUrl = "https://test.osori.co.kr/stores";
 
   static Future<List<StoreModel>> getNearStores(
       String depth1, String depth2) async {

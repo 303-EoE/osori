@@ -26,6 +26,7 @@ class _ReviewState extends State<Review> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+
     return Container(
       // height: 600,
       // margin: const EdgeInsets.only(bottom: 10),
@@ -49,103 +50,118 @@ class _ReviewState extends State<Review> {
                   },
                 ));
               },
-              child: Row(
-                children: [
-                  widget.review.memberProfileImageUrl == ""
-                      ? Image.asset(
-                          'assets/images/logo.png',
-                          height: 32,
-                        )
-                      : Image.network(
-                          'https://osori-bucket.s3.ap-northeast-2.amazonaws.com/${widget.review.memberProfileImageUrl}',
-                          height: 32,
-                        ),
-                  const SizedBox(
-                    width: 16,
-                  ),
-                  SizedBox(
-                    width: size.width / 2,
-                    child: Text(
-                      widget.review.memberNickname,
-                      overflow: TextOverflow.ellipsis,
+              child: Flexible(
+                flex: 5,
+                child: Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(1000)),
+                      clipBehavior: Clip.hardEdge,
+                      child: widget.review.memberProfileImageUrl == ""
+                          ? Image.asset(
+                              'assets/images/logo.png',
+                              height: 32,
+                            )
+                          : Image.network(
+                              'https://osori-bucket.s3.ap-northeast-2.amazonaws.com/${widget.review.memberProfileImageUrl}',
+                              height: 32,
+                            ),
                     ),
-                  ),
-                ],
+                    const SizedBox(
+                      width: 16,
+                    ),
+                    SizedBox(
+                      width: size.width / 2,
+                      child: Text(
+                        widget.review.memberNickname,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            // if (review.id == userId)
             if (widget.review.isMine)
-              PopupMenuButton(
-                surfaceTintColor: Colors.white,
-                onSelected: (value) {
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return Dialog(
-                        surfaceTintColor: Colors.white,
-                        child: SizedBox(
-                          width: 200,
-                          height: 150,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                const Text(
-                                  '리뷰를 삭제하시겠습니까?',
-                                  style: TextStyle(
-                                    fontSize: 18,
+              Flexible(
+                flex: 1,
+                child: PopupMenuButton(
+                  icon: const Icon(
+                    Icons.more_vert,
+                  ),
+                  surfaceTintColor: Colors.white,
+                  onSelected: (value) {
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return Dialog(
+                          surfaceTintColor: Colors.white,
+                          child: SizedBox(
+                            width: 200,
+                            height: 150,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  const Text(
+                                    '리뷰를 삭제하시겠습니까?',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    OutlinedButton(
-                                      onPressed: () async {
-                                        final response =
-                                            await ReviewService.deleteReview(
-                                                widget.review.id);
-                                        if (context.mounted) {
-                                          Navigator.pop(context);
-                                          if (response == 200) {
-                                            SnackBarManager.completeSnackBar(
-                                                context, '리뷰 삭제');
-                                          } else {
-                                            SnackBarManager.alertSnackBar(
-                                                context, '리뷰 삭제 실패!!');
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      OutlinedButton(
+                                        onPressed: () async {
+                                          final response =
+                                              await ReviewService.deleteReview(
+                                                  widget.review.id);
+                                          if (context.mounted) {
+                                            Navigator.pop(context);
+                                            if (response == 200) {
+                                              SnackBarManager.completeSnackBar(
+                                                  context, '리뷰 삭제');
+                                              print(context.owner);
+                                            } else {
+                                              SnackBarManager.alertSnackBar(
+                                                  context, '리뷰 삭제 실패!!');
+                                            }
                                           }
-                                        }
-                                      },
-                                      child: const Text('삭제하기'),
-                                    ),
-                                    OutlinedButton(
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text('취소하기'),
-                                    ),
-                                  ],
-                                )
-                              ],
+                                        },
+                                        child: const Text('삭제하기'),
+                                      ),
+                                      OutlinedButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: const Text('취소하기'),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  );
-                },
-                itemBuilder: (context) {
-                  return [
-                    const PopupMenuItem(
-                      value: 'remove',
-                      child: Text('삭제하기'),
-                    )
-                  ];
-                },
+                        );
+                      },
+                    );
+                  },
+                  itemBuilder: (context) {
+                    return [
+                      const PopupMenuItem(
+                        value: 'remove',
+                        child: Text('삭제하기'),
+                      )
+                    ];
+                  },
+                ),
               )
           ]),
         ),

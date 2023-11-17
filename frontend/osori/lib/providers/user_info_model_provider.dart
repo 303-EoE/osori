@@ -6,7 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'user_info_model_provider.g.dart';
 
-const String baseUrl = "https://osori.co.kr/members";
+const String baseUrl = "https://test.osori.co.kr/members";
 
 @riverpod
 Future<UserInfoModel> userInfoModel(UserInfoModelRef ref) async {

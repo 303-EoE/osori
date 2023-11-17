@@ -11,6 +11,7 @@ import 'package:osori/services/osori/store_service.dart';
 import 'package:osori/services/other/device_position_service.dart';
 import 'package:osori/services/other/kakao_local_api_service.dart';
 import 'package:osori/widgets/common/bottom_navigation_widget.dart';
+import 'package:osori/widgets/common/token_manager.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -33,8 +34,7 @@ class _MapScreenState extends State<MapScreen> {
   void getNearStores() async {
     position = await DevicePostionService.getNowPosition();
     nowPos = LatLng(position.latitude, position.longitude);
-    Map<String, String>? depths = await KakaoLocalApiService.getDepthByPosition(
-        '${nowPos.longitude}', '${nowPos.latitude}');
+    Map<String, String?> depths = await TokenManager.readDeviceDepths();
     stores =
         await StoreService.getNearStores(depths['depth1']!, depths['depth2']!);
     Set<Marker> aroundStores = {};
@@ -164,7 +164,10 @@ class _MapScreenState extends State<MapScreen> {
                   MaterialPageRoute(builder: (context) {
                     timer.cancel();
                     return SearchScreen(
-                      nowPos: nowPos,
+                      nowPos: LatLng(
+                        37.501263, // 멀티캠퍼스
+                        127.039583, // 멀티캠퍼스
+                      ),
                     );
                   }),
                 );
