@@ -40,7 +40,7 @@ public class MemberController {
 				.build());
 	}
 
-	@PutMapping
+	@PatchMapping
 	ResponseEntity<EnvelopeResponse<Void>> updateMyProfile(
 		@RequestPart(value = "patchMemberRequestDto") PatchMemberRequestDto patchMemberRequestDto,
 		@RequestPart(value = "profileImage", required =false) List<MultipartFile> profileImage){
