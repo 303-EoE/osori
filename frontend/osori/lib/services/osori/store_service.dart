@@ -67,7 +67,6 @@ class StoreService {
       var dio = Dio();
       final url = '$baseUrl/detail?store_id=$storeId';
       final response = await dio.get(url);
-      print(response.data['data']);
       return response.data['data'];
     } catch (e) {
       if (e is DioException) {
