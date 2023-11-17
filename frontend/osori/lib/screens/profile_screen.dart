@@ -70,7 +70,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    print(context.toString());
     return isLoaded
         ? DefaultTabController(
             length: 2,

@@ -126,12 +126,10 @@ class ReviewService {
     try {
       final token = await TokenManager.readAccessToken();
       final memberId = await TokenManager.readUserId();
-      print(reviewId);
       final url = '$baseUrl/detail?review_id=$reviewId&member_id=$memberId';
       var dio = Dio();
       dio.options.headers = {'Authorization': token};
       final response = await dio.get(url);
-      print(response.data);
       return ReviewWholeModel.fromJson(response.data['data']);
     } catch (e) {
       if (e is DioException) {
