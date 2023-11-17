@@ -38,7 +38,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         log.info("SecurityFilterChain");
         http
-                .cors(withDefaults())
+                .cors((cors) -> cors.disable())
                 .csrf((csrfConfig) -> csrfConfig.disable())
                 .httpBasic((httpBasic) -> httpBasic.disable())
                 .sessionManagement(session -> session
@@ -53,18 +53,5 @@ public class SecurityConfig {
                                 .requestMatchers(PERMIT_URL_ARRAY).permitAll()
                                 .anyRequest().authenticated());
         return http.build();
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        log.info("CorsConfigurationSource");
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://osori.co.kr")); // 허용할 오리진
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-
-        return source;
     }
 }

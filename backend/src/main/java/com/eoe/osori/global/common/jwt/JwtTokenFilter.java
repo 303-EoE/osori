@@ -44,7 +44,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest req) throws ServletException {
         log.info("JwtTokenFilter shouldNotFilter");
-        return req.getRequestURI().contains("/server") || req.getRequestURI().contains("/token");
+        return req.getRequestURI().contains("/token");
     }
 
     @Override
