@@ -7,7 +7,7 @@ part of 'review_summary_model_provider.dart';
 // **************************************************************************
 
 String _$reviewSummaryModelHash() =>
-    r'c547714747f5dac21a14e027c26eb7e5bd3d89e6';
+    r'ddd95c0bf6aa23a1e0569f41c3c2a92d9c8534cc';
 
 /// Copied from Dart SDK
 class _SystemHash {

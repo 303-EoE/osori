@@ -18,7 +18,10 @@ class _SplashScreenState extends State<SplashScreen> {
     final result = await TokenManager.verifyToken();
     if (mounted) {
       if (result == 'login need') {
-        SnackBarManager.alertSnackBar(context, '환영합니다. 어서오세요!');
+        await TokenManager.deleteUserInfo();
+        if (mounted) {
+          SnackBarManager.alertSnackBar(context, '환영합니다. 어서오세요!');
+        }
       } else {
         SnackBarManager.welcomeSnackBar(
             context, await TokenManager.readUserNickname());

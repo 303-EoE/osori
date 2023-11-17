@@ -9,7 +9,6 @@ import 'package:osori/screens/search_screen.dart';
 import 'package:osori/screens/store_screen.dart';
 import 'package:osori/services/osori/store_service.dart';
 import 'package:osori/services/other/device_position_service.dart';
-import 'package:osori/services/other/kakao_local_api_service.dart';
 import 'package:osori/widgets/common/bottom_navigation_widget.dart';
 import 'package:osori/widgets/common/token_manager.dart';
 
@@ -164,10 +163,7 @@ class _MapScreenState extends State<MapScreen> {
                   MaterialPageRoute(builder: (context) {
                     timer.cancel();
                     return SearchScreen(
-                      nowPos: LatLng(
-                        37.501263, // 멀티캠퍼스
-                        127.039583, // 멀티캠퍼스
-                      ),
+                      nowPos: nowPos,
                     );
                   }),
                 );

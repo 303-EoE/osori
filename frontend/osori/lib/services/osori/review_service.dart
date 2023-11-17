@@ -8,7 +8,7 @@ import 'package:osori/models/review/review_whole_model.dart';
 import 'package:osori/widgets/common/token_manager.dart';
 
 class ReviewService {
-  static const String baseUrl = "https://test.osori.co.kr/reviews";
+  static const String baseUrl = "https://osori.co.kr/reviews";
   // 가게 리뷰 요약 조회
   static Future<List<Map<String, dynamic>>> getSumarrizedReviews(
       int storeId) async {

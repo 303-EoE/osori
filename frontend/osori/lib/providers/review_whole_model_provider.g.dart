@@ -7,7 +7,7 @@ part of 'review_whole_model_provider.dart';
 // **************************************************************************
 
 String _$reviewWholeLocalModelHash() =>
-    r'f0dc02adb63453b205e7fc4361e63d7387b4e045';
+    r'645f9355919e6dd1ac6bfff28bd3ee77cf43ff77';
 
 /// Copied from Dart SDK
 class _SystemHash {
