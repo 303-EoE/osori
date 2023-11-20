@@ -3,6 +3,7 @@
 EXIST_BLUE=$(sudo docker-compose -p osori-review-blue -f /home/ubuntu/workspace/docker-compose.review.blue.yaml ps | grep Up)
 
 if [ -z "$EXIST_BLUE" ]; then
+        sudo docker-compose -p osori-review-blue -f /home/ubuntu/workspace/docker-compose.review.blue.yaml pull
         sudo docker-compose -p osori-review-blue -f /home/ubuntu/workspace/docker-compose.review.blue.yaml up -d
         BEFORE_COLOR="green"
         AFTER_COLOR="blue"
@@ -11,6 +12,7 @@ if [ -z "$EXIST_BLUE" ]; then
         BEFORE_PORT_2=8223
         AFTER_PORT_2=8221
 else
+        sudo docker-compose -p osori-review-green -f /home/ubuntu/workspace/docker-compose.review.green.yaml pull
         sudo docker-compose -p osori-review-green -f /home/ubuntu/workspace/docker-compose.review.green.yaml up -d
         BEFORE_COLOR="blue"
         AFTER_COLOR="green"
@@ -74,3 +76,5 @@ echo "$BEFORE_COLOR server down(port:${BEFORE_PORT_1})"
 echo "$BEFORE_COLOR server down(port:${BEFORE_PORT_2})"
 sudo docker-compose -p osori-review-${BEFORE_COLOR} -f /home/ubuntu/workspace/docker-compose.review.${BEFORE_COLOR}.yaml down
 
+# 5
+sudo docker image prune -f
