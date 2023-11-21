@@ -2,15 +2,7 @@
 
 ![오소리 헤더버전.jpg](./img/오소리%20헤더버전.jpg)
 
-### <div align="center">
-   오늘의 소비 리스트 | <b>오소리</b>
-</div>
-
-<br/>
-
-<div align="center">
-   소비 내역 기반 SNS
-</div>
+### <div align="center">오늘의 소비 리스트 | <b>오소리</b></div><br/><div align="center">소비 내역 기반 SNS</div>
 
 <br><br>
 
@@ -124,7 +116,7 @@ Azure AI Document Intelligence Studio
 
 오소리 서비스는 카카오, 구글을 통한 간편 로그인을 지원하고 있어요.
 
-![로그인.gif](./img/로그인.gif){: width="450px", height="800px"}
+<img src="./img/로그인.gif" width="300" height="700">
 
 <br>
 
@@ -138,7 +130,7 @@ Azure AI Document Intelligence Studio
 
 나의 닉네임과 프로필 사진을 수정할 수 있어요.
 
-![마이페이지.gif](./img/마이페이지.gif){: width="450px", height="800px"}
+<img src="./img/마이페이지.gif" width="300" height="700">
 
 <br>
 
@@ -154,7 +146,7 @@ Azure AI Document Intelligence Studio
 
 리뷰가 마음에 든다면, '좋아요'를 눌러서 내가 좋아하는 리뷰에 저장해요.
 
-![리뷰 피드.gif](./img/리뷰%20피드.gif){: width="450px", height="800px"}
+<img src="./img/리뷰%20피드.gif" width="300" height="700">
 
 <br>
 
@@ -166,7 +158,7 @@ Azure AI Document Intelligence Studio
 
 마음에 드는 가게를 발견했다면 핀을 클릭해서 가게 상세 정보를 확인해요.
 
-![가게 지도.gif](./img/가게%20지도.gif){: width="450px", height="800px"}
+<img src="./img/가게%20지도.gif" width="300" height="700">
 
 <br>
 
@@ -180,7 +172,7 @@ Azure AI Document Intelligence Studio
 
 더 자세한 리뷰를 확인하고 싶다면 리뷰를 클릭해봐요.
 
-![가게 상세 정보 확인.gif](./img/가게%20상세%20정보%20확인.gif){: width="450px", height="800px"}
+<img src="./img/가게%20상세%20정보%20확인.gif" width="300" height="700">
 
 <br>
 
@@ -196,7 +188,7 @@ Azure AI Document Intelligence Studio
 
 몇 명의 친구들과 함께한 소비인지, 어떤 타입, 어떤 내용의 소비를 했는지 리뷰를 작성하고, 소비 내역에 대한 사진을 함께 기록해요.
 
-![리뷰 등록.gif](./img/리뷰%20등록.gif){: width="450px", height="800px"}
+<img src="./img/리뷰%20등록.gif" width="300" height="700">
 
 
 <br><br>
