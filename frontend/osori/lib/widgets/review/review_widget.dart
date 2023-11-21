@@ -274,10 +274,15 @@ class _ReviewState extends State<Review> {
                 const SizedBox(
                   height: 10,
                 ),
-                Text(
-                  widget.review.content,
-                  maxLines: 5,
-                  overflow: TextOverflow.ellipsis,
+                Row(
+                  children: [
+                    Text(
+                      widget.review.content,
+                      maxLines: 5,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.start,
+                    ),
+                  ],
                 ),
                 const SizedBox(
                   height: 10,
