@@ -12,6 +12,11 @@
 
 영수증 인증 단계를 거친 신뢰할 수 있는 리뷰들을 통해 소통하고, 나만의 소비 피드를 만들어나가요!
 
+<div align="center">
+   <a href="https://youtu.be/QcEOstLRD8o" target="_blank">
+   <img src="http://img.youtube.com/vi/QcEOstLRD8o/0.jpg"></img>
+</div>
+
 <br><br>
 
 # 👨‍👩‍👧‍👦 팀 Team
